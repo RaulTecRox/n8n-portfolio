@@ -1,0 +1,177 @@
+{
+  "updatedAt": "2025-10-09T16:00:44.656Z",
+  "createdAt": "2025-10-09T15:03:43.086Z",
+  "id": "MHRzM0HErL3esyX3",
+  "name": "TrancreverAudio",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eadb2317-ae56-4070-b932-8e9603b94535",
+              "name": "base64",
+              "value": "={{ $json.body.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -688,
+        -144
+      ],
+      "id": "ae55334f-c143-420c-a08a-885b19d8031f",
+      "name": "Edit Fields base64"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.3.60.30:5000/api/transcribe",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "turbo"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 9000000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        16
+      ],
+      "id": "8aa73f17-82db-4495-b011-12fc30f72224",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "binaryPropertyName": "audio",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -496,
+        -144
+      ],
+      "id": "695d1b30-0fcb-431c-acbf-958d0ab9d6cd",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        16
+      ],
+      "id": "4389a05d-f0e7-40ec-bd62-2bd0fc18a781",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\Outros\\Gravando.mp3",
+        "options": {
+          "fileName": "gravacao"
+        }
+      },
+      "id": "58df91e6-ac0a-42fc-8d20-c27000cf8eb3",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        16
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Edit Fields base64": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        []
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "c7fb62be-5f35-46e6-ae85-eaa8f6c15693",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-09T15:03:43.086Z",
+      "createdAt": "2025-10-09T15:03:43.086Z",
+      "role": "workflow:owner",
+      "workflowId": "MHRzM0HErL3esyX3",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

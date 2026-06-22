@@ -1,0 +1,5997 @@
+{
+  "updatedAt": "2025-04-02T11:59:41.431Z",
+  "createdAt": "2024-11-19T17:10:51.610Z",
+  "id": "pSTtpGEqS720OrS1",
+  "name": "Acessos - Cria acessos full",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "045965ed-76ac-4515-a664-eaf20a83838f",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        80
+      ],
+      "id": "9740e77b-039d-4897-84e8-af9b29128d56",
+      "name": "Webhook",
+      "webhookId": "045965ed-76ac-4515-a664-eaf20a83838f"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.DESCRICAO }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "[\n  {\n    \"nome\": \"Nome do Colaborador\",\n    \"cpf\": \"12345678900\",\n    \"celular\": \"11 91234-5678\",\n    \"nascimento\": \"01/01/1980\",\n    \"cargo\": \"Cargo do Colaborador\",\n    \"empresa\": \"Empresa X\",\n    \"inicio\": \"01/01/2024\"\n  }\n]",
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        620,
+        -120
+      ],
+      "id": "8d3272e5-2eed-44f2-a8b1-5b4f9c969560",
+      "name": "Information Extractor",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "gemma2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        700,
+        80
+      ],
+      "id": "de10995e-c3d1-4bd1-b729-226dbb002863",
+      "name": "Ollama Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pOegylLBwaHAjzk2",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1bd5f098-a960-40d7-be91-724dae195554",
+              "name": "ID",
+              "value": "={{ $json.body.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "9b308025-d39b-4ee2-ad23-2976224fef7d",
+              "name": "TITULO",
+              "value": "={{ $json.body['Título'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7a0c062c-66b2-4097-bde0-7c011b402d3c",
+              "name": "STATUS",
+              "value": "={{ $json.body.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "8e55ef1d-b931-4828-bafa-e4b2bd66b40d",
+              "name": "STATUS APROVACÃO",
+              "value": "={{ $json.body['Status do pedido de aprovação'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c42bba14-0e27-4d62-99fd-8cf28366f135",
+              "name": "REQUERENTE",
+              "value": "={{ $json.body.Requerentes.toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "af5b3a15-477a-4ece-b625-519b3b6de734",
+              "name": "DESCRICAO",
+              "value": "={{ $json.body['Descrição'].replace(/<[^>]*>/g, '').toUpperCase().removeTags()}}",
+              "type": "string"
+            },
+            {
+              "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+              "name": "URL",
+              "value": "={{ $json.body['URL GLPI'].concat('/front/ticket.form.php?id=').concat($json.body.ID) }}",
+              "type": "string"
+            },
+            {
+              "id": "b6526f08-01be-4f85-8e93-b5df770edb8a",
+              "name": "ATENDENTE",
+              "value": "={{ $json.body['Atribuído'].trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "afdb474e-af20-46c4-8bd4-30bd9170882d",
+              "name": "APROVADOR",
+              "value": "={{ $json.body['Validações'][0].Validador.toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "ea817911-7e87-403d-963b-2e45d4df9333",
+              "name": "ATRIBUIDO GRUPO",
+              "value": "={{ $json.body['Atribuído para grupos'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        80
+      ],
+      "id": "d9f4cb71-6fe1-43d6-a247-55a24fe75f96",
+      "name": "separaDados"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obter os dados do nó anterior\nconst inputData = $json;\n\n// Verificar se a propriedade 'output' existe e é um array\nif (!Array.isArray(inputData.output)) {\n  return {\n    error: \"A propriedade 'output' não foi encontrada ou não é um array.\",\n    receivedData: inputData, // Retorna os dados recebidos para análise\n  };\n}\n\n// Acessar e formatar os dados da propriedade 'output'\nconst formattedData = inputData.output.map(item => ({\n  newNOME: item.nome.toUpperCase() || \"N/A\",\n  newCPF: item.cpf ? item.cpf.replace(/[\\.\\-\\s]/g, '') : \"N/A\", // Remove . - e espaços\n  newTELEFONE: item.celular || \"N/A\",\n  newDTNASCIMENTO: item.nascimento || \"N/A\",\n  newCARGO: item.cargo || \"N/A\",\n  newEMPRESA: item.empresa || \"N/A\",\n  newDTADMISSAO: item.inicio || \"N/A\",\n}));\n\n// Retornar os dados formatados\nreturn formattedData;\n"
+      },
+      "id": "0c270cf3-2ad1-4183-b87e-26d79dd26217",
+      "name": "SeparaDados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.TITULO }}",
+                    "rightValue": "Novo(s) Colaborador(es)",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        420,
+        80
+      ],
+      "id": "9aae07d1-a518-448b-b5d5-39e95a217f5a",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "e071423e-f328-42e7-b57e-dec006e16f4b",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        460,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "E:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "a3c653aa-cdb9-4bd4-85ef-6ff055db201b",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        200,
+        320
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtenha as listas filtrando os itens que possuem as chaves específicas\nconst listOfAll = $('CombinedItems').all().filter(item => item.json.CPF !== undefined);\nconst listOfDisableds = $('CombinedItems').all().filter(item => item.json.newCPF !== undefined);\n\n// Inicializa um array vazio para armazenar os resultados\nlet listaGeral = [];\n\n// Função para verificar se o nome existe na lista de ativos\nfunction foundName(cpf) {\n  return listOfAll.some(item => cpf === item.json.CPF);\n}\n\n// Loop pelos nomes desligados e adiciona ao array listaGeral\nfor (const disabled of listOfDisableds) {\n  listaGeral.push({\n    newCPF: disabled.json.newCPF,\n    status: foundName(disabled.json.newCPF),\n    local: disabled.json.LOCAL // Adiciona o local ao resultado\n  });\n}\n\n// Retorna os resultados como um array\nreturn listaGeral;"
+      },
+      "id": "9d36c5b9-2c70-4b45-9829-70912a54274b",
+      "name": "ValidaNome",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1660,
+        -80
+      ],
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "id": "26dcee19-0674-4088-9810-ff8d5073aee8",
+      "name": "CombinedItems",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1500,
+        -80
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "content": "## Compara se o usuário existe\nVerifica se ja exite via CPF ",
+        "height": 360,
+        "width": 600
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1480,
+        -220
+      ],
+      "typeVersion": 1,
+      "id": "dc90b906-e888-4808-b27a-e70ca3573a1e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e78e334e-2877-4042-9e3e-07dd5e594061",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1860,
+        -80
+      ],
+      "id": "41deab85-0911-46f4-963d-e49376d03c2e",
+      "name": "separaExitente"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+              "name": "USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'].split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "22fd9deb-0e60-4b1e-b03e-028bae90ea6c",
+              "name": "CPF",
+              "value": "={{ $json.CPF.toString().replaceSpecialChars().replaceAll(\".\",\"\").replaceAll(\"-\",\"\") }}",
+              "type": "string"
+            },
+            {
+              "id": "0441bd3a-d230-452b-bbe7-cce86e51079e",
+              "name": "CARGO",
+              "value": "={{ $json.CARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "f0398939-6419-4351-bff4-1b1b3a42e9ae",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "19990e22-70b9-4506-9bf0-4fcfba7787e8",
+      "name": "coletaDados",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2d4e6477-4c3a-43d3-838e-29f5370b01b3",
+              "name": "USUARIO",
+              "value": "={{ $json.usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "f58ba142-4271-4462-854d-40c9b64f3c9c",
+              "name": "newCPF",
+              "value": "={{ $json.newCPF }}",
+              "type": "string"
+            },
+            {
+              "id": "7e6553db-75a6-4d6d-ae6d-72963baaaf26",
+              "name": "newNOME",
+              "value": "={{ $('Merge1').item.json.newNOME }}",
+              "type": "string"
+            },
+            {
+              "id": "246711ad-b69a-41ee-af88-b7d1303b9265",
+              "name": "newTELEFONE",
+              "value": "={{ $('Merge1').item.json.newTELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "e2ee7afb-bde6-4c49-a63f-aa2d326085f6",
+              "name": "newDTNASCIMENTO",
+              "value": "={{ $('Merge1').item.json.newDTNASCIMENTO }}",
+              "type": "string"
+            },
+            {
+              "id": "b8e93734-2875-4fd0-b426-6c7e3687626a",
+              "name": "newCARGO",
+              "value": "={{ $('Merge1').item.json.newCARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "48eb49d3-e39f-4ed2-8dbc-7420dcd10f0d",
+              "name": "newEMPRESA",
+              "value": "={{ $('Merge1').item.json.newEMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa5d9f2-5a58-4a16-b607-b73f75a83db2",
+              "name": "newDTADMISSAO",
+              "value": "={{ $('Merge1').item.json.newDTADMISSAO }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2840,
+        -420
+      ],
+      "id": "ac56500e-d884-4241-bd90-d8bc2fec9d7d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "newCPF",
+        "options": {}
+      },
+      "id": "ace1aaa6-02af-46a0-9b42-8797eeb64111",
+      "name": "CombinedItems1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3780,
+        -460
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## GERA NOME USUARIO\ncomprara com a base de usuarios",
+        "height": 340,
+        "width": 680
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2340,
+        -540
+      ],
+      "typeVersion": 1,
+      "id": "3b4b7876-0df8-454d-9450-88ebba194554",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.newEMPRESA }}",
+                    "rightValue": "GASPAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GASPAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e44a0fb3-9470-43bc-a7ff-37ab0689915e",
+                    "leftValue": "={{ $json.newEMPRESA }}",
+                    "rightValue": "ACG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ACG"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "98ef700b-bcb8-40b6-8561-6b9f7be04e86",
+                    "leftValue": "={{ $json.newEMPRESA }}",
+                    "rightValue": "MDG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MDG"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bf328fb3-663f-41ee-a4cf-a043dafa74a4",
+                    "leftValue": "={{ $json.newEMPRESA }}",
+                    "rightValue": "MRCAMP",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MRCAMP"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        4220,
+        -640
+      ],
+      "id": "be0c890e-adf4-4139-93b6-e487bfa7eee6",
+      "name": "separaEmpresa"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10822e3f-4ddb-48e4-a1d6-dceb9c38cfab",
+              "name": "senhaPadao",
+              "value": "Mudar@1234",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        -140
+      ],
+      "id": "f6ae3b40-fef6-43e4-9a83-98e8da0d8301",
+      "name": "SenhaPadrao"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        420,
+        -120
+      ],
+      "id": "4c968667-b80b-416c-8976-92441ae48015",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5280,
+        -1000
+      ],
+      "id": "573feccd-0855-4f11-9df2-49993b898101",
+      "name": "IdContasGoogle"
+    },
+    {
+      "parameters": {
+        "content": "## CRIA CONTA GOOGLE\n",
+        "height": 1160,
+        "width": 940,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4680,
+        -1140
+      ],
+      "typeVersion": 1,
+      "id": "c6d82faf-8e65-4c1f-a331-01e70cef3b0d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5280,
+        -340
+      ],
+      "id": "38f57904-5817-484c-8179-9b560b007ed5",
+      "name": "IdContasGoogle2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5280,
+        -540
+      ],
+      "id": "f8ebc710-9638-4a06-b555-9ce386f15756",
+      "name": "IdContasGoogle3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5280,
+        -800
+      ],
+      "id": "30e174b8-9859-4efd-b11c-f984279009d9",
+      "name": "IdContasGoogle4"
+    },
+    {
+      "parameters": {
+        "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+        "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+        "password": "={{ $('SenhaPadrao').first().json.senhaPadao }}",
+        "domain": "mdgintermediacoes.com.br",
+        "username": "={{ $json.USUARIO }}",
+        "additionalFields": {
+          "changePasswordAtNextLogin": true
+        }
+      },
+      "id": "c687ae9f-fd50-494f-a253-d6096f81600c",
+      "name": "criaEmailGaspar",
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        5080,
+        -1000
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+        "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+        "password": "={{ $('SenhaPadrao').first().json.senhaPadao }}",
+        "domain": "mdgintermediacoes.com.br",
+        "username": "={{ $json.USUARIO }}",
+        "additionalFields": {
+          "changePasswordAtNextLogin": true
+        }
+      },
+      "id": "76d4c1c7-70cf-4264-8668-3aafa5ef138e",
+      "name": "criaEmailMrcamp",
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        5080,
+        -340
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+        "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+        "password": "={{ $('SenhaPadrao').first().json.senhaPadao }}",
+        "domain": "mdgintermediacoes.com.br",
+        "username": "={{ $json.USUARIO }}",
+        "additionalFields": {
+          "changePasswordAtNextLogin": true
+        }
+      },
+      "id": "f5d22a99-889b-4039-887b-008d5927e92c",
+      "name": "criaEmailMDG",
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        5080,
+        -540
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+        "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+        "password": "={{ $('SenhaPadrao').first().json.senhaPadao }}",
+        "domain": "acgconsultoria.com.br",
+        "username": "={{ $json.USUARIO }}",
+        "additionalFields": {
+          "changePasswordAtNextLogin": true
+        }
+      },
+      "id": "3ad4011e-eb6b-45fd-ad60-da07623dd0f3",
+      "name": "criaEmailACG",
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        5080,
+        -800
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "c051a2b6-e581-4629-af7f-e7199d90f922",
+      "name": "Agente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -1420
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Coordenadores\"\n}",
+        "options": {}
+      },
+      "id": "c8999e54-86da-4705-a1f3-1eda18e236f0",
+      "name": "Coordenadores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -1280
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Líder Comercial\"\n}",
+        "options": {}
+      },
+      "id": "b8dff12a-45a1-4708-a7aa-af3fe0639b00",
+      "name": "Lider",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -980
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## MOVE OU WORKSPASCE\n",
+        "height": 2880,
+        "width": 480,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        5740,
+        -1400
+      ],
+      "typeVersion": 1,
+      "id": "cd77347d-92d2-4b56-b8bb-4015392fa554",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/ACG/Precatório/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "cfbf8025-c59d-4fdc-b3b3-fa93ea0d0863",
+      "name": "/ACG/Precatório/Agente de Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -840
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Precatório/BKO\"\n}",
+        "options": {}
+      },
+      "id": "a0667ef5-6c5c-449b-a86e-f9920b208406",
+      "name": "/ACG/Precatório/BKO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -680
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/ACG/Precatório/Gerente\"\n}",
+        "options": {}
+      },
+      "id": "939043ee-d3c0-4ed5-9cc6-202ed7d0571f",
+      "name": "ACG/Precatório/Gerente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -520
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "ad6e98a1-7e30-4065-9655-45293e4a95e8",
+      "name": "/ACG/Consignado/Agente de Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -240
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "CONSULTOR DE NEGOCIOS JUNIOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CONSULTOR DE NEGOCIOS JUNIOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "BKO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "GERENTE PRECATORIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE PRECA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "47eeee0e-1485-4288-b811-818faf104934",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b71b7bbc-5e1f-48ad-a705-a35a32e56dca",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "AGENTE DE VENDAS J",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS J"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "95bce708-5c96-452e-8f17-58198c6d8952",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "Líder Comercial",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Líder Comercial"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "599f3de0-d36b-4bef-8bd4-437569b65de0",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "SUPERVISOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUPERVISOR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        5780,
+        -820
+      ],
+      "id": "dbf63e40-1142-4768-b4ae-4b8247e94c88",
+      "name": "ACG"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{  \"orgUnitPath\":\"/ACG/Consignado/BKO\"\n}",
+        "options": {}
+      },
+      "id": "6a2cd14a-131f-49b3-9818-7f14220485ce",
+      "name": "/ACG/Consignado/BKO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -380
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Coordenadores\"\n}",
+        "options": {}
+      },
+      "id": "ee6624db-5ec7-4478-8d91-6d0b32fbaf50",
+      "name": "/ACG/Consignado/Coordenadores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        80
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "SUPERVISOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUPERVISOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "GERENTE COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d3d82940-07fb-463f-87d8-a344232f8db6",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "Lider Comercial",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Lider Comercial"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b74bba44-1bd0-4749-afa3-9f0df3806106",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        5780,
+        -440
+      ],
+      "id": "6a20f8ff-18bd-4af3-930e-7281dfdeb3a2",
+      "name": "MDG"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Lider Comercial\"\n}",
+        "options": {}
+      },
+      "id": "7a9acd7c-da56-4312-bd7c-11f6f24ca5e1",
+      "name": "/ACG/Consignado/Lider Comercial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -80
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/MDG/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "3c6ae310-8a2f-435b-8cf0-ccf220a605e0",
+      "name": "/MDG/Agente de Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        400
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Coordenação\"\n}",
+        "options": {}
+      },
+      "id": "2bdaf193-9473-400c-a149-8b8577dc45c0",
+      "name": "/MDG/Coordenação",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        560
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Gerente Comercial\"\n}",
+        "options": {}
+      },
+      "id": "01ecaed4-fced-49f8-829a-458a8075a62e",
+      "name": "/MDG/Gerente Comercial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        700
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 9
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        6860,
+        -500
+      ],
+      "id": "3bf8e8db-51fd-40e8-b3fa-76c7b91247f4",
+      "name": "Merge ACG"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        6840,
+        -1160
+      ],
+      "id": "58063f6a-e4c0-477e-9009-c5ca0895f3c3",
+      "name": "Merge GASPAR"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Lider Comercial\"\n}",
+        "options": {}
+      },
+      "id": "887009aa-d57c-4c48-ae74-0c4c34b5af61",
+      "name": "/MDG/Lider Comercial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        840
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "SUPERVISOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUPERVISOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "GERENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4f0c8af2-3f81-4d51-b129-afc0cbe0a4a8",
+                    "leftValue": "={{ $('CombinedItems1').item.json.newCARGO }}",
+                    "rightValue": "LIDER",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        5780,
+        -1080
+      ],
+      "id": "d43fd486-905f-4a5f-bd78-a33e248bde72",
+      "name": "GASPAR"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $input.all(); \n\n// Definindo a OU do Active Directory\nconst caminhoOU = \"OU=Usuarios,OU=Homologacao,OU=01_MDG_PLN,DC=colaborador,DC=local\";\n\n// Recuperar a senha padrão do nó \"SenhaPadrao\"\nconst senha = $('SenhaPadrao').first().json.senhaPadao;\n\n// Validar se a senha padrão foi recuperada corretamente\nif (!senha) {\n  throw new Error(\"A senha padrão não foi encontrada no nó 'SenhaPadrao'. Verifique o nó.\");\n}\n\n// Verificar se os dados de entrada são válidos\nif (Array.isArray(usuarios) && usuarios.length > 0) {\n  // Processar cada usuário\n  let comandosSSH = usuarios.map(item => {\n    const usuario = item.json;\n    const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n    const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n    const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n    const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n    const telefone = usuario[\"TELEFONE\"]?.trim() || usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n    const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n    const mail = usuario[\"Email\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n\n    // Validação mínima para evitar erros graves\n    if (!usuarioNome || !nomeCompleto) {\n      throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n    }\n\n    // Gerar o comando SSH para criar o usuário no AD\n    return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\\\"New-ADUser -SamAccountName '${usuarioNome}' -UserPrincipalName '${usuarioNome}@colaborador.local' -Name '${nomeCompleto}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '\\\\\\\\\\\\\\\\srv01\\\\\\\\users$\\\\\\\\${usuarioNome}' -HomeDrive 'U' -PasswordNeverExpires:\\\\$false -ChangePasswordAtLogon \\\\$true -Enabled \\\\$true -Path '${caminhoOU}' -AccountPassword (ConvertTo-SecureString '${senha}' -AsPlainText -Force)\\\\\"\"`\n  }).join(\"\\n\");  // Aqui, usamos .join() para unir os comandos em uma única string, com cada comando em uma nova linha.\n\n  // Retornar os comandos SSH gerados como uma string\n  return {\n    json: {\n      comandosSSH\n    }\n  };\n} else {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7640,
+        -1020
+      ],
+      "id": "d07d815b-8c4e-4467-97e8-beb404ff4561",
+      "name": "Cria Usuário AD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        7840,
+        -1020
+      ],
+      "id": "6a73cceb-d23b-423d-8e4b-9c9517182ed8",
+      "name": "Execute Command",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b01cdf0-0c06-46e2-873e-d8d931ce3c13",
+              "name": "USUARIO",
+              "value": "={{ $('CombinedItems1').item.json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "e359c01b-9003-42e7-8949-892230ad0d17",
+              "name": "CPF",
+              "value": "={{ $('CombinedItems1').item.json.newCPF }}",
+              "type": "string"
+            },
+            {
+              "id": "5f34780e-43a8-4728-9a1b-6919d5188a04",
+              "name": "NOME",
+              "value": "={{ $('CombinedItems1').item.json.newNOME.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "01875bee-ba27-4b7f-a63f-111ad758aae6",
+              "name": "EMPRESA",
+              "value": "={{ $('CombinedItems1').item.json.newEMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "26ca6250-33f0-4b88-8201-0f1df0387c12",
+              "name": "Email",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "08ebe54f-9835-4a7c-af43-5ef90986238a",
+              "name": "First Name",
+              "value": "={{ $('CombinedItems').item.json.newNOME.toUpperCase().split(\" \").slice(0, 3).join(\" \") + \" \" }}",
+              "type": "string"
+            },
+            {
+              "id": "c8dcb954-f5d8-42f4-865a-ced2132f0ffe",
+              "name": "Last Name",
+              "value": "={{ $('CombinedItems1').item.json.newNOME.split(\" \").last().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "f017c604-7930-490e-8937-aee0f311a308",
+              "name": "TELEFONE",
+              "value": "={{ $('CombinedItems1').item.json.newTELEFONE.replace('-',' ').replaceAll(' ','') }}",
+              "type": "string"
+            },
+            {
+              "id": "c5b727e9-f63b-4a4d-abcf-7d6768279082",
+              "name": "CARGO",
+              "value": "={{ $('CombinedItems1').item.json.newCARGO.toUpperCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7440,
+        -1140
+      ],
+      "id": "979f78d5-c99c-488e-87a2-ac6c74d456d6",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Edit Fields3').item.json.CARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('Edit Fields3').item.json.CARGO }}",
+                    "rightValue": "=COORDENADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COORDENADOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('Edit Fields3').item.json.CARGO }}",
+                    "rightValue": "GERENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f223b4e-932d-4ac4-894a-4e0c9e631378",
+                    "leftValue": "={{ $('Edit Fields3').item.json.CARGO }}",
+                    "rightValue": "LIDER",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        8640,
+        -1120
+      ],
+      "id": "738998b5-b585-496b-80cf-deacd340fd92",
+      "name": "GASPAR1"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        8460,
+        -1100
+      ],
+      "id": "8f94ce78-4529-42d6-9fe0-074924743013",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyComercial', 'G_MDG_Comercial_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -1540
+      ],
+      "id": "219977c1-2fd0-4e5f-83b3-efc78d74570c",
+      "name": "adicionaGruposADAgente"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Gerentes_Comerciais,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -1240
+      ],
+      "id": "801b6d1d-88d6-4cbf-be03-903d39cbbb6e",
+      "name": "Move Usuario AD Gerente",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Coordenadores,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -1400
+      ],
+      "id": "70dd4a0d-0282-4802-bb7b-022ba7059b84",
+      "name": "Move Usuario AD Coordenador",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agente_de_Vendas,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -1540
+      ],
+      "id": "8ccf0659-c2d1-4721-b147-5182ca48ec91",
+      "name": "Move Usuario AD Agente",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "name.fullName",
+              "field2": "newNOME"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        7040,
+        -1140
+      ],
+      "id": "b535a627-0071-42e7-a4f4-091985f3f0af",
+      "name": "Merge3",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        6860,
+        680
+      ],
+      "id": "8692ffd9-e7e8-49ef-ad73-6701b4cd77f1",
+      "name": "MDG2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $input.all(); \n\n// Definindo a OU do Active Directory\nconst caminhoOU = \"OU=Usuarios,OU=Homologacao,OU=01_MDG_PLN,DC=colaborador,DC=local\";\n\n// Recuperar a senha padrão do nó \"SenhaPadrao\"\nconst senha = $('SenhaPadrao').first().json.senhaPadao;\n\n// Validar se a senha padrão foi recuperada corretamente\nif (!senha) {\n  throw new Error(\"A senha padrão não foi encontrada no nó 'SenhaPadrao'. Verifique o nó.\");\n}\n\n// Verificar se os dados de entrada são válidos\nif (Array.isArray(usuarios) && usuarios.length > 0) {\n  // Processar cada usuário\n  let comandosSSH = usuarios.map(item => {\n    const usuario = item.json;\n    const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n    const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n    const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n    const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n    const telefone = usuario[\"TELEFONE\"]?.trim() || usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n    const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n    const mail = usuario[\"Email\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n\n    // Validação mínima para evitar erros graves\n    if (!usuarioNome || !nomeCompleto) {\n      throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n    }\n\n    // Gerar o comando SSH para criar o usuário no AD\n    return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\\\"New-ADUser -SamAccountName '${usuarioNome}' -UserPrincipalName '${usuarioNome}@colaborador.local' -Name '${nomeCompleto}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '\\\\\\\\\\\\\\\\srv01\\\\\\\\users$\\\\\\\\${usuarioNome}' -HomeDrive 'U' -PasswordNeverExpires:\\\\$false -ChangePasswordAtLogon \\\\$true -Enabled \\\\$true -Path '${caminhoOU}' -AccountPassword (ConvertTo-SecureString '${senha}' -AsPlainText -Force)\\\\\"\"`\n  }).join(\"\\n\");  // Aqui, usamos .join() para unir os comandos em uma única string, com cada comando em uma nova linha.\n\n  // Retornar os comandos SSH gerados como uma string\n  return {\n    json: {\n      comandosSSH\n    }\n  };\n} else {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7680,
+        -280
+      ],
+      "id": "c52a5c29-c560-4d6d-a206-dfb2e6830a2c",
+      "name": "Cria Usuário AD1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        7880,
+        -280
+      ],
+      "id": "bbaa45ee-a24e-472c-861e-2b06926c3904",
+      "name": "Execute Command2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b01cdf0-0c06-46e2-873e-d8d931ce3c13",
+              "name": "USUARIO",
+              "value": "={{ $('CombinedItems1').item.json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "e359c01b-9003-42e7-8949-892230ad0d17",
+              "name": "CPF",
+              "value": "={{ $('CombinedItems1').item.json.newCPF }}",
+              "type": "string"
+            },
+            {
+              "id": "5f34780e-43a8-4728-9a1b-6919d5188a04",
+              "name": "NOME",
+              "value": "={{ $('CombinedItems1').item.json.newNOME.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "01875bee-ba27-4b7f-a63f-111ad758aae6",
+              "name": "EMPRESA",
+              "value": "={{ $('CombinedItems1').item.json.newEMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "26ca6250-33f0-4b88-8201-0f1df0387c12",
+              "name": "Email",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "08ebe54f-9835-4a7c-af43-5ef90986238a",
+              "name": "First Name",
+              "value": "={{ $('CombinedItems').item.json.newNOME.toUpperCase().split(\" \").slice(0, 3).join(\" \") + \" \" }}",
+              "type": "string"
+            },
+            {
+              "id": "c8dcb954-f5d8-42f4-865a-ced2132f0ffe",
+              "name": "Last Name",
+              "value": "={{ $('CombinedItems1').item.json.newNOME.split(\" \").last().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "f017c604-7930-490e-8937-aee0f311a308",
+              "name": "TELEFONE",
+              "value": "={{ $('CombinedItems1').item.json.newTELEFONE.replace('-',' ').replaceAll(' ','') }}",
+              "type": "string"
+            },
+            {
+              "id": "c5b727e9-f63b-4a4d-abcf-7d6768279082",
+              "name": "CARGO",
+              "value": "={{ $('CombinedItems1').item.json.newCARGO.toUpperCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7480,
+        -380
+      ],
+      "id": "6e717648-32a0-4a51-85de-6529c35aff45",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        8520,
+        -360
+      ],
+      "id": "7e3bebef-1813-49cf-8eb3-558c516ff999",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Gerente,OU=Precatorio,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -600
+      ],
+      "id": "155c3142-5b34-47e0-9444-695b816d09d2",
+      "name": "Move Usuario AD Gerente1",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agentes,OU=Precatorio,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -740
+      ],
+      "id": "97f80a80-1ffa-4bd6-9c1d-39f2a4609ee7",
+      "name": "Move Usuario AD Agente1",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "name.fullName",
+              "field2": "newNOME"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        7080,
+        -360
+      ],
+      "id": "506e1164-5efb-48cc-bd25-84f49e118ed8",
+      "name": "Merge5",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Edit Fields4').item.json.CARGO }}",
+                    "rightValue": "CONSULTOR DE NEGOCIOS JUNIOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CONSULTOR DE NEGOCIOS JUNIOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('Edit Fields4').item.json.CARGO }}",
+                    "rightValue": "=BKO PRECATORIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO PRECATORIO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('Edit Fields4').item.json.CARGO }}",
+                    "rightValue": "GERENTE PRECATORIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE PRECATORIO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "beb4e5f3-aed8-4d84-a2a6-382e0aa2f193",
+                    "leftValue": "={{ $('Edit Fields4').item.json.CARGO }}",
+                    "rightValue": "BKO COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "913a4798-7b45-42e9-a9ce-fa8446a06de0",
+                    "leftValue": "={{ $('Edit Fields4').item.json.CARGO }}",
+                    "rightValue": "AGENTE DE VENDAS J",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS J"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f1e7515-677c-4433-a266-97342dea0aca",
+                    "leftValue": "={{ $('Edit Fields4').item.json.CARGO }}",
+                    "rightValue": "LIDER COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0d9f492a-8768-43ec-bb78-0220184c1f43",
+                    "leftValue": "={{ $('Edit Fields4').item.json.CARGO }}",
+                    "rightValue": "COORDENADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COORDENADOR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        8680,
+        -420
+      ],
+      "id": "346a52bd-b936-4ca8-a8ae-327c37420976",
+      "name": "ACG1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_PRECILUS_USER', 'G_MDG_Impressora_TI', 'G_MDG_Impressora_Precatorio', 'G_PLA_AdmLocal_Comercial', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyPrecatorio', 'PLA_AdmLocal_Administrativo', 'G_MDG_Precatorio'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -740
+      ],
+      "id": "7d6ab62f-734f-429f-843f-d6e554c8cd80",
+      "name": "ConsultorGruposAdd"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_BaseBKO_W', 'G_MDG_Docs_Adm_Precatorio_W', 'G_MDG_PRECILUS_COORD', 'G_MDG_FERIAS_W', 'G_MDG_AutenticacaoGLPI', 'G_MDG_PbiPrecatorio_W', 'G_MDG_PrintScreen_Gerencial', 'G_MDG_Impressora_TI', 'G_MDG_Impressora_Precatorio', 'G_MDG_AUTENTICACAO_VPN', 'G_MDG_Marketing_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyPrecatorio', 'G_MDG_Impressora_RH', 'PLA_AdmLocal_Administrativo', 'G_MDG_Coord_Precatorio', 'G_MDG_Precatorio'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -600
+      ],
+      "id": "873ccb71-c69e-4e01-ba67-239fb7bcd86b",
+      "name": "GerentePrecaGruposAdd"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Gerente Comercial\"\n}",
+        "options": {}
+      },
+      "id": "2e7d1e92-c8e7-4c26-8838-e9439a296308",
+      "name": "/MDG/Gerente Comercial1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        -1140
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_FERIAS_W', 'G_MDG_FERIAS_R', 'G_MDG_GLPI_Lideres', 'G_MDG_AutenticacaoGLPI', 'G_CATELI_ImpressoraComercial', 'G_MDG_ProxyCoord', 'G_MDG_Impressora_Financeiro', 'G_MDG_Monitoria_R', 'G_MDG_PrintScreen_Coordenadores', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Coordenador_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Impressoras_BKO', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_Coordenador_W', 'G_MDG_Comercial_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -1400
+      ],
+      "id": "00f7e328-b976-4737-8b0c-06ee2d4e145e",
+      "name": "CoodernadorGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AcompanhamentoGastosFinanceiro', 'G_MDG_AcompanhamentoFinanceiroGaspar_R', 'G_MDG_TABUARGULUS_USER', 'G_MDG_FERIAS_W', 'G_LMP_ImpressoraComercial', 'G_MDG_AutenticacaoGLPI', 'G_MDG_BaseMacica_W', 'G_MDG_BaseMacica_R', 'G_MDG_ProxyGerentes', 'G_MDG_Mailing_W', 'G_CATELI_Diretoria_W', 'G_CATELI_FechamentoCosmopolis_W', 'G_CATELI_ImpressoraComercial', 'G_CATELI_Mailing', 'G_MDG_PermiteRemoviveis', 'G_MDG_Fechamento_W', 'G_MDG_PrintScreen_Gerentes', 'G_MDG_Evidencias_Operadores', 'G_MDG_BD_BKO', 'G_MDG_Impressora_Financeiro', 'G_MDG_TELEVISAO_W', 'G_MDG_AUTENTICACAO_VPN', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Impressoras_BKO', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_Remoto', 'G_MDG_Gerente', 'G_MDG_BKO_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -1240
+      ],
+      "id": "5276bd38-87d6-414a-af58-f122c2b019fb",
+      "name": "GerenteGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Lideres_de_Vendas,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -1100
+      ],
+      "id": "68af6681-c4a1-4290-8d49-1ed927bf117a",
+      "name": "Move Usuario AD Agente2",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_FERIAS_W', 'G_MDG_FERIAS_R', 'G_MDG_AutenticacaoGLPI', 'G_CATELI_ImpressoraComercial', 'G_MDG_ProxyCoord', 'G_MDG_PrintScreen_Coordenadores', 'G_MDG_Lideres_W', 'G_MDG_Lideres_R', 'G_PLA_AdmLocal_Comercial', 'G_MDG_AUTENTICACAO_VPN', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -1100
+      ],
+      "id": "46acf9bd-cc6b-414e-820b-bcf64cec35d6",
+      "name": "LiderGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyBKO', 'G_MDG_Impressora_BKO_Comercial', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_BKO_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -440
+      ],
+      "id": "2bdbcc50-4d36-4784-9d63-f2074fe474c0",
+      "name": "BKOcomercialGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Usuarios,OU=Backoffice,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -440
+      ],
+      "id": "8c428fe2-2b92-48bc-899d-4d70e211e1c8",
+      "name": "Move Usuario AD",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agentes_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -280
+      ],
+      "id": "655cae48-4827-410c-8a80-d24ddd18b7e4",
+      "name": "Move Usuario AD Agente3",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_CATELI_Comercial_R', 'G_CATELI_Comercial_W', 'G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyComercial', 'G_MDG__Comercial_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -280
+      ],
+      "id": "e5f47cc3-9f5d-418e-ad30-ea4e3a08ec18",
+      "name": "AgenteComercialGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Lideres_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        -120
+      ],
+      "id": "421e6110-3351-49c4-97bf-5a857ade898a",
+      "name": "Move Usuario AD Agente4",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_Proxy_Lideres', 'G_MDG_AutenticacaoGLPI', 'G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Comercial_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        -120
+      ],
+      "id": "cd51aacf-fbfe-415b-be24-3204e7c7654b",
+      "name": "LiderGruposAD1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Coordenadores,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        40
+      ],
+      "id": "7bb0da32-d397-4b18-9565-45c1aae64d05",
+      "name": "Move Usuario AD Agente5",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AutenticacaoGLPI', 'G_MDG_ProxyCoord', 'G_MDG_Impressora_Financeiro', 'G_MDG_PrintScreen_Coordenadores', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Coordenador_R', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Coordenador_W', 'G_MDG_Comercial_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        40
+      ],
+      "id": "24f24039-0b1e-468a-ae84-4d05e87276de",
+      "name": "CoordenadorComercialGruposAD2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $input.all(); \n\n// Definindo a OU do Active Directory\nconst caminhoOU = \"OU=Usuarios,OU=Homologacao,OU=01_MDG_PLN,DC=colaborador,DC=local\";\n\n// Recuperar a senha padrão do nó \"SenhaPadrao\"\nconst senha = $('SenhaPadrao').first().json.senhaPadao;\n\n// Validar se a senha padrão foi recuperada corretamente\nif (!senha) {\n  throw new Error(\"A senha padrão não foi encontrada no nó 'SenhaPadrao'. Verifique o nó.\");\n}\n\n// Verificar se os dados de entrada são válidos\nif (Array.isArray(usuarios) && usuarios.length > 0) {\n  // Processar cada usuário\n  let comandosSSH = usuarios.map(item => {\n    const usuario = item.json;\n    const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n    const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n    const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n    const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n    const telefone = usuario[\"TELEFONE\"]?.trim() || usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n    const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n    const mail = usuario[\"Email\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n\n    // Validação mínima para evitar erros graves\n    if (!usuarioNome || !nomeCompleto) {\n      throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n    }\n\n    // Gerar o comando SSH para criar o usuário no AD\n    return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\\\"New-ADUser -SamAccountName '${usuarioNome}' -UserPrincipalName '${usuarioNome}@colaborador.local' -Name '${nomeCompleto}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '\\\\\\\\\\\\\\\\srv01\\\\\\\\users$\\\\\\\\${usuarioNome}' -HomeDrive 'U' -PasswordNeverExpires:\\\\$false -ChangePasswordAtLogon \\\\$true -Enabled \\\\$true -Path '${caminhoOU}' -AccountPassword (ConvertTo-SecureString '${senha}' -AsPlainText -Force)\\\\\"\"`\n  }).join(\"\\n\");  // Aqui, usamos .join() para unir os comandos em uma única string, com cada comando em uma nova linha.\n\n  // Retornar os comandos SSH gerados como uma string\n  return {\n    json: {\n      comandosSSH\n    }\n  };\n} else {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7680,
+        840
+      ],
+      "id": "488e57cc-f63d-441d-99d7-67446b1fae2c",
+      "name": "Cria Usuário AD2"
+    },
+    {
+      "parameters": {
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        7900,
+        840
+      ],
+      "id": "9e2169bb-16b1-4104-ac13-250e8c07469a",
+      "name": "Execute Command3",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b01cdf0-0c06-46e2-873e-d8d931ce3c13",
+              "name": "USUARIO",
+              "value": "={{ $('CombinedItems1').item.json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "e359c01b-9003-42e7-8949-892230ad0d17",
+              "name": "CPF",
+              "value": "={{ $('CombinedItems1').item.json.newCPF }}",
+              "type": "string"
+            },
+            {
+              "id": "5f34780e-43a8-4728-9a1b-6919d5188a04",
+              "name": "NOME",
+              "value": "={{ $('CombinedItems1').item.json.newNOME.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "01875bee-ba27-4b7f-a63f-111ad758aae6",
+              "name": "EMPRESA",
+              "value": "={{ $('CombinedItems1').item.json.newEMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "26ca6250-33f0-4b88-8201-0f1df0387c12",
+              "name": "Email",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "08ebe54f-9835-4a7c-af43-5ef90986238a",
+              "name": "First Name",
+              "value": "={{ $('CombinedItems1').item.json.newNOME.toUpperCase().split(\" \").slice(0, 3).join(\" \") + \" \" }}",
+              "type": "string"
+            },
+            {
+              "id": "c8dcb954-f5d8-42f4-865a-ced2132f0ffe",
+              "name": "Last Name",
+              "value": "={{ $('CombinedItems1').item.json.newNOME.split(\" \").last().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "f017c604-7930-490e-8937-aee0f311a308",
+              "name": "TELEFONE",
+              "value": "={{ $('CombinedItems1').item.json.newTELEFONE.replace('-',' ').replaceAll(' ','') }}",
+              "type": "string"
+            },
+            {
+              "id": "c5b727e9-f63b-4a4d-abcf-7d6768279082",
+              "name": "CARGO",
+              "value": "={{ $('CombinedItems1').item.json.newCARGO.toUpperCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7480,
+        720
+      ],
+      "id": "6247989e-a173-4f8a-9f2b-465a88da0545",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        8520,
+        720
+      ],
+      "id": "3a30164d-116d-49de-a1ca-ee7548ab0b1d",
+      "name": "Merge6"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "name.fullName",
+              "field2": "newNOME"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        7060,
+        700
+      ],
+      "id": "be5ad28c-614d-46a8-a61a-622b6caa0fc6",
+      "name": "Merge7",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agentes_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        580
+      ],
+      "id": "f02381f6-dbae-4dfd-967a-8cb085b7ff80",
+      "name": "Move Usuario AD Agente7",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_CATELI_Comercial_R', 'G_CATELI_Comercial_W', 'G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyComercial', 'G_MDG_Comercial_W'); foreach(\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        580
+      ],
+      "id": "d139490e-8e2f-4a35-9fc9-4f6345914b7a",
+      "name": "AgenteComercialGruposAD1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Coordenadores,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        920
+      ],
+      "id": "4bc95388-0e33-4d35-936b-a602a5b2b4e4",
+      "name": "Move Usuario AD Agente9",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AutenticacaoGLPI', 'G_MDG_ProxyCoord', 'G_MDG_Impressora_Financeiro', 'G_MDG_PrintScreen_Coordenadores', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Coordenador_R', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Coordenador_W', 'G_MDG_Comercial_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        920
+      ],
+      "id": "b31557ed-042e-4f4d-8ad5-d35a23bc36a8",
+      "name": "CoordenadorComercialGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyBKO', 'G_MDG_Impressora_BKO_Comercial', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_BKO_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        420
+      ],
+      "id": "01435199-09f3-49eb-892d-81c0ad7d8086",
+      "name": "BKOcomercialGruposAD1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Usuarios,OU=Backoffice,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        420
+      ],
+      "id": "2ace9a34-e5f9-40d6-bb4c-7dd00b64780e",
+      "name": "Move Usuario AD1",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Lideres_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        760
+      ],
+      "id": "467604c7-3e2d-4f1b-9db5-6dab03f75ff6",
+      "name": "Move Usuario AD Agente6",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_Proxy_Lideres', 'G_MDG_AutenticacaoGLPI', 'G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Comercial_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        760
+      ],
+      "id": "3a135397-d720-4774-a9bc-64638ff288e9",
+      "name": "LiderGruposAD3"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyBKO', 'G_MDG_Impressora_BKO_Comercial', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_BKO_W'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8920,
+        1100
+      ],
+      "id": "3d1a7079-5fc8-4394-a90a-cbd6a9cb5845",
+      "name": "BKOcomercialGruposAD2"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Usuarios,OU=Backoffice,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        9100,
+        1100
+      ],
+      "id": "52e62000-bd87-49ed-b63e-f32e3c386286",
+      "name": "Move Usuario AD2",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n \"orgUnitPath\":\"/MDG/BackOffice\"\n}",
+        "options": {}
+      },
+      "id": "b6abdc69-1f2c-4389-81ac-669d6411d664",
+      "name": "/MDG/BackOffice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6620,
+        1000
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## USUARIO AD\nCRIA , ADICIONA GRUPOS E MOVE PARA OU",
+        "height": 3120,
+        "width": 1880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        6540,
+        -1760
+      ],
+      "typeVersion": 1,
+      "id": "abf17373-fe74-403e-9f55-2bccc14709b2",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "newCPF",
+              "field2": "CPF"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1440,
+        300
+      ],
+      "id": "6ae4c432-8d06-4367-9447-bd220c639ebf",
+      "name": "Merge8",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e55e860b-5142-4f56-80a5-3c0f94846090",
+              "name": "USUARIO",
+              "value": "={{ $json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "8e94364e-0e95-4679-9003-ffe756a399d3",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1660,
+        300
+      ],
+      "id": "99c10aa8-05b7-4165-b9dc-6e76b739b46d",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "newCPF",
+              "field2": "CPF"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1880,
+        280
+      ],
+      "id": "ab48220d-7c8f-48b7-825d-4fdad0447f39",
+      "name": "Merge9",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b913d08c-8dd1-4c6d-91e6-fba888930fa5",
+              "name": "newNOME",
+              "value": "={{ $json.newNOME }}",
+              "type": "string"
+            },
+            {
+              "id": "26047ffa-7e4b-4a17-9e6f-b10a68a28203",
+              "name": "newCPF",
+              "value": "={{ $json.newCPF }}",
+              "type": "string"
+            },
+            {
+              "id": "771a6375-8c23-4b00-a064-558177ba8efd",
+              "name": "newTELEFONE",
+              "value": "={{ $json.newTELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "be3b690c-78a7-485b-9441-a0b0f2443a09",
+              "name": "newDTNASCIMENTO",
+              "value": "={{ $json.newDTNASCIMENTO }}",
+              "type": "string"
+            },
+            {
+              "id": "2ccfb043-7edf-43da-9cb1-0d986bcbf978",
+              "name": "newCARGO",
+              "value": "={{ $json.newCARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "2483d1b6-eb59-4d68-abdc-4be58a2f16d1",
+              "name": "newEMPRESA",
+              "value": "={{ $json.newEMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "1c198e88-b87c-4ed9-9464-380334f9b196",
+              "name": "newDTADMISSAO",
+              "value": "={{ $json.newDTADMISSAO }}",
+              "type": "string"
+            },
+            {
+              "id": "697a2d1e-c243-42f4-bd8d-d8ec614b11b2",
+              "name": "USUARIO",
+              "value": "={{ $json.USUARIO }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2100,
+        280
+      ],
+      "id": "7d43bfa1-5750-4fd5-af36-3d683d666682",
+      "name": "Edit Fields7"
+    },
+    {
+      "parameters": {
+        "command": "={{ $json.comando }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        7900,
+        1080
+      ],
+      "id": "05607286-5a1c-4a2a-bf07-9e79ecc4068b",
+      "name": "Execute Command4"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8540,
+        1080
+      ],
+      "id": "1bfe1e9d-e711-439e-842e-a24a927e711b",
+      "name": "Execute Command6"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "comandosSSH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8340,
+        1080
+      ],
+      "id": "b623238f-9bcc-4376-8841-b32e56a1bb44",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "beb4e5f3-aed8-4d84-a2a6-382e0aa2f193",
+                    "leftValue": "={{ $('Edit Fields5').item.json.CARGO }}",
+                    "rightValue": "BKO COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "913a4798-7b45-42e9-a9ce-fa8446a06de0",
+                    "leftValue": "={{ $('Edit Fields5').item.json.CARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS J"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f1e7515-677c-4433-a266-97342dea0aca",
+                    "leftValue": "={{ $('Edit Fields5').item.json.CARGO }}",
+                    "rightValue": "LIDER COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0d9f492a-8768-43ec-bb78-0220184c1f43",
+                    "leftValue": "={{ $('Edit Fields5').item.json.CARGO }}",
+                    "rightValue": "COORDENADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COORDENADOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "33c71223-1ce8-4dc7-9d72-7b6042eb9cfd",
+                    "leftValue": "={{ $('Edit Fields5').item.json.CARGO }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        8680,
+        700
+      ],
+      "id": "90faf770-c7c4-4f09-a9b3-5223e3e02402",
+      "name": "MDG1"
+    },
+    {
+      "parameters": {
+        "command": "={{ $json.comando }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        7860,
+        -80
+      ],
+      "id": "1677637e-0b32-432e-a4c0-19ca35bc5016",
+      "name": "Execute Command7"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8440,
+        -80
+      ],
+      "id": "151fe24b-846a-445b-abea-5c270e956188",
+      "name": "Execute Command8"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "comandosSSH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8260,
+        -80
+      ],
+      "id": "60b2fad3-c8ae-476d-b069-a2398983fac3",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $('Edit Fields5').all();\n\n// Verificar se os dados de entrada são válidos\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}\n\n// Processar cada usuário\nconst comandosSSH = usuarios.map(item => {\n  const usuario = item.json;\n\n  // Recuperar campos do usuário com validação\n  const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n  const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n  const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n  const telefone = usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n  const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n  const mail = usuario[\"Email\"]?.trim() || \"EMAIL NÃO DEFINIDO\";\n  const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n  const homeDirectory = `\\\\\\\\srv01\\\\users$\\\\${usuarioNome}`; // Diretório do usuário\n  const homeDrive = \"U\"; // Unidade atribuída ao diretório do usuário\n\n  // Validação mínima para evitar erros graves\n  if (!usuarioNome || !nomeCompleto) {\n    throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n  }\n\n  // Gerar o comando SSH para configurar as propriedades do usuário no AD\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADUser -Identity '${usuarioNome}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '${homeDirectory}' -HomeDrive '${homeDrive}'\\\\\"\"`\n});\n\n// Retornar os comandos SSH gerados como entradas separadas no array\nreturn comandosSSH.map(comando => ({ json: { comando } }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7700,
+        1080
+      ],
+      "id": "ac9e0221-d438-483a-8788-32645734ef34",
+      "name": "ATUALIZA USUARIO MDG"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de usuários\nconst usuarios = $('Edit Fields5').all(); // Vai pegar todos os itens no nó Edit Fields5\nconst senhaPadrao = $('SenhaPadrao').first().json.senhaPadao; // A senha padrão, supondo que seja única\n\n// Verificar se há usuários\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"Não há usuários válidos no nó Edit Fields5.\");\n}\n\n// Gerar comandos SSH para cada usuário\nconst comandosSSH = usuarios.map(usuario => {\n  const usuarioNome = usuario.json.USUARIO; // Acessando o usuário\n  if (!usuarioNome) {\n    throw new Error(\"Usuário não encontrado em um dos itens.\");\n  }\n\n  // Gerar o comando SSH com PowerShell\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADAccountPassword -Identity '${usuarioNome}' -NewPassword (ConvertTo-SecureString '${senhaPadrao}' -AsPlainText -Force); Set-ADUser -Identity '${usuarioNome}' -ChangePasswordAtLogon \\$true; Enable-ADAccount -Identity '${usuarioNome}'\\\\\"\"`;\n});\n\n// Retornar os comandos gerados\nreturn {\n  json: {\n    comandosSSH\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8120,
+        1080
+      ],
+      "id": "5b7e365f-848f-4978-88b3-e95ac01722a4",
+      "name": "ATIVA USUARIO MDG"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de usuários\nconst usuarios = $('Edit Fields4').all(); // Vai pegar todos os itens no nó Edit Fields5\nconst senhaPadrao = $('SenhaPadrao').first().json.senhaPadao; // A senha padrão, supondo que seja única\n\n// Verificar se há usuários\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"Não há usuários válidos no nó Edit Fields5.\");\n}\n\n// Gerar comandos SSH para cada usuário\nconst comandosSSH = usuarios.map(usuario => {\n  const usuarioNome = usuario.json.USUARIO; // Acessando o usuário\n  if (!usuarioNome) {\n    throw new Error(\"Usuário não encontrado em um dos itens.\");\n  }\n\n  // Gerar o comando SSH com PowerShell\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADAccountPassword -Identity '${usuarioNome}' -NewPassword (ConvertTo-SecureString '${senhaPadrao}' -AsPlainText -Force); Set-ADUser -Identity '${usuarioNome}' -ChangePasswordAtLogon \\$true; Enable-ADAccount -Identity '${usuarioNome}'\\\\\"\"`;\n});\n\n// Retornar os comandos gerados\nreturn {\n  json: {\n    comandosSSH\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8060,
+        -80
+      ],
+      "id": "8e7960cb-2583-4b4e-8111-0902095323e7",
+      "name": "ATIVA USURIO ACG"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $('Edit Fields4').all();\n\n// Verificar se os dados de entrada são válidos\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}\n\n// Processar cada usuário\nconst comandosSSH = usuarios.map(item => {\n  const usuario = item.json;\n\n  // Recuperar campos do usuário com validação\n  const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n  const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n  const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n  const telefone = usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n  const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n  const mail = usuario[\"Email\"]?.trim() || \"EMAIL NÃO DEFINIDO\";\n  const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n  const homeDirectory = `\\\\\\\\srv01\\\\users$\\\\${usuarioNome}`; // Diretório do usuário\n  const homeDrive = \"U\"; // Unidade atribuída ao diretório do usuário\n\n  // Validação mínima para evitar erros graves\n  if (!usuarioNome || !nomeCompleto) {\n    throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n  }\n\n  // Gerar o comando SSH para configurar as propriedades do usuário no AD\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADUser -Identity '${usuarioNome}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '${homeDirectory}' -HomeDrive '${homeDrive}'\\\\\"\"`\n});\n\n// Retornar os comandos SSH gerados como entradas separadas no array\nreturn comandosSSH.map(comando => ({ json: { comando } }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7680,
+        -80
+      ],
+      "id": "5bec4f32-f8d2-4010-860b-30c273fd476b",
+      "name": "ATUALIZA USUARIO MDG1"
+    },
+    {
+      "parameters": {
+        "command": "={{ $json.comando }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        7800,
+        -800
+      ],
+      "id": "67819dc9-92b7-4474-b352-93b931e80b18",
+      "name": "Execute Command9"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        8380,
+        -800
+      ],
+      "id": "68d50bf9-404b-4417-85c6-8cd830efe720",
+      "name": "Execute Command10"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "comandosSSH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8200,
+        -800
+      ],
+      "id": "a66f777e-7d29-4a57-b7c5-5b2877b4851a",
+      "name": "Split Out3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $('Edit Fields3').all();\n\n// Verificar se os dados de entrada são válidos\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}\n\n// Processar cada usuário\nconst comandosSSH = usuarios.map(item => {\n  const usuario = item.json;\n\n  // Recuperar campos do usuário com validação\n  const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n  const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n  const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n  const telefone = usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n  const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n  const mail = usuario[\"Email\"]?.trim() || \"EMAIL NÃO DEFINIDO\";\n  const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n  const homeDirectory = `\\\\\\\\srv01\\\\users$\\\\${usuarioNome}`; // Diretório do usuário\n  const homeDrive = \"U\"; // Unidade atribuída ao diretório do usuário\n\n  // Validação mínima para evitar erros graves\n  if (!usuarioNome || !nomeCompleto) {\n    throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n  }\n\n  // Gerar o comando SSH para configurar as propriedades do usuário no AD\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADUser -Identity '${usuarioNome}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '${homeDirectory}' -HomeDrive '${homeDrive}'\\\\\"\"`\n});\n\n// Retornar os comandos SSH gerados como entradas separadas no array\nreturn comandosSSH.map(comando => ({ json: { comando } }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7620,
+        -800
+      ],
+      "id": "e5789f5d-4786-40d5-aa30-bb5f6cc573b2",
+      "name": "ATUALIZA USUARIO GASPAR"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de usuários\nconst usuarios = $('Edit Fields3').all(); // Vai pegar todos os itens no nó Edit Fields5\nconst senhaPadrao = $('SenhaPadrao').first().json.senhaPadao; // A senha padrão, supondo que seja única\n\n// Verificar se há usuários\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"Não há usuários válidos no nó Edit Fields5.\");\n}\n\n// Gerar comandos SSH para cada usuário\nconst comandosSSH = usuarios.map(usuario => {\n  const usuarioNome = usuario.json.USUARIO; // Acessando o usuário\n  if (!usuarioNome) {\n    throw new Error(\"Usuário não encontrado em um dos itens.\");\n  }\n\n  // Gerar o comando SSH com PowerShell\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADAccountPassword -Identity '${usuarioNome}' -NewPassword (ConvertTo-SecureString '${senhaPadrao}' -AsPlainText -Force); Set-ADUser -Identity '${usuarioNome}' -ChangePasswordAtLogon \\$true; Enable-ADAccount -Identity '${usuarioNome}'\\\\\"\"`;\n});\n\n// Retornar os comandos gerados\nreturn {\n  json: {\n    comandosSSH\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8000,
+        -800
+      ],
+      "id": "73def652-ebf5-4f3f-88d6-129ed6d10e41",
+      "name": "ATIVA USURIO GASPAR"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        11160,
+        -380
+      ],
+      "id": "906dd3c7-2f49-4cc8-a6a0-fa5300e90632",
+      "name": "MergeFiim"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d05a74bd-33db-484e-a005-c1af571558f4",
+              "name": "USUARIO",
+              "value": "={{ $json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "06f64543-d150-4ee1-95ba-5a8978202d27",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "29f2ebc2-ef50-4c86-8533-bfb206475a38",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "58870c40-53dc-41d0-a7fc-dd7eb444e813",
+              "name": "SenhaPadrao",
+              "value": "={{ $('SenhaPadrao').first().json.senhaPadao }}",
+              "type": "string"
+            },
+            {
+              "id": "8c784ac2-761c-4c0c-9dbf-a233d4a3cbef",
+              "name": "ID",
+              "value": "={{ $('separaDados').item.json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "9c802617-5232-4ae6-8e5b-408dcc25d44d",
+              "name": "TITULO",
+              "value": "={{ $('separaDados').item.json.TITULO }}",
+              "type": "string"
+            },
+            {
+              "id": "6852983a-58df-48c0-90ab-7650e04a6d54",
+              "name": "URL",
+              "value": "={{ $('separaDados').item.json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        11320,
+        -380
+      ],
+      "id": "5247b1e3-80ab-40f8-bddb-2f47d273c22e",
+      "name": "DadosFim"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Função para obter uma saudação aleatória\nfunction obterSaudacao() {\n    const saudacoes = [\n        \"Fala, time de TI! 💻 Vamos codar com estilo hoje!\",\n        \"E aí, equipe incrível! 🚀 Mais um dia para fazer acontecer!\",\n        \"Oi, time! 🌟 Vocês são a força que move a tecnologia!\",\n        \"Bora lá, pessoal! 🔧 Resolvendo problemas e criando soluções!\",\n        \"Vamos com tudo, equipe! 💪 A TI não para, e vocês são demais!\",\n        \"Saudações, mestres do código! 🧙‍♂️ Que a força esteja com vocês!\",\n        \"Salve, equipe de TI! 🎉 Mais um dia para brilhar nos projetos!\",\n        \"Fala, feras da tecnologia! 🌐 Juntos, dominamos o mundo digital!\",\n        \"Oi, time espetacular! 🌟 O show da TI não pode parar!\",\n        \"Bora lá, campeões da TI! 🏆 Hoje é mais um dia de conquistas!\"\n    ];\n    // Retorna uma saudação aleatória da lista\n    return saudacoes[Math.floor(Math.random() * saudacoes.length)];\n}\n\n// Função para obter a data atual formatada no padrão dd/mm/yyyy\nfunction obterDataAtual() {\n    const hoje = new Date();\n    const dia = String(hoje.getDate()).padStart(2, '0');\n    const mes = String(hoje.getMonth() + 1).padStart(2, '0');\n    const ano = hoje.getFullYear();\n    return `${dia}/${mes}/${ano}`;\n}\n\n// Inicializa a variável para armazenar todas as mensagens unificadas\nlet mensagemUnificada = \"\";\n\n// Cria um objeto para armazenar os dados agrupados por ID e TÍTULO\nlet chamadosAgrupados = {};\n\n// Itera sobre todos os dados do input\nfor (const item of $input.all()) {\n    // Obtém as informações principais do chamado\n    const id = item.json.ID || 'ID não informado';\n    const titulo = item.json.TITULO || 'Título não informado';\n    const nomeCompleto = item.json.NOME || 'Nome não informado';\n    const usuarioAd = item.json.USUARIO || 'Usuário não informado';\n    const email = item.json.Email || 'Email não informado';\n    const senhaPadrao = item.json.SenhaPadrao || 'Senha não informada';\n    const url = item.json.URL || 'URL não informada';\n\n    // Se o chamado ainda não foi adicionado ao agrupamento, inicializa a estrutura\n    if (!chamadosAgrupados[id]) {\n        chamadosAgrupados[id] = {\n            titulo: titulo,\n            url: url,\n            usuarios: []\n        };\n    }\n\n    // Adiciona os dados do usuário à lista de usuários para este chamado\n    chamadosAgrupados[id].usuarios.push({\n        nomeCompleto: nomeCompleto,\n        usuarioAd: usuarioAd,\n        email: email,\n        senhaPadrao: senhaPadrao\n    });\n}\n\n// Obtém a saudação aleatória\nconst saudacao = obterSaudacao();\n\n// Obtém a data atual\nconst dataAtual = obterDataAtual();\n\n// Agora cria a mensagem unificada\nfor (const id in chamadosAgrupados) {\n    const chamado = chamadosAgrupados[id];\n\n    // Adiciona a saudação e a introdução\n    mensagemUnificada += `${saudacao}\\n\\nAcessos criados!\\n\\n`;\n\n    // Adiciona a informação de ID, TÍTULO e Data de Criação no início\n    mensagemUnificada += `ID: ${id} - TITULO: ${chamado.titulo}\\n`;\n    mensagemUnificada += `Data de criação: ${dataAtual}\\n\\n`;\n\n    // Adiciona as informações de cada usuário relacionado a este chamado\n    for (const usuario of chamado.usuarios) {\n        mensagemUnificada += `*${usuario.nomeCompleto}*\\n`;\n        mensagemUnificada += `- USUARIO AD: ${usuario.usuarioAd}\\n`;\n        mensagemUnificada += `- SENHA: ${usuario.senhaPadrao}\\n`;\n        mensagemUnificada += `- EMAIL: ${usuario.email}\\n\\n`;\n    }\n\n    // Adiciona o link para conferir o chamado\n    mensagemUnificada += `Link do Chamado: ${chamado.url}\\n\\n`;\n}\n\n// Retorna a mensagem final no formato JSON contendo apenas uma string\nreturn [\n    {\n        json: {\n            textMessage: JSON.stringify(mensagemUnificada.trim())\n        }\n    }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11520,
+        -380
+      ],
+      "id": "3a9eb635-acdb-4b1e-a1f4-d5b62146229a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/SUPORTE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"5519999522207-1626738024@g.us\",\"textMessage\": {\"text\":{{ $json.textMessage.trim() }}}}",
+        "options": {}
+      },
+      "id": "65a89ddb-fbfe-425a-b01e-145af5d86e9f",
+      "name": "InformTiAdmitidos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11700,
+        -380
+      ],
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        11920,
+        -380
+      ],
+      "id": "b9babe68-2305-4bfd-9d80-89da5a7c5e5d",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5500,
+        -1000
+      ],
+      "id": "e3e2635a-516f-4470-a928-605ac380dddb",
+      "name": "Wait",
+      "webhookId": "a5d34bab-295a-4169-a4f7-dd47ff1a47e0"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5500,
+        -800
+      ],
+      "id": "85337693-de8d-4b89-9e3b-129b05130d4b",
+      "name": "Wait1",
+      "webhookId": "ac7d1543-5a9a-4916-8c3e-39739da7c71b"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5500,
+        -440
+      ],
+      "id": "cc765fc2-da27-48b2-870a-ac6a508cd533",
+      "name": "Wait2",
+      "webhookId": "86c439f4-abc0-4410-bade-f632ae9a81c7"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entradas\nconst usuariosData = $('Merge1').all(); // Lista de dados de usuários recebidos\nconst usuariosExistentes = $('coletaDados')\n    .all()\n    .map(item => item.json.USUARIO)\n    .filter(usuario => usuario); // Lista de usuários existentes\n\n// Lista de palavras a serem ignoradas (preposições comuns)\nconst palavrasIgnoradas = [\"de\", \"da\", \"do\", \"das\", \"dos\"];\n\n// Função para remover acentos\nconst removerAcentos = (str) =>\n    str.normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\").toLowerCase();\n\n// Função para gerar nomes de usuário\nfunction gerarNomeUsuario(nomeCompleto, newCPF, usuariosExistentes) {\n    const nomeSemAcentos = removerAcentos(nomeCompleto);\n    const partesNome = nomeSemAcentos.split(\" \").filter(p => p.length > 0 && !palavrasIgnoradas.includes(p));\n    \n    const primeiroNome = partesNome[0];\n    let sobrenome = partesNome[partesNome.length - 1];\n    let nomeUsuario = `${primeiroNome}.${sobrenome}`;\n    let tentativa = 1;\n\n    // Tenta variações do nome até encontrar um disponível\n    while (usuariosExistentes.includes(nomeUsuario)) {\n        if (tentativa === 1 && partesNome.length > 2) {\n            sobrenome = partesNome[1]; // Segundo nome como sobrenome\n        } else if (tentativa === 2 && partesNome.length > 3) {\n            sobrenome = `${partesNome[1]}${partesNome[2]}`; // Combina segundo nome com próximo sobrenome\n        } else {\n            sobrenome = `${partesNome.slice(1).join(\"\")}${tentativa}`; // Junta todos os sobrenomes com número\n        }\n        nomeUsuario = `${primeiroNome}.${sobrenome}`;\n        tentativa++;\n    }\n\n    return { usuario: nomeUsuario, newCPF };\n}\n\n// Gerar os nomes de usuário para cada entrada recebida\nconst resultados = usuariosData.map(item => {\n    const nomeCompleto = item.json.newNOME;\n    const newCPF = item.json.newCPF;\n    return gerarNomeUsuario(nomeCompleto, newCPF, usuariosExistentes);\n});\n\n// Retornar os resultados\nreturn resultados;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        -420
+      ],
+      "id": "7f11a174-0991-4145-99a5-1bdb736ccaf4",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "append",
+        "workbook": {
+          "__rl": true,
+          "value": "01NDI3H4QDNFBRJNR2YZFJE5RDJ65TQFC3",
+          "mode": "list",
+          "cachedResultName": "Banco de Dados - Usuários1",
+          "cachedResultUrl": "https://mdgintermediacoescombr-my.sharepoint.com/personal/suporte_ti_mdgintermediacoes_com_br/_layouts/15/Doc.aspx?sourcedoc=%7B14436903-3AB6-4AC6-9276-234FBB38145B%7D&file=Banco%20de%20Dados%20-%20Usu%C3%A1rios1.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Base",
+          "cachedResultUrl": "https://mdgintermediacoescombr-my.sharepoint.com/personal/suporte_ti_mdgintermediacoes_com_br/_layouts/15/Doc.aspx?sourcedoc=%7B14436903-3AB6-4AC6-9276-234FBB38145B%7D&file=Banco%20de%20Dados%20-%20Usu%C3%A1rios1.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Base!A1"
+        },
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "E-MAIL/USUARIO",
+              "fieldValue": "={{ $json.primaryEmail }}"
+            },
+            {
+              "column": "TELEFONE",
+              "fieldValue": "={{ $json.newTELEFONE }}"
+            },
+            {
+              "column": "DATA DE NASCIMENTO",
+              "fieldValue": "={{ $json.newDTNASCIMENTO }}"
+            },
+            {
+              "column": "CARGO",
+              "fieldValue": "={{ $json.newCARGO }}"
+            },
+            {
+              "column": "EMPRESA",
+              "fieldValue": "={{ $json.newEMPRESA }}"
+            },
+            {
+              "column": "ADMISSAO",
+              "fieldValue": "={{ $json.newDTADMISSAO }}"
+            },
+            {
+              "column": "CPF",
+              "fieldValue": "={{ $json.newCPF }}"
+            },
+            {
+              "column": "NOME",
+              "fieldValue": "={{ $json.newNOME }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        6160,
+        600
+      ],
+      "id": "99758413-447c-4d3d-a246-a91488ea5415",
+      "name": "Microsoft Excel 3651",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "qVNQCSlloEIaDVkh",
+          "name": "Microsoft Excel account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        5740,
+        340
+      ],
+      "id": "e954761e-51f5-4c21-81b9-d75798e743a8",
+      "name": "Merge10",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef913edc-2e01-4a69-a543-77d50bfca30e",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "7d3e31b9-9983-4292-8172-e8fad91b2667",
+              "name": "newNOME",
+              "value": "={{ $('CombinedItems1').item.json.newNOME }}",
+              "type": "string"
+            },
+            {
+              "id": "7b35c3d4-0c0d-421c-9fd3-9923d247d98e",
+              "name": "newTELEFONE",
+              "value": "={{ $('CombinedItems1').item.json.newTELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "d2e1f921-83dd-43a8-9848-c8f31a8b0073",
+              "name": "newDTNASCIMENTO",
+              "value": "={{ $('CombinedItems1').item.json.newDTNASCIMENTO }}",
+              "type": "string"
+            },
+            {
+              "id": "ef5fcc2a-1d50-440e-9d02-7632e81c7266",
+              "name": "newCARGO",
+              "value": "={{ $('CombinedItems1').item.json.newCARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "3a56d101-4a78-4baa-aa38-c9a40c271032",
+              "name": "newCARGO",
+              "value": "={{ $('CombinedItems1').item.json.newCARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "c8db7882-b66f-4d10-9815-2ba10f3f93b2",
+              "name": "newEMPRESA",
+              "value": "={{ $('CombinedItems1').item.json.newEMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "e663f5ee-8981-4a66-a20a-40827f33225a",
+              "name": "newDTADMISSAO",
+              "value": "={{ $('CombinedItems1').item.json.newDTADMISSAO }}",
+              "type": "string"
+            },
+            {
+              "id": "5e8086bb-c970-4b21-aeb3-17eca92d0e5b",
+              "name": "newCPF",
+              "value": "={{ $('CombinedItems1').item.json.newCPF }}",
+              "type": "string"
+            },
+            {
+              "id": "0711f495-20f7-4ae8-846e-739182d84976",
+              "name": "ATIVO",
+              "value": "SIM",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5920,
+        380
+      ],
+      "id": "7d24ad3a-7f40-4427-9033-d74859684271",
+      "name": "Edit Fields8",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "newCPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2400,
+        -420
+      ],
+      "id": "d42c38dc-128a-4145-98fc-fbb291944350",
+      "name": "Merge1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3320,
+        -480
+      ],
+      "id": "6245d042-db93-4a2d-ba63-ac191657e504",
+      "name": "Merge11"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "16a3dda6-2392-4cd1-8718-b0796939e11b",
+              "leftValue": "={{ $json.USUARIO }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        4900,
+        -580
+      ],
+      "id": "a99aff67-5ce6-420b-a6bd-f9ac4faedd95",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "71444506-cf11-4a21-bcac-8115f4fa6a29",
+              "leftValue": "={{ $json.USUARIO }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        4920,
+        -800
+      ],
+      "id": "9803578f-4bd4-4dee-9a04-ed9ea580178b",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "58320700-cabc-4ba6-9d0d-2aa3153d160b",
+              "leftValue": "={{ $json.USUARIO }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        4900,
+        -1000
+      ],
+      "id": "ece45d97-606b-42cb-9474-96474ac3b4b6",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c0f9962a-2294-4876-af3d-a507d3d3cdb4",
+              "leftValue": "={{ $json.USUARIO }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        4900,
+        -360
+      ],
+      "id": "681a220e-764d-4a07-9a2a-ad77d9a3ff58",
+      "name": "Filter3"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        7280,
+        700
+      ],
+      "id": "ec51b283-cf53-4e11-a152-e32dcc7ce005",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        7300,
+        -360
+      ],
+      "id": "472dac0e-50ee-4bf3-8a44-4d12001055af",
+      "name": "Remove Duplicates1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        7260,
+        -1140
+      ],
+      "id": "9081e2c0-21db-46f8-b9d8-b06bf4d52962",
+      "name": "Remove Duplicates2"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "separaDados",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SenhaPadrao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "SeparaDados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "separaDados": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "SeparaDados": {
+      "main": [
+        [
+          {
+            "node": "CombinedItems",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge9",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CombinedItems1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "coletaDados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CombinedItems": {
+      "main": [
+        [
+          {
+            "node": "ValidaNome",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "ValidaNome": {
+      "main": [
+        [
+          {
+            "node": "separaExitente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "separaExitente": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "coletaDados": {
+      "main": [
+        [
+          {
+            "node": "CombinedItems",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CombinedItems1": {
+      "main": [
+        [
+          {
+            "node": "separaEmpresa",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "separaEmpresa": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SenhaPadrao": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IdContasGoogle": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IdContasGoogle2": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IdContasGoogle3": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IdContasGoogle4": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "criaEmailGaspar": {
+      "main": [
+        [
+          {
+            "node": "IdContasGoogle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "criaEmailMrcamp": {
+      "main": [
+        [
+          {
+            "node": "IdContasGoogle2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "criaEmailMDG": {
+      "main": [
+        [
+          {
+            "node": "IdContasGoogle3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "criaEmailACG": {
+      "main": [
+        [
+          {
+            "node": "IdContasGoogle4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/ACG/Precatório/Agente de Vendas": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ACG": {
+      "main": [
+        [
+          {
+            "node": "/ACG/Precatório/Agente de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Precatório/BKO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ACG/Precatório/Gerente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/BKO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/Agente de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/Lider Comercial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/Coordenadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MDG": {
+      "main": [
+        [
+          {
+            "node": "/MDG/Agente de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Coordenação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Gerente Comercial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Lider Comercial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/BackOffice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente": {
+      "main": [
+        [
+          {
+            "node": "Merge GASPAR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Coordenadores": {
+      "main": [
+        [
+          {
+            "node": "Merge GASPAR",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Lider": {
+      "main": [
+        [
+          {
+            "node": "Merge GASPAR",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "/ACG/Precatório/BKO": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ACG/Precatório/Gerente": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/BKO": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/Agente de Vendas": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/Lider Comercial": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/Coordenadores": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "/MDG/Agente de Vendas": {
+      "main": [
+        [
+          {
+            "node": "MDG2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/MDG/Coordenação": {
+      "main": [
+        [
+          {
+            "node": "MDG2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "/MDG/Gerente Comercial": {
+      "main": [
+        [
+          {
+            "node": "MDG2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "/MDG/Lider Comercial": {
+      "main": [
+        [
+          {
+            "node": "MDG2",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "GASPAR": {
+      "main": [
+        [
+          {
+            "node": "Agente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Coordenadores",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Gerente Comercial1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Lider",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge GASPAR": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Usuário AD": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Cria Usuário AD",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge ACG": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "ATUALIZA USUARIO GASPAR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "GASPAR1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "GASPAR1": {
+      "main": [
+        [
+          {
+            "node": "adicionaGruposADAgente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CoodernadorGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GerenteGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LiderGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "adicionaGruposADAgente": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MDG2": {
+      "main": [
+        [
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Usuário AD1": {
+      "main": [
+        [
+          {
+            "node": "Execute Command2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command2": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "ATUALIZA USUARIO MDG1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Cria Usuário AD1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "ACG1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ACG1": {
+      "main": [
+        [
+          {
+            "node": "ConsultorGruposAdd",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "GerentePrecaGruposAdd",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "BKOcomercialGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AgenteComercialGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LiderGruposAD1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CoordenadorComercialGruposAD2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultorGruposAdd": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GerentePrecaGruposAdd": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Gerente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/MDG/Gerente Comercial1": {
+      "main": [
+        [
+          {
+            "node": "Merge GASPAR",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "CoodernadorGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Coordenador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GerenteGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Gerente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LiderGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BKOcomercialGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AgenteComercialGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LiderGruposAD1": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoordenadorComercialGruposAD2": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Usuário AD2": {
+      "main": [
+        [
+          {
+            "node": "Execute Command3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command3": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "ATUALIZA USUARIO MDG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Cria Usuário AD2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge6": {
+      "main": [
+        [
+          {
+            "node": "MDG1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge7": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AgenteComercialGruposAD1": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoordenadorComercialGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BKOcomercialGruposAD1": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LiderGruposAD3": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BKOcomercialGruposAD2": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/MDG/BackOffice": {
+      "main": [
+        [
+          {
+            "node": "MDG2",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge8": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "Merge9",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge9": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Merge11",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Execute Command4": {
+      "main": [
+        [
+          {
+            "node": "ATIVA USUARIO MDG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command6": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Execute Command6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MDG1": {
+      "main": [
+        [
+          {
+            "node": "BKOcomercialGruposAD1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AgenteComercialGruposAD1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LiderGruposAD3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CoordenadorComercialGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "BKOcomercialGruposAD2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command7": {
+      "main": [
+        [
+          {
+            "node": "ATIVA USURIO ACG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Execute Command8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command8": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ATUALIZA USUARIO MDG": {
+      "main": [
+        [
+          {
+            "node": "Execute Command4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATIVA USUARIO MDG": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATIVA USURIO ACG": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATUALIZA USUARIO MDG1": {
+      "main": [
+        [
+          {
+            "node": "Execute Command7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command9": {
+      "main": [
+        [
+          {
+            "node": "ATIVA USURIO GASPAR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "Execute Command10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command10": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ATUALIZA USUARIO GASPAR": {
+      "main": [
+        [
+          {
+            "node": "Execute Command9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATIVA USURIO GASPAR": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Coordenador": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Gerente": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente2": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente1": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Gerente1": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente3": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente4": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente5": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD1": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente7": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente6": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente9": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD2": {
+      "main": [
+        [
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeFiim": {
+      "main": [
+        [
+          {
+            "node": "DadosFim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DadosFim": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "InformTiAdmitidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InformTiAdmitidos": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "GASPAR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "ACG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "MDG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge10": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields8": {
+      "main": [
+        [
+          {
+            "node": "Microsoft Excel 3651",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge11": {
+      "main": [
+        [
+          {
+            "node": "CombinedItems1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "criaEmailMDG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "criaEmailACG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "criaEmailGaspar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter3": {
+      "main": [
+        [
+          {
+            "node": "criaEmailMrcamp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "connection": "upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "http",
+            "x-forwarded-for": "10.3.60.27, 10.3.60.26",
+            "host": "n8napp",
+            "content-length": "3441",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Título": "Novo(s) Colaborador(es) MDG",
+            "ID": "0005772",
+            "Requerentes": "AMANDA APARECIDA HENRIQUE VECCHIO, Nicholas Azevedo do Amaral",
+            "URL GLPI": "https://glpi.mdgintermediacoes.com.br",
+            "Descrição": "<p><strong>Dados dos novos colaboradores:</strong></p>\n<p> </p>\n<table style=\"border-collapse: collapse; width: 101.103%; height: 181px;\" border=\"1\"><colgroup><col style=\"width: 15.0625%;\"><col style=\"width: 15.2773%;\"><col style=\"width: 14.5631%;\"><col style=\"width: 14.6845%;\"><col style=\"width: 12.7427%;\"><col style=\"width: 14.0777%;\"><col style=\"width: 13.7136%;\"></colgroup>\n<tbody>\n<tr style=\"height: 43px;\">\n<td style=\"height: 43px;\">\n<p><span style=\"color: #000000;\"><strong>Nome </strong></span><span style=\"color: #000000;\"><strong>Completo</strong></span></p>\n</td>\n<td style=\"height: 43px;\"><span style=\"color: #000000;\"><strong>CPF</strong></span></td>\n<td style=\"height: 43px;\"><span style=\"color: #000000;\"><strong>Celular</strong></span></td>\n<td style=\"height: 43px;\"><span style=\"color: #000000;\"><strong>Data de Nascimento</strong></span></td>\n<td style=\"height: 43px;\"><span style=\"color: #000000;\"><strong>Cargo</strong></span></td>\n<td style=\"height: 43px;\"><span style=\"color: #000000;\"><strong>Empresa </strong></span></td>\n<td style=\"height: 43px;\"><span style=\"color: #000000;\"><strong>Data de Início</strong></span></td>\n</tr>\n<tr style=\"height: 23px;\">\n<td style=\"height: 23px;\">Aline dos Santos Valereto </td>\n<td style=\"height: 23px;\">523.459.848-99 </td>\n<td style=\"height: 23px;\">19 98165-5205</td>\n<td style=\"height: 23px;\">19/09/2001 </td>\n<td style=\"height: 23px;\">AGENTE DE VENDAS J</td>\n<td style=\"height: 23px;\">MDG</td>\n<td style=\"height: 23px;\">12/02/2025</td>\n</tr>\n<tr style=\"height: 23px;\">\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n</tr>\n<tr style=\"height: 23px;\">\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n</tr>\n<tr style=\"height: 23px;\">\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n</tr>\n<tr style=\"height: 23px;\">\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n</tr>\n<tr style=\"height: 23px;\">\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n<td style=\"height: 23px;\"> </td>\n</tr>\n</tbody>\n</table>",
+            "Status": "Em atendimento (atribuído)",
+            "Atribuído": "AMANDA APARECIDA HENRIQUE VECCHIO",
+            "Atribuído para grupos": ""
+          },
+          "webhookUrl": "http://n8n.mdgintermediacoes.com.br/webhook/045965ed-76ac-4515-a664-eaf20a83838f",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Information Extractor": [
+      {
+        "json": {
+          "output": [
+            {
+              "nome": "ALINE DOS SANTOS VALERETO",
+              "cpf": "523.459.848-99",
+              "celular": "19 98165-5205",
+              "nascimento": "19/09/2001",
+              "cargo": "AGENTE DE VENDAS J",
+              "empresa": "MDG",
+              "inicio": "12/02/2025"
+            }
+          ]
+        }
+      }
+    ],
+    "criaEmailMDG": [
+      {
+        "json": {
+          "kind": "admin#directory#user",
+          "id": "100560267402979781809",
+          "etag": "\"mHdwp7aQX-Eg68ZMU_TSEt8S-6JvhOOWLcLSDjjwgPc/dr9XnB6YQesax6rRfsWAKLUcbyA\"",
+          "primaryEmail": "aline.valereto@mdgintermediacoes.com.br",
+          "name": {
+            "givenName": "ALINE DOS SANTOS\n",
+            "familyName": "VALERETO"
+          },
+          "isAdmin": false,
+          "isDelegatedAdmin": false,
+          "creationTime": "2025-02-11T19:56:27.000Z",
+          "changePasswordAtNextLogin": true,
+          "customerId": "C039eeil7",
+          "orgUnitPath": "/",
+          "isMailboxSetup": false
+        }
+      }
+    ],
+    "/MDG/Agente de Vendas": [
+      {
+        "json": {
+          "id": "100560267402979781809",
+          "primaryEmail": "aline.valereto@mdgintermediacoes.com.br",
+          "isAdmin": false,
+          "isDelegatedAdmin": false,
+          "agreedToTerms": false,
+          "suspended": false,
+          "changePasswordAtNextLogin": true,
+          "ipWhitelisted": false,
+          "name": {
+            "fullName": "ALINE DOS SANTOS VALERETO",
+            "familyName": "VALERETO",
+            "givenName": "ALINE DOS SANTOS\n"
+          },
+          "kind": "admin#directory#user",
+          "etag": "\"mHdwp7aQX-Eg68ZMU_TSEt8S-6JvhOOWLcLSDjjwgPc/v5gXwI1qS6H5469RXCH3OuqfCto\"",
+          "emails": [
+            {
+              "address": "aline.valereto@mdgintermediacoes.com.br",
+              "primary": true
+            },
+            {
+              "address": "aline.valereto@mdgintermediacoes.com.br.test-google-a.com"
+            }
+          ],
+          "isMailboxSetup": true,
+          "customerId": "C039eeil7",
+          "lastLoginTime": "1970-01-01T00:00:00.000Z",
+          "thumbnailPhotoUrl": "//lh3.googleusercontent.com/a/ACg8ocKD8_SCpD7ptAilQ-oKILlwE-k4xbqAZ4hA5tiYybBoGOj7VA=mo",
+          "languages": [
+            {
+              "languageCode": "pt",
+              "preference": "preferred"
+            }
+          ],
+          "creationTime": "2025-02-11T19:56:27.000Z",
+          "nonEditableAliases": [
+            "aline.valereto@mdgintermediacoes.com.br.test-google-a.com"
+          ],
+          "includeInGlobalAddressList": true,
+          "thumbnailPhotoEtag": "\"mHdwp7aQX-Eg68ZMU_TSEt8S-6JvhOOWLcLSDjjwgPc/4p4fRKkaupZlX2CmFlNSA8Zz31M\"",
+          "archived": false,
+          "recoveryEmail": "",
+          "orgUnitPath": "/MDG/Agente de Vendas"
+        }
+      }
+    ]
+  },
+  "versionId": "c943c4b9-3f1f-4b6e-bd9d-9ae31fcfdb12",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-11-19T17:10:51.610Z",
+      "createdAt": "2024-11-19T17:10:51.610Z",
+      "role": "workflow:owner",
+      "workflowId": "pSTtpGEqS720OrS1",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2024-11-07T12:25:14.506Z",
+      "createdAt": "2024-11-07T12:25:14.506Z",
+      "id": "o0b1eCtfXeRfItda",
+      "name": "Gestão Acesso"
+    }
+  ]
+}

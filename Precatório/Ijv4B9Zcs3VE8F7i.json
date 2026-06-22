@@ -1,0 +1,644 @@
+{
+  "updatedAt": "2025-11-12T11:51:11.011Z",
+  "createdAt": "2025-03-26T18:28:55.633Z",
+  "id": "Ijv4B9Zcs3VE8F7i",
+  "name": "Higenizador - Nome UP",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1xE93ZfHd8HFmumMe-YTPE7bPUMA6H709",
+          "mode": "list",
+          "cachedResultName": "Preca-Higenizador",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1xE93ZfHd8HFmumMe-YTPE7bPUMA6H709"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        180
+      ],
+      "id": "18354506-45d3-40d5-9160-78925670fb5d",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "25fe58a1-93f6-4ef6-b4b7-75ffe0479165",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "xlsx",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "83abdfe1-15b3-48dd-b67b-a329a64aba84",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "xls",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "179b179b-d4be-46b4-bab0-b6f2ba5100d4",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "csv",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c50315bf-24bf-44ca-9af2-7c110fa615ba",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "xlsm",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        540,
+        180
+      ],
+      "id": "772c1af4-a3ab-44c7-af09-75a3e3587c6a",
+      "name": "Filter5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d3612c77-cb61-4c06-9b62-5cf78d859eb8",
+              "leftValue": "={{ $json.lastModifyingUser.displayName }}",
+              "rightValue": "Desenvolvimento MDG",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        180
+      ],
+      "id": "46b8a72c-2c27-4218-8ce4-628dd0999902",
+      "name": "Filter6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "44308ad2-bde1-4f6d-a19c-a41260327f84",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9ead94da-d9cd-48f2-8bf7-677147fa9353",
+              "name": "EMAIL",
+              "value": "={{ $json.lastModifyingUser.emailAddress }}",
+              "type": "string"
+            },
+            {
+              "id": "3f5535a5-f85b-422c-8ec8-9056baaadcef",
+              "name": "AquivoName",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        740,
+        180
+      ],
+      "id": "211d7419-7296-4edd-b376-72315aead47d",
+      "name": "Dados Driver"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41acf44b-7b3b-4df4-a25b-1268fbfe54a9",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "638bf10f-dd72-4431-91e2-bce00048b78d",
+              "name": "Nome do Beneficiário",
+              "value": "={{ $json['Nome do Beneficiário'] }}",
+              "type": "string"
+            },
+            {
+              "id": "65b95347-469c-439a-9f6b-3d4baae9a21a",
+              "name": "Valor",
+              "value": "={{ $json.Valor }}",
+              "type": "number"
+            },
+            {
+              "id": "22562ab5-e759-488d-bf3d-4a748cd8177c",
+              "name": "driver.EMAIL",
+              "value": "={{ $('Dados Driver').item.json.EMAIL }}",
+              "type": "string"
+            },
+            {
+              "id": "98c786e1-128c-494d-a588-11904644a628",
+              "name": "driver.AquivoName",
+              "value": "={{ $('Dados Driver').item.json.AquivoName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1500,
+        180
+      ],
+      "id": "14fd7b98-e727-4b38-8558-132e1b07eb80",
+      "name": "Concilia dados"
+    },
+    {
+      "parameters": {
+        "content": "## RECEBE PLANILHA NO DRIVER\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 300,
+        "width": 780
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        80,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "c3be0912-e16d-4c7d-ad8f-ad136ac2d6c4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## EXTRAI DADOS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 300,
+        "width": 740
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        920,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "4e48840c-487c-4ea1-9fc8-4ef232123374",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ENVIA PARA FILA\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 300,
+        "width": 460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1720,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "ee21fea4-4d8c-4cdc-b69c-ef5736eced81",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2220,
+        180
+      ],
+      "id": "85cea626-4661-4dd1-8ee2-bab14a8887fc",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        180
+      ],
+      "id": "9c9d86da-11f4-4abb-832c-6bd478c4d799",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        960,
+        180
+      ],
+      "id": "d4e7c126-3ace-49d0-9fd8-4e5cc9034c98",
+      "name": "Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        180
+      ],
+      "id": "c297db24-7d29-4070-8a8d-1c2bf8ca23b2",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "higenizador_exchange",
+        "exchangeType": "direct",
+        "routingKey": "higenizador_preca_name",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        1980,
+        180
+      ],
+      "id": "5f544adb-e368-4ef1-aacc-5cbfc2e57e00",
+      "name": "RabbitMQ1",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter5": {
+      "main": [
+        [
+          {
+            "node": "Dados Driver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter6": {
+      "main": [
+        [
+          {
+            "node": "Filter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados Driver": {
+      "main": [
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Concilia dados": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Concilia dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-10-15T02:17:49Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Google Drive Trigger": [
+      {
+        "json": {
+          "parents": [
+            "1xE93ZfHd8HFmumMe-YTPE7bPUMA6H709"
+          ],
+          "lastModifyingUser": {
+            "displayName": "Matheus Rodrigues",
+            "kind": "drive#user",
+            "me": false,
+            "permissionId": "08322610298871067901",
+            "emailAddress": "matheus.almeida@mdgintermediacoes.com.br",
+            "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjW8GTuWPtnhcJRBvDqCRDgy0VT7rxzD5DZtwP1ViWJxDB0vz60=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Matheus Rodrigues",
+              "kind": "drive#user",
+              "me": false,
+              "permissionId": "08322610298871067901",
+              "emailAddress": "matheus.almeida@mdgintermediacoes.com.br",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjW8GTuWPtnhcJRBvDqCRDgy0VT7rxzD5DZtwP1ViWJxDB0vz60=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "17604633664812570778",
+              "type": "domain",
+              "domain": "mdgintermediacoes.com.br",
+              "role": "reader",
+              "allowFileDiscovery": true,
+              "displayName": "DG Serviços"
+            },
+            {
+              "kind": "drive#permission",
+              "id": "08322610298871067901",
+              "type": "user",
+              "emailAddress": "matheus.almeida@mdgintermediacoes.com.br",
+              "role": "owner",
+              "displayName": "Matheus Rodrigues",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjW8GTuWPtnhcJRBvDqCRDgy0VT7rxzD5DZtwP1ViWJxDB0vz60=s64",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "kind": "drive#permission",
+              "id": "11534251328642009597",
+              "type": "user",
+              "emailAddress": "raul.guimaraes@mdgintermediacoes.com.br",
+              "role": "writer",
+              "displayName": "Raul Guimaraes",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjVLinhVP5SDvzoRw_GHsctAF_4I7cLShq9XtTZG73xlYmt8F0I=s64",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "kind": "drive#permission",
+              "id": "16172521949113898529",
+              "type": "user",
+              "emailAddress": "desenvolvimento@mdgintermediacoes.com.br",
+              "role": "writer",
+              "displayName": "Desenvolvimento MDG",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocKNvUuD7lRcJscziH6zg2mLZ4CDToWDJurLhHaT1z35L1bKEA=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": false,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": false,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": false,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": false,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": false,
+            "canMoveItemOutOfDrive": false,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": false,
+            "canUntrash": false
+          },
+          "permissionIds": [
+            "17604633664812570778",
+            "08322610298871067901",
+            "11534251328642009597",
+            "16172521949113898529"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "kind": "drive#file",
+          "id": "1c2XBjpfi7Qv4cqCieW9CzpFItLuPYMqA",
+          "name": "beneficiarios_unificados_2.xlsx",
+          "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "3",
+          "webContentLink": "https://drive.google.com/uc?id=1c2XBjpfi7Qv4cqCieW9CzpFItLuPYMqA&export=download",
+          "webViewLink": "https://docs.google.com/spreadsheets/d/1c2XBjpfi7Qv4cqCieW9CzpFItLuPYMqA/edit?usp=drivesdk&ouid=103143123596259879442&rtpof=true&sd=true",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBM2YU7CGB0OAmbCNSOwUuiwk7ts1rKAuZV3tZ9SmrLS6aK3M5d5CnXRseWmtLvkSHLfOciC7pWUsmzsM8ZekMnC_QSs7_5CpLm1m_snSxGSthE=s220",
+          "thumbnailVersion": "1",
+          "viewedByMe": false,
+          "createdTime": "2025-05-14T19:57:50.256Z",
+          "modifiedTime": "2025-05-14T19:57:44.000Z",
+          "modifiedByMe": false,
+          "shared": true,
+          "ownedByMe": false,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "originalFilename": "beneficiarios_unificados_2.xlsx",
+          "fullFileExtension": "xlsx",
+          "fileExtension": "xlsx",
+          "md5Checksum": "9373c31e45ab5f45f31c345652c47da1",
+          "sha1Checksum": "f243641867d777bd51eb4d525e5b8c7adf9d5488",
+          "sha256Checksum": "c5dcad8186531f68139812084fcf902d6cef3aff8ca67ce2d4120fb6f361f275",
+          "size": "9247",
+          "quotaBytesUsed": "9247",
+          "headRevisionId": "0B3m8M-AbFio1bHlZeXh4VUkzY3dSTHkvbkdITDZwNnM4UWNjPQ",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        }
+      }
+    ]
+  },
+  "versionId": "c6aa2305-d26f-499c-8174-f1c3f2d1271a",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-03-26T18:28:55.633Z",
+      "createdAt": "2025-03-26T18:28:55.633Z",
+      "role": "workflow:owner",
+      "workflowId": "Ijv4B9Zcs3VE8F7i",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2025-03-12T12:36:54.367Z",
+      "createdAt": "2025-03-12T12:36:54.367Z",
+      "id": "QZdk22jygnFSCxrA",
+      "name": "Precatório"
+    }
+  ]
+}

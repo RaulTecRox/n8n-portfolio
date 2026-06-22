@@ -1,0 +1,811 @@
+{
+  "updatedAt": "2025-12-09T13:33:22.476Z",
+  "createdAt": "2025-10-31T13:14:31.468Z",
+  "id": "odHXrO1xBwjidFIs",
+  "name": "API - ACOMPANHAMENTO AGILUS",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DECLARE @nomeBanco VARCHAR(100) = '{{ $json.nomeBanco }}';  -- '' ou NULL = não filtra\nDECLARE @codigoBanco INT = {{ $json.codigoBanco }};           -- se vier 0, tratar como sem filtro\n\nSELECT  \n    af.af_codigo,\n    af.Af_codigo_contrato_banco,\n    af.Bcolib_codigo,\n    ban.bcolib_descricao,\n    af.faf_codigo,\n    fase.faf_descricao\nFROM dbo.af af\nLEFT JOIN dbo.bancolib ban ON af.Bcolib_codigo = ban.Bcolib_codigo\nLEFT JOIN dbo.fase_af fase ON af.faf_codigo = fase.faf_codigo\nWHERE \n    af.faf_codigo IN (2, 10, 60, 93)\n\n    -- filtro opcional por nome\n    AND (\n            @nomeBanco IS NULL\n            OR @nomeBanco = ''\n            OR ban.bcolib_descricao LIKE '%' + @nomeBanco + '%'\n        )\n\n    -- filtro opcional por código (0 = sem filtro)\n    AND (\n            @codigoBanco IS NULL\n            OR @codigoBanco = 0\n            OR af.Bcolib_codigo = @codigoBanco\n        )\n\nORDER BY af.af_codigo;\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        -80
+      ],
+      "id": "b364fa78-0547-4fac-aec0-e10fc355e27b",
+      "name": "Consulta AF",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT  \n    af.af_codigo,\n    af.Af_codigo_contrato_banco,\n    af.Bcolib_codigo,\n    ban.bcolib_descricao,\n    af.faf_codigo,\n    fase.faf_descricao\nFROM dbo.af af\nLEFT JOIN dbo.bancolib ban ON af.Bcolib_codigo = ban.Bcolib_codigo\nLEFT JOIN dbo.fase_af fase ON af.faf_codigo = fase.faf_codigo\nWHERE af.Af_codigo_contrato_banco = '{{ $json.Af_codigo_contrato_banco }}';\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        640
+      ],
+      "id": "8f0b376c-f14e-4f70-b3ce-aebc717d1190",
+      "name": "Consulta AF1",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "97acfa10-f6bc-4412-8269-154d09b82291",
+                    "leftValue": "={{ $json.faf_codigo }}",
+                    "rightValue": 10,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aguardando Formalizacao"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "663e67f4-99e0-4058-a7a9-126aaef25a6e",
+                    "leftValue": "={{ $json.faf_codigo }}",
+                    "rightValue": 60,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aguardando Averbacao"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1dda0a38-2435-437f-8690-7f7569b652bc",
+                    "leftValue": "={{ $json.faf_codigo }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Averbado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "15dab3c4-17fb-4d79-b358-e8374798d19a",
+                    "leftValue": "={{ $json.faf_codigo }}",
+                    "rightValue": 93,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aguardando Desbloqueio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        480,
+        608
+      ],
+      "id": "6dcab3b7-d6cb-4e53-9722-10f07047c3f6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb0f4ebd-f532-47a5-9b01-ba5d2e98099b",
+              "name": "Af_codigo_contrato_banco",
+              "value": "2025100106525",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        640
+      ],
+      "id": "1a115f64-b145-4f4f-8cc3-afe1cf9c2174",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1777bbe-225c-4a41-8ca5-4147ad75c024",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "702e4ea5-ea23-4b77-9ff6-a93d8ca53998",
+              "name": "Af_codigo_contrato_banco",
+              "value": "={{ $json.Af_codigo_contrato_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "9723b840-decc-4dfe-b203-1d99f1476b39",
+              "name": "nomeBanco",
+              "value": "={{ $json.bcolib_descricao }}",
+              "type": "string"
+            },
+            {
+              "id": "11c428b0-eac9-4a0d-999e-b70df3fb85e3",
+              "name": "codigoBanco",
+              "value": "={{ $json.Bcolib_codigo }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        -80
+      ],
+      "id": "75099fb2-42b0-4f37-8c0d-b0619e3a7145",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "22850eb9-c582-45ef-b22a-7ee0bef87781",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/listabancos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -656,
+        -336
+      ],
+      "id": "a4b7b029-dc06-4807-8f9e-e9f953e12c7a",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hLoqTc4h1IMnbMbr",
+          "name": "Header Auth account - API AGILUS EXTERNA"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        720,
+        304
+      ],
+      "id": "7745176d-d7ba-4d6b-875d-d06d65b7c92e",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        944,
+        -80
+      ],
+      "id": "c152fd0e-e15e-4519-9aed-6e33345b4e6e",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "path": "listabancos",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        304
+      ],
+      "id": "4a343f1f-871d-40ac-85ce-97136ef6e2a8",
+      "name": "Webhook- list Banks",
+      "webhookId": "55a9234c-c2ec-490c-b5b0-f46647c73cbf",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hLoqTc4h1IMnbMbr",
+          "name": "Header Auth account - API AGILUS EXTERNA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    Bcolib_codigo,\n    bcolib_descricao\nFROM dbo.bancolib\nORDER BY bcolib_descricao;\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        112,
+        304
+      ],
+      "id": "260ec088-3ba1-4139-950d-3077bdd630e7",
+      "name": "Consulta Banks",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        528,
+        304
+      ],
+      "id": "65241386-2392-4b53-8a6a-52a06c408121",
+      "name": "Respond to Webhook Banks"
+    },
+    {
+      "parameters": {
+        "path": "af/acompanhamento/consulta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        -80
+      ],
+      "id": "2409d020-5b72-4fab-a052-83b0cadaa49d",
+      "name": "Webhook - Consulta AF",
+      "webhookId": "d3ad93a7-08a7-4c32-be49-1a8244def25f",
+      "notesInFlow": true,
+      "notes": "@query nomeBanco optional string Nome do banco para filtragem\n@query codigoBanco optional integer Código do banco para filtragem\n"
+    },
+    {
+      "parameters": {
+        "content": "## Consulta AF\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 368,
+        "width": 1376
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "5644440b-c2a3-4de5-b531-ee335587619d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Lista Bancos\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 304,
+        "width": 1184
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "94236570-898b-46a7-8243-35e7e8db04c9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8a8b758-9ddb-43eb-bdc4-85b1079bebfa",
+              "name": "codigoBanco",
+              "value": "={{ $json.Bcolib_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "dc65a9dc-daec-42b8-8b33-b36fbc456993",
+              "name": "nomeBanco",
+              "value": "={{ $json.bcolib_descricao }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        304
+      ],
+      "id": "8352451f-d568-4954-8f67-a2114abba4d4",
+      "name": "Ajusta dados"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb0f4ebd-f532-47a5-9b01-ba5d2e98099b",
+              "name": "nomeBanco",
+              "value": "={{ $json.query.nomeBanco }}",
+              "type": "string"
+            },
+            {
+              "id": "9a13ecf2-bb3a-4641-9f73-ccd279d14bde",
+              "name": "codigoBanco",
+              "value": "={{ $json.query.codigoBanco }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        -80
+      ],
+      "id": "24a3373e-fdea-4879-ae52-b297ed84961a",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "content": "## Configure webhooks\n\nPara dar suporte a rótulos de parâmetros, você precisa abrir a seção de notas de cada webhook e adicionar o seguinte texto.\n\n\n//@body field_name string description\n//@query field_name string description\n\n",
+        "height": 420,
+        "width": 912
+      },
+      "id": "57193ecd-08f2-4c63-b0b5-3d04dc53bf96",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        -720
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<!DOCTYPE html>\n<html>\n<head>\n  <title>Swagger UI from YAML Text</title>\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\">\n</head>\n<body>\n  <div id=\"swagger-ui\"></div>\n\n  <script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\"></script>\n  <script src=\"https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js\"></script>\n  <script>\n    const yamlText = `{{ $json.text }}`;\n    const spec = jsyaml.load(yamlText);\n    const ui = SwaggerUIBundle({\n      spec: spec,\n      dom_id: \"#swagger-ui\"\n    });\n  </script>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "id": "de3ae2f0-c91e-4753-aaec-16b1d8fcbdce",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        512,
+        -464
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "path": "af/swagger",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e625a0f8-a0e6-4378-83aa-8fba52e31c1a",
+      "name": "Get Swagger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -144,
+        -464
+      ],
+      "webhookId": "b6873bae-3e61-4a93-9dc2-0100b497390e",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "function safe(x) \n{\n  return x.replaceAll(\":\",\"\").replaceAll(\"/\",\"|\")\n}\n\nfunction findValidTargets(connections, sourceNode, potentialTargets) {\n  const visited = new Set();\n  const foundTargets = new Set();\n\n  function dfs(node) {\n    if (visited.has(node)) return;\n    visited.add(node);\n\n    if (potentialTargets.includes(node)) {\n      foundTargets.add(node);\n      return;\n    }\n\n    const nodeConnections = connections[node]?.main || [];\n    for (const path of nodeConnections) {\n      for (const next of path) {\n        dfs(next.node);\n      }\n    }\n  }\n\n  dfs(sourceNode);\n  return Array.from(foundTargets);\n}\n\nconst nodes = []\nfor (const item of $input.all()) \n{\n  let webhook = {\n    name: item.json.name,\n    id: item.json.id,\n    webhooks: []\n  }\n  const webhook_call = item.json.nodes.filter(node =>node.type=='n8n-nodes-base.webhook');\n  const webhook_resp = item.json.nodes.filter(node =>node.type=='n8n-nodes-base.respondToWebhook');\n  const targets = webhook_resp.map(wr => wr.name);\n  if(webhook_call.length)\n  {\n    for(const call of webhook_call)\n    {\n        const callName = call.name;\n        if(call?.parameters?.responseMode == \"responseNode\")\n        {\n            const valid = findValidTargets(item.json.connections, callName, targets);\n            call.responses = webhook_resp.filter(wr => valid.includes(wr.name))\n        }\n    }\n    \n      webhook.webhooks.push(...webhook_call);\n      nodes.push(webhook);\n  }\n}\n\nlet s = `\nswagger: \"2.0\"\ninfo:\n  title: N8N Instance API\n  description: API description in Markdown.\n  version: 1.0.0\n  \nhost: ${$('Get Swagger').first().json?.headers?.host || 'n8n.instance.com'}\n\nbasePath: /webhook\nschemes:\n  - https\npaths:\n`\n\nfor(const node of nodes)\n{\n    const used_path = {};\n    for(const w of node.webhooks)\n    {\n      let path = '';\n      if(!(w?.parameters?.path in used_path))\n      {\n        path = w?.parameters?.path;\n        used_path[path] = true;\n      }\n\n      let produces = \"application/json\"\n      let code = 200;\n      if(w?.responses?.length)\n      {\n          for(const r of w.responses)\n          {\n              switch(r?.parameters?.respondWith)\n              {\n                case 'text':\n                  produces ='text/plain';\n                break\n                case 'redirect':\n                  produces = 'redirect';\n                  code = 301\n                break\n                case 'json':\n                  produces = 'application/json';\n                break\n              }\n          }\n      }\n      let parameters = []\n      if(w?.notes)\n      {\n        console.log({notes: w.notes})\n        const params = w?.notes?.split('\\n').filter(p => p.startsWith('@'));\n        for(const p of params)\n        {\n          const parts = p.split(' ');\n          const [position, name, type] = parts;\n          const description = parts.slice(3).join(' ');\n          console.log(p.split(' '))\n          switch(position)\n          {\n            case '@query':\n              parameters.push(`\n        - name: ${name}\n          in: ${position.replaceAll('@', '')}\n          description: ${description || 'no description'}\n          type: ${type}\n          required: true\n`)\n            break\n            case '@body':\n              parameters.push(`\n        - name: ${name}\n          in: ${position.replaceAll('@', '')}\n          description: ${description || 'no description'}\n          schema:\n            type: object\n            required:\n              - ${name}\n            properties:\n              ${name}:\n                type: ${type}\n`)\n          }\n        \n        }\n\n        if(parameters.length)\n        {\n          parameters.unshift(`\n      parameters:\n`)\n        }\n      }\n      s+=`\n  ${path ? `/${path}:` : ''}\n    ${w?.parameters?.httpMethod?.toLowerCase() || 'get'} :\n      summary: ${safe(w?.name) || safe(node.name)}.\n      description: Related to workflow [${node.id}].\n      tags:\n        - ${safe(node.name)}\n      ${parameters.join('\\n')}\n      produces:\n        - ${produces}\n      responses:\n        ${code}:\n          description: OK`\n    }\n}\n\nreturn {json:{text: s, nodes}};"
+      },
+      "id": "b19e98e6-9009-4ef7-b2d6-bd2d93ba47fa",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        288,
+        -464
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "workflowId": {
+          "__rl": true,
+          "value": "odHXrO1xBwjidFIs",
+          "mode": "list",
+          "cachedResultName": "My workflow 26 (#odHXrO1xBwjidFIs)"
+        },
+        "requestOptions": {}
+      },
+      "id": "96a8e39e-6612-4019-8c93-0db4fefb4064",
+      "name": "n8n",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        80,
+        -464
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "n8nApi": {
+          "id": "WvD7d2nbFg2RPpZP",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/af/acompanhamento/consulta",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "nomeBanco",
+              "value": "SENFF"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        96
+      ],
+      "id": "81731505-9082-4870-b0d0-927268c75e42",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hLoqTc4h1IMnbMbr",
+          "name": "Header Auth account - API AGILUS EXTERNA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "PATCH",
+        "path": "84ff3418-cd82-4a54-9917-0db2ca3e6676",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        640
+      ],
+      "id": "19e2e72c-07d2-49a1-8c52-e20526269cf8",
+      "name": "Webhook",
+      "webhookId": "84ff3418-cd82-4a54-9917-0db2ca3e6676",
+      "notes": "@body Af_codigo_contrato_banco string Nome do banco para filtragem"
+    }
+  ],
+  "connections": {
+    "Consulta AF": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta AF1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Consulta AF1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook- list Banks": {
+      "main": [
+        [
+          {
+            "node": "Consulta Banks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Banks": {
+      "main": [
+        [
+          {
+            "node": "Ajusta dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook Banks": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Consulta AF": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajusta dados": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook Banks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Consulta AF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Swagger": {
+      "main": [
+        [
+          {
+            "node": "n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook - Consulta AF": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.254.84",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.254.84",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.254.84",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "query-parameters": "nomeBanco&codigoBanco",
+            "content-type": "application/json",
+            "authorization": "Bearer ***REDACTED***",
+            "user-agent": "PostmanRuntime/7.49.1",
+            "accept": "*/*",
+            "postman-token": "3537721d-4ec0-432c-8d9e-395a4c8d47cf",
+            "accept-encoding": "gzip, deflate, br"
+          },
+          "params": {},
+          "query": {
+            "nomeBanco": "",
+            "codigoBanco": ""
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/af/acompanhamento/consulta",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "cd54c68d-3f55-4b41-a717-e7c7ff8e6859",
+  "activeVersionId": null,
+  "triggerCount": 4,
+  "shared": [
+    {
+      "updatedAt": "2025-10-31T13:14:31.468Z",
+      "createdAt": "2025-10-31T13:14:31.468Z",
+      "role": "workflow:owner",
+      "workflowId": "odHXrO1xBwjidFIs",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

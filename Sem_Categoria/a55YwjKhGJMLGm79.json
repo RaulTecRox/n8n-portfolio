@@ -1,0 +1,440 @@
+{
+  "updatedAt": "2024-11-21T12:42:08.243Z",
+  "createdAt": "2024-11-21T12:42:08.243Z",
+  "id": "a55YwjKhGJMLGm79",
+  "name": "Reverse Ura Official",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n\tinstances.name AS instance_name,\n\tinstances.endpoint AS instance_endpoint,\n\tinstances.apikey AS instance_apikey,\n\tbranchs.name AS branchs_name\nFROM instances AS instances \nINNER JOIN branchs AS branchs\nON instances.external_group_id = branchs.id\nWHERE instances.active = 1 AND instances.send = 'evolution-api' AND branchs.external_group_id = {{ $('Webhook').first().json.body.idGrupoUsuario}}\nORDER BY RAND()\nLIMIT 1;",
+        "options": {}
+      },
+      "id": "156e9c4f-8b8b-46d7-ab6a-cbeb70043118",
+      "name": "Sorteia uma caixa de saida",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        580,
+        820
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "PPS78JUtnilF97qD",
+          "name": "messages_hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const webhook = $('Webhook').first().json.body\nconst message = $('Selecionando mensagem1').first().json\nconst instance = $('Sorteia uma caixa de saida').first().json\n\nreturn {\n  \"evolutionNameInstance\": instance[\"instance_name\"],\n  \"evolutionUrlSendMessage\": instance[\"instance_endpoint\"].concat(\"/message/sendText/\", instance[\"instance_name\"]),\n  \"evolutionUrlTestConnection\": instance[\"instance_endpoint\"].concat(\"/instance/connectionState/\", instance[\"instance_name\"]),\n  \"evolutionUrlTestWhatsapp\": instance[\"instance_endpoint\"].concat(\"/chat/whatsappNumbers/\", instance[\"instance_name\"]),\n  \"evolutionApiKey\": instance[\"instance_apikey\"],\n  \"clientPhone\": \"55\".concat(webhook[\"telefone\"]),\n  \"clientMessage\": message[\"messages_message\"]\n}\n"
+      },
+      "id": "e3565eb7-058f-45b8-aa0c-03548f652141",
+      "name": "Montagem do objeto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        820
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {},
+      "id": "f989b6f7-71ce-462f-b724-8bf3271557f8",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        940,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "instances",
+          "mode": "list",
+          "cachedResultName": "instances"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "name",
+        "valueToMatchOn": "={{ $json.instance.instanceName }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "active",
+              "value": "0"
+            },
+            {
+              "column": "send",
+              "value": "evolution-api"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "81037563-111a-4a6b-bfbc-f85845e26881",
+      "name": "Desabilita instance",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.3,
+      "position": [
+        840,
+        1060
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "PPS78JUtnilF97qD",
+          "name": "messages_hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "a7450d59-310b-4c5a-a376-535258ea4458",
+              "leftValue": "={{ $json.instance.state }}",
+              "rightValue": "open",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "53a2e94e-5faa-4740-bd20-07fe242710a4",
+      "name": "esta conectado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Montagem do objeto').item.json.evolutionUrlTestWhatsapp }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Montagem do objeto').item.json.evolutionApiKey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"numbers\": [\n      \"{{ $('Montagem do objeto').item.json.clientPhone }}\"\n    ]\n}",
+        "options": {}
+      },
+      "id": "e17a96d1-19aa-4ab5-a5c9-a2a83bd7fd25",
+      "name": "Teste se é whatsapp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        580
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.evolutionUrlTestConnection }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.evolutionApiKey }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "efd56589-9df8-4839-9eef-13e729046dae",
+      "name": "Status da conexão",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        820
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.evolutionUrlSendMessage }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.evolutionApiKey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.clientPhone }}\",\n  \"textMessage\": {\n    \"text\": \"{{ $json.clientMessage }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "68359b1b-95ad-4db1-8768-4c3be1532c62",
+      "name": "Envia mensagem para evolution api",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        580,
+        520
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const testWhatsapp = $('Teste se é whatsapp').first().json.exists;\n\nif (!testWhatsapp) {\n  const response = {\n    ...$('Montagem do objeto').first().json,\n    \"clientMessage\": \"O numero \".concat($('Montagem do objeto').first().json.clientPhone, \" não é um whatsapp, necessario ligar!\") \n  }\n  return response\n}\n\n  return $('Montagem do objeto').first().json"
+      },
+      "id": "0bcd9efb-bd76-4649-8341-3cd9b102b6b9",
+      "name": "Valida whatsapp",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n\tmessages.id AS messages_id,\n\tmessages.message AS messages_message\nFROM messages\nWHERE type = 'reverse-ura-trigger' AND ACTIVE = 1\nORDER BY RAND()\nLIMIT 1;",
+        "options": {}
+      },
+      "id": "3988256e-551d-44d6-bb19-6f70c1bebe8c",
+      "name": "Selecionando mensagem1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        380,
+        820
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "PPS78JUtnilF97qD",
+          "name": "messages_hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d6a60822-56e8-4ae2-bfcb-f71cdf4686e8",
+        "authentication": "headerAuth",
+        "options": {
+          "responseCode": {
+            "values": {
+              "responseCode": 204
+            }
+          }
+        }
+      },
+      "id": "d9a45c3e-3ef1-4d5e-aae9-3aef81ae7ccc",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        140,
+        820
+      ],
+      "webhookId": "d6a60822-56e8-4ae2-bfcb-f71cdf4686e8",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XJzJE7nZVHZZrlIh",
+          "name": "Reverse Ura"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Sorteia uma caixa de saida": {
+      "main": [
+        [
+          {
+            "node": "Montagem do objeto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montagem do objeto": {
+      "main": [
+        [
+          {
+            "node": "Status da conexão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Desabilita instance": {
+      "main": [
+        [
+          {
+            "node": "Sorteia uma caixa de saida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "esta conectado?": {
+      "main": [
+        [
+          {
+            "node": "Teste se é whatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Desabilita instance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teste se é whatsapp": {
+      "main": [
+        [
+          {
+            "node": "Valida whatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Selecionando mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status da conexão": {
+      "main": [
+        [
+          {
+            "node": "esta conectado?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Selecionando mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envia mensagem para evolution api": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Selecionando mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valida whatsapp": {
+      "main": [
+        [
+          {
+            "node": "Envia mensagem para evolution api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Selecionando mensagem1": {
+      "main": [
+        [
+          {
+            "node": "Sorteia uma caixa de saida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Selecionando mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 60
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "41f4443f-6a6c-44e1-aacd-5da78c5fffa3",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-11-21T12:42:08.243Z",
+      "createdAt": "2024-11-21T12:42:08.243Z",
+      "role": "workflow:owner",
+      "workflowId": "a55YwjKhGJMLGm79",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

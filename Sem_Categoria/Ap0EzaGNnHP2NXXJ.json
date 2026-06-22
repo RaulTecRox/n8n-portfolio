@@ -1,0 +1,118 @@
+{
+  "updatedAt": "2025-10-14T15:01:16.210Z",
+  "createdAt": "2025-10-14T12:42:44.670Z",
+  "id": "Ap0EzaGNnHP2NXXJ",
+  "name": "My workflow 25",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "17d3e7e8-6f33-447d-8c18-be7f2156bfdd",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a4c34b7f-e5f3-462b-97a0-bf4e4ebc90d5",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ba4db970-0835-4971-926a-c2e5ca05d89e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/user/106576244301312513124",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {}
+      },
+      "id": "0a57e1ac-3829-4700-98ed-4451ee721c45",
+      "name": "/ACG/Consignado/Agente de Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "/ACG/Consignado/Agente de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "f34cf86d-477a-41dd-a724-3601f9467126",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-10-14T12:42:44.670Z",
+      "createdAt": "2025-10-14T12:42:44.670Z",
+      "role": "workflow:owner",
+      "workflowId": "Ap0EzaGNnHP2NXXJ",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

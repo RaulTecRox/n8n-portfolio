@@ -1,0 +1,2460 @@
+{
+  "updatedAt": "2025-09-12T15:18:53.666Z",
+  "createdAt": "2025-05-16T14:48:02.774Z",
+  "id": "TpH0AJmWmvn1K4re",
+  "name": "Higienizador - AMIGOZ Consulta Margem Convenio",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba3f2894-b0dc-40e8-b236-b47c36c9e351",
+              "name": "data",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().cpf }}",
+              "type": "string"
+            },
+            {
+              "id": "4ec2ef88-701c-48f8-adea-1a4f883e228c",
+              "name": "type",
+              "value": "cpf",
+              "type": "string"
+            },
+            {
+              "id": "1ed2c516-6124-4af5-9261-a960f4394f79",
+              "name": "Authorization",
+              "value": "SvykkclF002Y2GPgAkANSEDmpxdiQcoIt1XOeUPw1a0603e5",
+              "type": "string"
+            },
+            {
+              "id": "46c5a7e7-8db3-4441-b4b4-092d4cb54b8f",
+              "name": "matricula",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().matricula }}",
+              "type": "string"
+            },
+            {
+              "id": "901ddf04-8b8c-4e0b-9e4b-c7ffc2667a25",
+              "name": "folha",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().Folha }}",
+              "type": "string"
+            },
+            {
+              "id": "800b05f1-ea72-4980-8d49-0322f9204039",
+              "name": "convenio",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().convenio }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        20,
+        100
+      ],
+      "id": "a7e807b7-860f-4570-a01a-2bdd8463ec86",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('Acessos').first().json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('Acessos').first().json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        100
+      ],
+      "id": "c0f315c3-e680-456c-97f6-ba583c0ff0cf",
+      "name": "token1",
+      "retryOnFail": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/consulta-margem/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "numero_cpf",
+              "value": "={{ $('Edit criar-margem').item.json.cpf_cliente }}"
+            },
+            {
+              "name": "averbadora",
+              "value": "={{ $('Edit criar-margem').item.json.averbadora }}"
+            },
+            {
+              "name": "convenio",
+              "value": "={{ $('Edit criar-margem').item.json.convenio }}"
+            },
+            {
+              "name": "numero_matricula",
+              "value": "={{ $('Edit criar-margem').item.json.numero_matricula }}"
+            },
+            {
+              "name": "convenio",
+              "value": "={{ $('Edit criar-margem').item.json.convenio }}"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        100
+      ],
+      "id": "37385350-ace5-4862-bd3c-a7bd0340c3c5",
+      "name": "HTTP Consulta Margem",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6cc265ed-7773-4c36-86a0-a7e3ca06030c",
+              "name": "cpf_cliente",
+              "value": "={{ $('Dados').item.json.data.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }} }}",
+              "type": "string"
+            },
+            {
+              "id": "1aac03d1-968e-4b18-b8a3-d51c09793086",
+              "name": "averbadora",
+              "value": "={{ $json.averbadora }}",
+              "type": "number"
+            },
+            {
+              "id": "2e26c3d8-ec6a-4f09-9235-3664cb7cf190",
+              "name": "numero_matricula",
+              "value": "={{ $('Dados').item.json.matricula.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "32eb5683-7d69-4d00-b8b1-d8328a116886",
+              "name": "convenio",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        100
+      ],
+      "id": "05be50e8-ce76-4d78-bf05-0198ee83700f",
+      "name": "Edit criar-margem"
+    },
+    {
+      "parameters": {
+        "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/consulta-convenios/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        100
+      ],
+      "id": "5b164816-043d-40a0-ad49-cda79b0a666d",
+      "name": "HTTP consulta-convenios",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('Acessos').first().json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('Acessos').first().json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1080,
+        100
+      ],
+      "id": "95a20a28-c080-4a8d-9433-9957b88da2a4",
+      "name": "token",
+      "retryOnFail": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f589c21-647b-4eca-906f-07e8e7f980f5",
+              "name": "CPF",
+              "value": "={{ $('Dados').item.json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "8d2cf11d-94af-4494-92cd-68bd48288c9e",
+              "name": "nome",
+              "value": "={{ $json.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "5214b175-2961-421c-b0c3-15b82de235cd",
+              "name": "tipoProduto",
+              "value": "={{ $json.tipoProduto }}",
+              "type": "string"
+            },
+            {
+              "id": "19a63905-4eb7-4496-b4f6-5557be4baf20",
+              "name": "numeroMatricula",
+              "value": "={{ $json.numeroMatricula }}",
+              "type": "string"
+            },
+            {
+              "id": "c1581377-a158-49d3-98af-79040ff9d56b",
+              "name": "margem_atual",
+              "value": "={{ $json.margem_atual }}",
+              "type": "string"
+            },
+            {
+              "id": "f2ab4b5d-29e1-4849-8fc1-014b2cc12821",
+              "name": "Folha",
+              "value": "={{ $('Filter').item.json.nome }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        -200
+      ],
+      "id": "1378f515-7127-4236-b3ea-6460bfcc09a2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "363e5d74-646c-4ca5-bdfe-c1dcf33f8a2b",
+              "leftValue": "={{ $json.nome.toUpperCase().trim() }}",
+              "rightValue": "={{ $('Dados').item.json.folha.toUpperCase().trim() }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "d6da70c3-ae79-497c-8f60-4e62ab01ef15",
+              "leftValue": "={{ $json.nome.toUpperCase().trim() }}",
+              "rightValue": "={{ $('Dados').item.json.convenio.toUpperCase().trim() }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        100
+      ],
+      "id": "2c9e2c55-625d-4a98-9efa-06560a9cc111",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wsnv.novavidati.com.br/wslocalizador.asmx/NVCHECKJson",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Token",
+              "value": "={{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "nvcheck.Documento",
+              "value": "={{ $('Dados').item.json.data.replaceAll('.','').replaceAll('-','') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2460,
+        -700
+      ],
+      "id": "84374d71-cb27-46d4-baaa-e2ab2d4f4631",
+      "name": "HTTP nvcheck"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "57413736-c250-418d-ab14-9dc274d7e1d3",
+              "name": "token",
+              "value": "={{ $json.d }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2260,
+        -700
+      ],
+      "id": "572fa53d-5457-40e6-a5df-891a19678817",
+      "name": "Edit Token"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wsnv.novavidati.com.br/wslocalizador.asmx/GerarTokenJson",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "credencial.usuario",
+              "value": "={{ $('Acessos').item.json.usuarioNovaVidaTi }}"
+            },
+            {
+              "name": "credencial.senha",
+              "value": "={{ $('Acessos').item.json.senhaNovaVidaTi }}"
+            },
+            {
+              "name": "credencial.cliente",
+              "value": "={{ $('Acessos').item.json.clienteNovaVidaTi }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2080,
+        -700
+      ],
+      "id": "7cd690a0-a0af-4839-b2e4-f97c67e6165c",
+      "name": "HTTP Gera Token"
+    },
+    {
+      "parameters": {
+        "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.CPF }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer ***REDACTED***"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 100000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3180,
+        -760
+      ],
+      "id": "c2448c36-1f6f-42ad-a615-9ac7e48c7b3e",
+      "name": "Consulta credilus",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json.data;\nconst resultado = [];\n\nconst getIdade = (nasc) => {\n  const [dia, mes, ano] = nasc.split('/');\n  const nascimento = new Date(`${ano}-${mes}-${dia}`);\n  const hoje = new Date();\n  let idade = hoje.getFullYear() - nascimento.getFullYear();\n  const m = hoje.getMonth() - nascimento.getMonth();\n  if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {\n    idade--;\n  }\n  return idade.toString();\n};\n\n// Filtrar contatos com WhatsApp = SIM\nconst contatosComWhatsApp = data.filter(d => d.WHATSAPP === \"SIM\");\n\nif (contatosComWhatsApp.length > 0) {\n  const pessoa = contatosComWhatsApp[0]; // pega o primeiro com WhatsApp SIM\n  const cpf = pessoa.CPFCNPJ;\n  const nome = pessoa.NOME;\n  const idade = getIdade(pessoa.NASC);\n  \n  // Pega até 2 telefones\n  const telefones = contatosComWhatsApp.map(d => d.TELEFONE);\n  const telefone_1 = telefones[0] || \"\";\n  const telefone_2 = telefones[1] || \"\";\n\n  resultado.push({\n    json: {\n      CPF: cpf,\n      NOME: nome,\n      IDADE: idade,\n      TELEFONE_1: telefone_1,\n      TELEFONE_2: telefone_2\n    }\n  });\n}\n\nreturn resultado;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3500,
+        -820
+      ],
+      "id": "3f32d1ef-4d40-4d13-9234-c9eaf4e90328",
+      "name": "Code1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        3240,
+        -520
+      ],
+      "id": "e31771b8-503f-4cfc-aad7-9a2828580d59",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3740,
+        -740
+      ],
+      "id": "7d907494-9c4a-40ee-9976-f7c0c1030c7f",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA CREDILUS CPF\n",
+        "height": 480,
+        "width": 1080
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2940,
+        -840
+      ],
+      "typeVersion": 1,
+      "id": "f8129af5-5ea4-4bec-ab51-76fe4d0eb935",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5156968-77d1-4a11-bc9d-7a0e9e25abae",
+              "name": "CPF",
+              "value": "={{ $json.d.CONSULTA.CADASTRAIS.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+              "type": "string"
+            },
+            {
+              "id": "13c81e7b-29e1-4290-af13-601e291eec64",
+              "name": "NOME",
+              "value": "={{ $json.d.CONSULTA.CADASTRAIS.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "dd47d7ef-09af-402a-941f-065b264cd7c0",
+              "name": "IDADE",
+              "value": "={{ $json.d.CONSULTA.CADASTRAIS.IDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "650ac4fb-6c32-49d3-83c2-82a0beb9b8a0",
+              "name": "=TELEFONE_{{ $json.d.CONSULTA.TELEFONES[0].POSICAO }}",
+              "value": "={{ $json.d.CONSULTA.TELEFONES[0].DDD }}{{ $json.d.CONSULTA.TELEFONES[0].TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "ca0e38cd-112e-4b58-b4bf-29084ed49e44",
+              "name": "=TELEFONE_{{ $json.d.CONSULTA.TELEFONES[1].POSICAO }}",
+              "value": "={{ $json.d.CONSULTA.TELEFONES[1].DDD }}{{ $json.d.CONSULTA.TELEFONES[1].TELEFONE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2640,
+        -700
+      ],
+      "id": "37955831-7d30-43b3-b021-f98a0cca9323",
+      "name": "Edit Fields1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "58f2c457-f671-4b9a-ba45-36ec7b11ee17",
+              "leftValue": "={{ $json.TELEFONE_1 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3000,
+        -700
+      ],
+      "id": "1985b64a-ae9a-4d2b-b869-0fb137a77190",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "68042c07-6f5b-41c0-b153-8cfbab9a4b22",
+              "name": "usuarioHappy",
+              "value": "38075290801",
+              "type": "string"
+            },
+            {
+              "id": "0a15880a-07de-4756-8133-25c6a07bfa9f",
+              "name": "SenhaHappy",
+              "value": "Mdg@1234",
+              "type": "string"
+            },
+            {
+              "id": "283151fc-2fc2-405c-9016-78a341f2a087",
+              "name": "Authorization",
+              "value": "SvykkclF002Y2GPgAkANSEDmpxdiQcoIt1XOeUPw1a0603e5",
+              "type": "string"
+            },
+            {
+              "id": "70939a85-8cc9-4631-a2a4-1c92c68e9129",
+              "name": "usuarioNovaVidaTi",
+              "value": "daniel.gaspar@acgconsultoria.com.br",
+              "type": "string"
+            },
+            {
+              "id": "c4fc2a38-f994-4cae-b998-a2e36450b029",
+              "name": "senhaNovaVidaTi",
+              "value": "Mdg@2025",
+              "type": "string"
+            },
+            {
+              "id": "b382437a-11e7-416a-9d3b-0ba685a7f75e",
+              "name": "clienteNovaVidaTi",
+              "value": "ACG",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        100
+      ],
+      "id": "b25fb412-5856-4d33-95ea-664267858439",
+      "name": "Acessos",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA NOVA VIDA TI \n",
+        "height": 320,
+        "width": 900
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1960,
+        -780
+      ],
+      "typeVersion": 1,
+      "id": "c93eb122-a288-4863-973b-7566d8109c20",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        3060,
+        -220
+      ],
+      "id": "cd3dcd77-80b5-4e4d-9643-4c9ff4d2f23f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "databaseId": 223716,
+        "tableId": 555282,
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        3680,
+        -220
+      ],
+      "id": "1ec3c960-c676-4d95-bb64-375a32f5efd2",
+      "name": "Baserow",
+      "credentials": {
+        "baserowApi": {
+          "id": "zWiTHsKRCs3MpLam",
+          "name": "Baserow desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3900,
+        -220
+      ],
+      "id": "d1936e92-d24d-4a53-b5be-f0696cb5dac5",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc75fb94-f9aa-4d0a-acf2-d61edbb7a7fe",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "e0ba22ae-1841-4050-987b-5cd69ae71c06",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "91e4e5a8-7b1c-4b2a-a5e4-f82d88590aee",
+              "name": "MATRICULA",
+              "value": "={{ $json.numeroMatricula }}",
+              "type": "string"
+            },
+            {
+              "id": "335f9844-d646-499d-b054-4b793b540d3a",
+              "name": "IDADE",
+              "value": "={{ $json.IDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "a361747c-e20b-4a65-805f-60cfce6ca3ab",
+              "name": "TELEFONE_1",
+              "value": "={{ $json.TELEFONE_1 }}",
+              "type": "string"
+            },
+            {
+              "id": "449c0927-b7c2-4baf-9ac0-f573ea8b47b8",
+              "name": "TELEFONE_2",
+              "value": "={{ $json.TELEFONE_2 }}",
+              "type": "string"
+            },
+            {
+              "id": "b9a3aac0-71d1-497a-8bea-1a77231ddec6",
+              "name": "={{ $json.tipoProduto }}",
+              "value": "={{ $json.margem_atual }}",
+              "type": "string"
+            },
+            {
+              "id": "33ed6923-c279-46b0-9246-eb1a213d5a84",
+              "name": "={{ $json.tipoProduto }}",
+              "value": "={{ $json.margem_atual }}",
+              "type": "string"
+            },
+            {
+              "id": "609859f7-7797-403e-83c1-e5df097333cd",
+              "name": "CONVENIO",
+              "value": "={{ $json.Folha }}",
+              "type": "string"
+            },
+            {
+              "id": "8e8e5b4b-e75a-4114-a592-fce9e5f54bb0",
+              "name": "AquivoName",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().driver.AquivoName}}",
+              "type": "string"
+            },
+            {
+              "id": "7cacd699-7f59-48da-b6ea-0d919082895b",
+              "name": "EMAIL",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().driver.EMAIL}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3260,
+        -220
+      ],
+      "id": "e85381c5-0dd1-4e74-b920-8a6b1c3421a9",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "content": "## UPDATE BASE ROW\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 260,
+        "width": 1080,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2980,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "e3f3833f-4122-4630-86bc-538b9b8f6c6d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5156968-77d1-4a11-bc9d-7a0e9e25abae",
+              "name": "CPF",
+              "value": "={{ $json.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+              "type": "string"
+            },
+            {
+              "id": "13c81e7b-29e1-4290-af13-601e291eec64",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "dd47d7ef-09af-402a-941f-065b264cd7c0",
+              "name": "IDADE",
+              "value": "={{ $json.IDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "881f55c0-5796-4804-85df-f0adc5d09602",
+              "name": "TELEFONE_1",
+              "value": "={{ $json.TELEFONE_1 }}",
+              "type": "string"
+            },
+            {
+              "id": "778592c3-0468-4c39-b586-6b355478938a",
+              "name": "TELEFONE_2",
+              "value": "={{ $json.TELEFONE_2 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3460,
+        -520
+      ],
+      "id": "b9232e7b-b2ec-4069-85a4-ab2d7aa75cf5",
+      "name": "Edit Fields3",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entrada: lista de objetos com possíveis duplicações por CPF\nconst input = items.map(item => item.json);\n\nconst merged = {};\n\nfor (const obj of input) {\n  const cpf = obj.CPF;\n\n  if (!merged[cpf]) {\n    merged[cpf] = { ...obj };\n  } else {\n    // Junta os dados específicos (ex: \"Cartão Consignado\", \"Cartão Benefício\")\n    for (const key in obj) {\n      if (!(key in merged[cpf])) {\n        merged[cpf][key] = obj[key];\n      }\n    }\n  }\n}\n\n// Converte para formato de saída do n8n\nreturn Object.values(merged).map(data => ({ json: data }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3480,
+        -220
+      ],
+      "id": "6a26f63b-e64c-45ee-b4b1-7d26f99961bc",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a451964-0bf7-40cf-9246-4d5df47f7c96",
+              "name": "message",
+              "value": "={{ $json.error.message",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2420,
+        480
+      ],
+      "id": "db0faf02-575d-4355-9fae-f32133bcbf61",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawMessage = items[0].json.message;\n\n// Extrair o JSON que está dentro da string, removendo o prefixo \"400 - \" e as aspas externas\nconst regex = /^400 - \"(.*)\"$/s;\nconst match = rawMessage.match(regex);\n\nif (!match) {\n  throw new Error('Formato inesperado da mensagem');\n}\n\nconst jsonEscaped = match[1];\n\n// Desescapar as aspas para formar um JSON válido\nconst jsonString = jsonEscaped.replace(/\\\\\"/g, '\"');\n\nconst parsed = JSON.parse(jsonString);\n\n// Mensagem de erro geral\nconst errorMsg = parsed.error;\n\n// Array de margens\nconst margins = parsed.margins;\n\n// Retornar um array com cada margem + a mensagem de erro\nreturn margins.map(margin => ({\n  json: {\n    errorMessage: errorMsg,\n    nome: margin.nome,\n    matricula: margin.numeroMatricula,\n    nascimento: margin.nascimento,\n    cargo: margin.cargo,\n    estavel: margin.estavel_bool,\n    tipoProduto: margin.tipoProduto,\n    tipoMargem: margin.tipoMargem,\n    margemAtual: margin.margem_atual,\n    verba: margin.verba,\n    folha: margin.folha,\n    idProduto: margin.idProduto,\n    ocupacao: margin.ocupacao\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        480
+      ],
+      "id": "a731bde4-5aaf-4317-8f43-d22fa0442854",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wsnv.novavidati.com.br/wslocalizador.asmx/NVCHECKJson",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Token",
+              "value": "={{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "nvcheck.Documento",
+              "value": "={{ $('Dados').item.json.data.replaceAll('.','').replaceAll('-','') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        480
+      ],
+      "id": "435d19c8-9996-4a7a-8df2-aa5d768d8f09",
+      "name": "HTTP nvcheck1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "57413736-c250-418d-ab14-9dc274d7e1d3",
+              "name": "token",
+              "value": "={{ $json.d }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2940,
+        480
+      ],
+      "id": "5bc725d1-82f9-41bd-a071-b0bc9b4b8321",
+      "name": "Edit Token1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wsnv.novavidati.com.br/wslocalizador.asmx/GerarTokenJson",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "credencial.usuario",
+              "value": "={{ $('Acessos').item.json.usuarioNovaVidaTi }}"
+            },
+            {
+              "name": "credencial.senha",
+              "value": "={{ $('Acessos').item.json.senhaNovaVidaTi }}"
+            },
+            {
+              "name": "credencial.cliente",
+              "value": "={{ $('Acessos').item.json.clienteNovaVidaTi }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2780,
+        480
+      ],
+      "id": "2d42179b-4a39-479e-a572-de93916fcc65",
+      "name": "HTTP Gera Token1"
+    },
+    {
+      "parameters": {
+        "url": "http://10.3.60.14:9001/api/v1/credilink/search/wsdl/cpf",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.CPF }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer ***REDACTED***"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 100000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3980,
+        400
+      ],
+      "id": "fe635130-a24f-4057-a498-38b5dcaec632",
+      "name": "Consulta credilus1",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json.data;\nconst resultado = [];\n\nconst getIdade = (nasc) => {\n  const [dia, mes, ano] = nasc.split('/');\n  const nascimento = new Date(`${ano}-${mes}-${dia}`);\n  const hoje = new Date();\n  let idade = hoje.getFullYear() - nascimento.getFullYear();\n  const m = hoje.getMonth() - nascimento.getMonth();\n  if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {\n    idade--;\n  }\n  return idade.toString();\n};\n\n// Filtrar contatos com WhatsApp = SIM\nconst contatosComWhatsApp = data.filter(d => d.WHATSAPP === \"SIM\");\n\nif (contatosComWhatsApp.length > 0) {\n  const pessoa = contatosComWhatsApp[0]; // pega o primeiro com WhatsApp SIM\n  const cpf = pessoa.CPFCNPJ;\n  const nome = pessoa.NOME;\n  const idade = getIdade(pessoa.NASC);\n  \n  // Pega até 2 telefones\n  const telefones = contatosComWhatsApp.map(d => d.TELEFONE);\n  const telefone_1 = telefones[0] || \"\";\n  const telefone_2 = telefones[1] || \"\";\n\n  resultado.push({\n    json: {\n      CPF: cpf,\n      NOME: nome,\n      IDADE: idade,\n      TELEFONE_1: telefone_1,\n      TELEFONE_2: telefone_2\n    }\n  });\n}\n\nreturn resultado;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4320,
+        380
+      ],
+      "id": "b778fe2b-efdb-4004-a09c-f5cc73e0b5ce",
+      "name": "Code3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        3920,
+        660
+      ],
+      "id": "f353ed6a-1b1b-4199-9497-9f6487a05994",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4320,
+        580
+      ],
+      "id": "a44893f1-71c1-42af-bf09-fe602f3181d7",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5156968-77d1-4a11-bc9d-7a0e9e25abae",
+              "name": "CPF",
+              "value": "={{ $json.d.CONSULTA.CADASTRAIS.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+              "type": "string"
+            },
+            {
+              "id": "13c81e7b-29e1-4290-af13-601e291eec64",
+              "name": "NOME",
+              "value": "={{ $json.d.CONSULTA.CADASTRAIS.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "dd47d7ef-09af-402a-941f-065b264cd7c0",
+              "name": "IDADE",
+              "value": "={{ $json.d.CONSULTA.CADASTRAIS.IDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "650ac4fb-6c32-49d3-83c2-82a0beb9b8a0",
+              "name": "=TELEFONE_{{ $json.d.CONSULTA.TELEFONES[0].POSICAO }}",
+              "value": "={{ $json.d.CONSULTA.TELEFONES[0].DDD }}{{ $json.d.CONSULTA.TELEFONES[0].TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "ca0e38cd-112e-4b58-b4bf-29084ed49e44",
+              "name": "=TELEFONE_{{ $json.d.CONSULTA.TELEFONES[1].POSICAO }}",
+              "value": "={{ $json.d.CONSULTA.TELEFONES[1].DDD }}{{ $json.d.CONSULTA.TELEFONES[1].TELEFONE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3480,
+        480
+      ],
+      "id": "10828137-92b6-4f2c-b498-ac8a318081aa",
+      "name": "Edit Fields6",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "58f2c457-f671-4b9a-ba45-36ec7b11ee17",
+              "leftValue": "={{ $json.TELEFONE_1 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3660,
+        480
+      ],
+      "id": "ec5d5341-19eb-4a21-a29e-706d60c8e140",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA NOVA VIDA TI \n",
+        "height": 320,
+        "width": 1060
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2220,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "86c8266f-b048-46a9-bda1-7b0c5ed05003",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "NOME",
+              "field2": "nome"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        3540,
+        1120
+      ],
+      "id": "b71b49e6-5f61-4e2a-989f-9dacb492cbd6",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc75fb94-f9aa-4d0a-acf2-d61edbb7a7fe",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "e0ba22ae-1841-4050-987b-5cd69ae71c06",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "91e4e5a8-7b1c-4b2a-a5e4-f82d88590aee",
+              "name": "MATRICULA",
+              "value": "={{ $json.matricula }}",
+              "type": "string"
+            },
+            {
+              "id": "335f9844-d646-499d-b054-4b793b540d3a",
+              "name": "IDADE",
+              "value": "={{ $json.IDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "a361747c-e20b-4a65-805f-60cfce6ca3ab",
+              "name": "TELEFONE_1",
+              "value": "={{ $json.TELEFONE_1 }}",
+              "type": "string"
+            },
+            {
+              "id": "449c0927-b7c2-4baf-9ac0-f573ea8b47b8",
+              "name": "TELEFONE_2",
+              "value": "={{ $json.TELEFONE_2 }}",
+              "type": "string"
+            },
+            {
+              "id": "b9a3aac0-71d1-497a-8bea-1a77231ddec6",
+              "name": "={{ $json.tipoProduto }}",
+              "value": "={{ $json.margemAtual }}",
+              "type": "string"
+            },
+            {
+              "id": "33ed6923-c279-46b0-9246-eb1a213d5a84",
+              "name": "={{ $json.tipoProduto }}",
+              "value": "={{ $json.margemAtual }}",
+              "type": "string"
+            },
+            {
+              "id": "609859f7-7797-403e-83c1-e5df097333cd",
+              "name": "CONVENIO",
+              "value": "={{ $('Filter').item.json.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "bb3add2e-2786-41c4-adf9-f97855acc636",
+              "name": "errorMessage",
+              "value": "={{ $json.errorMessage }}",
+              "type": "string"
+            },
+            {
+              "id": "eaa0e613-2cf6-45e0-a93a-ee59769bf0af",
+              "name": "AquivoName",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().driver.AquivoName}}",
+              "type": "string"
+            },
+            {
+              "id": "7686286b-0cfe-4803-922a-805612222308",
+              "name": "EMAIL",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().driver.EMAIL}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3740,
+        1120
+      ],
+      "id": "07157871-c8df-4f1f-938d-e8f0a814aa9b",
+      "name": "Edit Fields7"
+    },
+    {
+      "parameters": {
+        "content": "## UPDATE BASE ROW\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 360,
+        "width": 1140,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3200,
+        1020
+      ],
+      "typeVersion": 1,
+      "id": "90be97ef-9ecc-476f-818d-644c62f33cf0",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5156968-77d1-4a11-bc9d-7a0e9e25abae",
+              "name": "CPF",
+              "value": "={{ $json.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+              "type": "string"
+            },
+            {
+              "id": "13c81e7b-29e1-4290-af13-601e291eec64",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "dd47d7ef-09af-402a-941f-065b264cd7c0",
+              "name": "IDADE",
+              "value": "={{ $json.IDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "881f55c0-5796-4804-85df-f0adc5d09602",
+              "name": "TELEFONE_1",
+              "value": "={{ $json.TELEFONE_1 }}",
+              "type": "string"
+            },
+            {
+              "id": "778592c3-0468-4c39-b586-6b355478938a",
+              "name": "TELEFONE_2",
+              "value": "={{ $json.TELEFONE_2 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4140,
+        680
+      ],
+      "id": "92e5dc57-d597-4734-9212-6830d1ec1e49",
+      "name": "Edit Fields8",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entrada: lista de objetos com possíveis duplicações por CPF\nconst input = items.map(item => item.json);\n\nconst merged = {};\n\nfor (const obj of input) {\n  const cpf = obj.CPF;\n\n  if (!merged[cpf]) {\n    merged[cpf] = { ...obj };\n  } else {\n    // Junta os dados específicos (ex: \"Cartão Consignado\", \"Cartão Benefício\")\n    for (const key in obj) {\n      if (!(key in merged[cpf])) {\n        merged[cpf][key] = obj[key];\n      }\n    }\n  }\n}\n\n// Converte para formato de saída do n8n\nreturn Object.values(merged).map(data => ({ json: data }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3960,
+        1120
+      ],
+      "id": "663052ec-a7f6-426d-8966-3a818ab57311",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1zVE9dDkn3-BMIWp8rJPWDcqxJ9_kS6xhIJ7lPT85OtI",
+          "mode": "list",
+          "cachedResultName": "AMIGOZ - CONVÊNIO ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zVE9dDkn3-BMIWp8rJPWDcqxJ9_kS6xhIJ7lPT85OtI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1925687718,
+          "mode": "list",
+          "cachedResultName": "erro",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zVE9dDkn3-BMIWp8rJPWDcqxJ9_kS6xhIJ7lPT85OtI/edit#gid=1925687718"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "CPF"
+          ],
+          "schema": [
+            {
+              "id": "NOME",
+              "displayName": "NOME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CPF",
+              "displayName": "CPF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MATRICULA",
+              "displayName": "MATRICULA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IDADE",
+              "displayName": "IDADE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TELEFONE_1",
+              "displayName": "TELEFONE_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TELEFONE_2",
+              "displayName": "TELEFONE_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cartão Consignado",
+              "displayName": "Cartão Consignado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CONVENIO",
+              "displayName": "CONVENIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cartão Benefício",
+              "displayName": "Cartão Benefício",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        4200,
+        1220
+      ],
+      "id": "94e2bbe6-731f-43b7-89cd-7dc1df48cc5c",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA CREDILUS CPF\n",
+        "height": 480,
+        "width": 1080
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3440,
+        360
+      ],
+      "typeVersion": 1,
+      "id": "5f558963-7a14-4e55-afac-b5e2d72fcee5",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "42e07d5a-a41f-4d83-bea2-dab8b1a348be",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "401",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "544f2a14-a148-4909-a007-660bd87d8d0b",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "500",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        480
+      ],
+      "id": "8109da43-53f2-4ab9-a87d-fa1cb6de1ea8",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "queue": "higenizador_margem_amigoz_convenio",
+        "options": {
+          "arguments": {
+            "argument": [
+              {
+                "key": "xqueue-type",
+                "value": "quorum"
+              }
+            ]
+          },
+          "binding": {
+            "bindings": [
+              {
+                "exchange": "higenizador_exchange",
+                "routingKey": "higenizador_margem_amigoz_convenio"
+              }
+            ]
+          },
+          "acknowledge": "executionFinishes",
+          "parallelMessages": 4
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        280
+      ],
+      "id": "5adcc450-4079-46f3-853f-925f8cbe708d",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "databaseId": 223716,
+        "tableId": 555282,
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        4160,
+        1120
+      ],
+      "id": "38ea4024-0a69-4a36-835b-29102588754c",
+      "name": "Baserow2",
+      "credentials": {
+        "baserowApi": {
+          "id": "zWiTHsKRCs3MpLam",
+          "name": "Baserow desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4380,
+        1120
+      ],
+      "id": "f25e0ab7-791e-4418-ba09-6ae4cb180d6c",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "SOUducHvN3YIWxP9",
+          "mode": "list",
+          "cachedResultName": "Higienizador - AMIGOZ Gera planilha Margem Convenio"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        420
+      ],
+      "id": "f1dd7f23-a9d6-42c1-bdc3-10823c621962",
+      "name": "Execute Workflow",
+      "retryOnFail": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4612a8f9-6298-4333-b902-90aef6f93dc1",
+              "leftValue": "={{ $json.messages }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        20,
+        420
+      ],
+      "id": "760b4ec5-9e30-4c5c-897b-6006a53419fa",
+      "name": "Filter5"
+    },
+    {
+      "parameters": {
+        "url": "http://10.3.60.31:15672/api/queues/%2F/higenizador_margem_amigoz_convenio",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -200,
+        420
+      ],
+      "id": "660ef09c-e8d4-4597-b4ac-81ec25089010",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "ZbqYo9qALBnrHiBt",
+          "name": "RabbitMQ User"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        700,
+        420
+      ],
+      "id": "7cc9f634-173a-4797-b3f8-1731bc7ad800",
+      "name": "No Operation, do nothing4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f245a66f-95f4-476a-8287-996c98ef3227",
+              "name": "AquivoName",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().driver.AquivoName.split('-').first() }}",
+              "type": "string"
+            },
+            {
+              "id": "9335ac07-f295-40a9-a280-d5809aead022",
+              "name": "email",
+              "value": "={{ $('RabbitMQ Trigger').item.json.content.parseJson().driver.EMAIL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        420
+      ],
+      "id": "948208b9-877a-47b7-ad07-f139aa5d7c07",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "content": "## INFORMA FILA \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 380,
+        "width": 1180,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "f2f973fa-b840-42ca-abdb-ed3233cbe685",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA MARGEM AMIGOZ\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 260,
+        "width": 1640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -200,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "ef18ae50-3888-4edb-b287-cdfcbf661985",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ad2affc7-e0a6-4264-a446-4c928df8506e",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "Não",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2260,
+        480
+      ],
+      "id": "7fdcde63-a9f9-4b8d-bfd3-fb45973aebe8",
+      "name": "Filter1"
+    }
+  ],
+  "connections": {
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token1": {
+      "main": [
+        [
+          {
+            "node": "HTTP consulta-convenios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Consulta Margem": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit criar-margem": {
+      "main": [
+        [
+          {
+            "node": "token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP consulta-convenios": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token": {
+      "main": [
+        [
+          {
+            "node": "HTTP Consulta Margem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Edit criar-margem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP nvcheck": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Token": {
+      "main": [
+        [
+          {
+            "node": "HTTP nvcheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Gera Token": {
+      "main": [
+        [
+          {
+            "node": "Edit Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta credilus": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Consulta credilus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Gera Token",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Acessos": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Baserow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Gera Token1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP nvcheck1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Token1": {
+      "main": [
+        [
+          {
+            "node": "HTTP nvcheck1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Gera Token1": {
+      "main": [
+        [
+          {
+            "node": "Edit Token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta credilus1": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Consulta credilus1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields8": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Baserow2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        []
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit criar-margem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "Acessos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Filter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "fields": {
+            "consumerTag": "amq.ctag-TT1T0mE-je5nox9yr3FSew",
+            "deliveryTag": 31248,
+            "redelivered": false,
+            "exchange": "higenizador_exchange",
+            "routingKey": "higenizador_margem_amigoz_convenio"
+          },
+          "properties": {
+            "headers": {}
+          },
+          "content": "{\"nome\":\"RENATO CARLOS VINENTE DA SILVA\",\"cpf\":\"158.471.738-65\",\"matricula\":\"263088\",\"margem\":\"MARGEM CARTAO\",\"convenio\":\"porto velho\",\"Folha\":\"PREFEITURA DE PORTO VELHO\",\"driver\":{\"AquivoName\":\"Conciliacao Outros - Cartao e Emprestimo.xlsx\",\"EMAIL\":\"raul.guimaraes@mdgintermediacoes.com.br\"}}"
+        }
+      }
+    ]
+  },
+  "versionId": "98925d48-50d5-4916-8010-fdea226cc53a",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-16T14:48:02.774Z",
+      "createdAt": "2025-05-16T14:48:02.774Z",
+      "role": "workflow:owner",
+      "workflowId": "TpH0AJmWmvn1K4re",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

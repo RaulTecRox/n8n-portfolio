@@ -1,0 +1,6851 @@
+{
+  "updatedAt": "2026-02-27T18:01:44.267Z",
+  "createdAt": "2025-02-14T19:38:24.774Z",
+  "id": "ClMoe4ihHgnc9C5S",
+  "name": "Acessos - Gera emails",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.newEMPRESA.trim().toUpperCase() }}",
+                    "rightValue": "GASPAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "748ab328-97db-456f-ae5c-f07da7449e6c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GASPAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e44a0fb3-9470-43bc-a7ff-37ab0689915e",
+                    "leftValue": "={{ $json.newEMPRESA.trim().toUpperCase() }}",
+                    "rightValue": "ACG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ACG"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "98ef700b-bcb8-40b6-8561-6b9f7be04e86",
+                    "leftValue": "={{ $json.newEMPRESA.trim().toUpperCase() }}",
+                    "rightValue": "MDG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MDG"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1664,
+        1072
+      ],
+      "id": "746e5681-407a-4900-b1a1-76266ef9c111",
+      "name": "separaEmpresa"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        672
+      ],
+      "id": "71e76a7e-e4e9-470f-900e-e5b403df5b93",
+      "name": "IdContasGoogle"
+    },
+    {
+      "parameters": {
+        "content": "## CRIA CONTA GOOGLE\n",
+        "height": 1080,
+        "width": 1876,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "fa84522a-8728-4e50-ad00-a63b75ac7ad5",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        1328
+      ],
+      "id": "7482f364-c16a-42cc-8c2d-c3bd7d29a893",
+      "name": "IdContasGoogle3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+              "name": "primaryEmail",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        1008
+      ],
+      "id": "dfbf73be-6efa-439f-93d5-8ee733ae1e0b",
+      "name": "IdContasGoogle4"
+    },
+    {
+      "parameters": {
+        "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+        "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+        "password": "={{ $('SenhaPadrao').first().json.senhaPadrao }}",
+        "username": "={{ $json.USUARIO }}",
+        "domain": "mdgintermediacoes.com.br",
+        "additionalFields": {
+          "changePasswordAtNextLogin": true,
+          "phoneUi": {
+            "phoneValues": [
+              {
+                "type": "mobile",
+                "value": "={{ $json.newTELEFONE }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "ab519c90-557e-487d-bba7-f7aa556b4ed9",
+      "name": "criaEmailGaspar",
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        672
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+        "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+        "password": "={{ $('SenhaPadrao').first().json.senhaPadrao }}",
+        "username": "={{ $json.USUARIO }}",
+        "domain": "mdgintermediacoes.com.br",
+        "additionalFields": {
+          "changePasswordAtNextLogin": true
+        }
+      },
+      "id": "e82f76b0-7113-4dde-a156-c9d1c81415e8",
+      "name": "criaEmailMDG",
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        1328
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+        "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+        "password": "={{ $('SenhaPadrao').first().json.senhaPadrao }}",
+        "username": "={{ $json.USUARIO }}",
+        "domain": "acgconsultoria.com.br",
+        "additionalFields": {
+          "changePasswordAtNextLogin": true
+        }
+      },
+      "id": "ed29bcb7-b719-4f09-b29d-aa1879b80f6e",
+      "name": "criaEmailACG",
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        1008
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "6ba0b043-2bf4-4ee0-a647-e7b09ab80cdf",
+      "name": "Agente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        384
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Coordenadores\"\n}",
+        "options": {}
+      },
+      "id": "84e4cb64-52bc-40f3-bf92-9481c9cb5f3e",
+      "name": "Coordenadores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        528
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Líder Comercial\"\n}",
+        "options": {}
+      },
+      "id": "1fa97a72-af9a-4328-ac7f-c0595f59a2b0",
+      "name": "Lider",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        672
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/ACG/Precatório/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "1dc8e1ac-d074-41f7-8bc6-df18aac780c5",
+      "name": "/ACG/Precatório/Agente de Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        960
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Precatório/BKO\"\n}",
+        "options": {}
+      },
+      "id": "af09dd9a-aaaa-4caf-8625-b68c376c9436",
+      "name": "/ACG/Precatório/BKO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        1120
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/ACG/Precatório/Gerente\"\n}",
+        "options": {}
+      },
+      "id": "7fc030e0-d651-44c6-94aa-4e42beaebfdb",
+      "name": "ACG/Precatório/Gerente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        1280
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "4daf933f-5777-483b-b05c-5f8e7ed7b3ee",
+      "name": "/ACG/Consignado/Agente de Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        1568
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "CONSULTOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "8a548c91-7c7c-44c8-b589-eb8665edd483"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CONSULTOR DE NEGOCIOS JUNIOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "BKO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "GERENTE PRECATORIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE PRECA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "47eeee0e-1485-4288-b811-818faf104934",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b71b7bbc-5e1f-48ad-a705-a35a32e56dca",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "95bce708-5c96-452e-8f17-58198c6d8952",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "Líder Comercial",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Líder Comercial"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "599f3de0-d36b-4bef-8bd4-437569b65de0",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "SUPERVISOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUPERVISOR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        992
+      ],
+      "id": "06edcf66-bf6e-4c1d-932e-4da90f2af376",
+      "name": "ACG"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{  \"orgUnitPath\":\"/ACG/Consignado/BKO\"\n}",
+        "options": {}
+      },
+      "id": "3df468c9-5e39-44b8-82e4-491bc607ad2d",
+      "name": "/ACG/Consignado/BKO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        1424
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Coordenadores\"\n}",
+        "options": {}
+      },
+      "id": "5fa22896-5bba-4fed-ac6e-a69703950f83",
+      "name": "/ACG/Consignado/Coordenadores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        1888
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "GERENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "ce327fe6-ee5b-43e1-b273-8aab75a6615b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "SUPERVISOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUPERVISOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d3d82940-07fb-463f-87d8-a344232f8db6",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "LIDER ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b74bba44-1bd0-4749-afa3-9f0df3806106",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        1360
+      ],
+      "id": "8361d99d-631e-4c21-8816-84a37820c64c",
+      "name": "MDG"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Lider Comercial\"\n}",
+        "options": {}
+      },
+      "id": "8efac6ea-fa40-4eec-bbe6-36c19af41fd3",
+      "name": "/ACG/Consignado/Lider Comercial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        1728
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\": \"/MDG/Agente de Vendas\"\n}",
+        "options": {}
+      },
+      "id": "0ba05653-568f-4aba-a2fb-c696072d7eec",
+      "name": "/MDG/Agente de Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        2240
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Coordenação\"\n}",
+        "options": {}
+      },
+      "id": "f97ce8f9-f76d-467f-9ee4-3632977cbe0d",
+      "name": "/MDG/Coordenação",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        2384
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Gerente Comercial\"\n}",
+        "options": {}
+      },
+      "id": "725e3450-9a75-4867-99de-edea4587e62e",
+      "name": "/MDG/Gerente Comercial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        2096
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2304,
+        1312
+      ],
+      "id": "27cd62fe-ffd5-49ee-a6aa-bf0b2663fe14",
+      "name": "Merge ACG"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2160,
+        640
+      ],
+      "id": "40f88071-3875-4446-a87b-71a251cd4524",
+      "name": "Merge GASPAR"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Lider Comercial\"\n}",
+        "options": {}
+      },
+      "id": "ff185962-7c82-461c-a04a-d92c03fb8bec",
+      "name": "/MDG/Lider Comercial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        2528
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "ab568d41-5d25-4e2e-b33c-56c0ea5be8b8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                    "rightValue": "SUPERVISOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUPERVISOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4f0c8af2-3f81-4d51-b129-afc0cbe0a4a8",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                    "rightValue": "LIDER",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                    "rightValue": "GERENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        528,
+        640
+      ],
+      "id": "a48c5fd8-3a45-4b41-b08b-555dba908a1d",
+      "name": "GASPAR"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2160,
+        2256
+      ],
+      "id": "0f1b1211-47c6-4b8e-b76e-4f4161b28c4a",
+      "name": "MDG2"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Gerente Comercial\"\n}",
+        "options": {}
+      },
+      "id": "e0282faa-7643-4579-bc27-602927d75e91",
+      "name": "/MDG/Gerente Comercial1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        816
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n \"orgUnitPath\":\"/MDG/BackOffice\"\n}",
+        "options": {}
+      },
+      "id": "4d6e4674-b3e3-4536-aa67-c95693a21307",
+      "name": "/MDG/BackOffice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        2656
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "R8QudPAJcJ42wNUO",
+          "name": "Google account Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        672
+      ],
+      "id": "b984c74b-c1ea-48d0-bb1a-0eb7d63bb889",
+      "name": "Wait",
+      "webhookId": "4719fa02-d116-4b62-b122-4639293c01c5"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        1008
+      ],
+      "id": "d0a37d9e-bde8-41d5-9da0-d7412ef7d54e",
+      "name": "Wait1",
+      "webhookId": "ed57b122-afe0-4c73-94b0-bbcdac17a52b"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        1328
+      ],
+      "id": "f02f9c9b-26c9-4df5-bac4-e795c01b8c3a",
+      "name": "Wait2",
+      "webhookId": "7bf0af5c-3cb1-4250-a325-b21cf1f04c6b"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "append",
+        "workbook": {
+          "__rl": true,
+          "value": "01NDI3H4QDNFBRJNR2YZFJE5RDJ65TQFC3",
+          "mode": "list",
+          "cachedResultName": "Banco de Dados - Usuários1",
+          "cachedResultUrl": "https://mdgintermediacoescombr-my.sharepoint.com/personal/suporte_ti_mdgintermediacoes_com_br/_layouts/15/Doc.aspx?sourcedoc=%7B14436903-3AB6-4AC6-9276-234FBB38145B%7D&file=Banco%20de%20Dados%20-%20Usu%C3%A1rios1.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Base",
+          "cachedResultUrl": "https://mdgintermediacoescombr-my.sharepoint.com/personal/suporte_ti_mdgintermediacoes_com_br/_layouts/15/Doc.aspx?sourcedoc=%7B14436903-3AB6-4AC6-9276-234FBB38145B%7D&file=Banco%20de%20Dados%20-%20Usu%C3%A1rios1.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Base!A1"
+        },
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "E-MAIL/USUARIO",
+              "fieldValue": "={{ $json.primaryEmail }}"
+            },
+            {
+              "column": "TELEFONE",
+              "fieldValue": "={{ $json.newTELEFONE }}"
+            },
+            {
+              "column": "DATA DE NASCIMENTO",
+              "fieldValue": "={{ $json.newDTNASCIMENTO }}"
+            },
+            {
+              "column": "CARGO",
+              "fieldValue": "={{ $json.newCARGO }}"
+            },
+            {
+              "column": "EMPRESA",
+              "fieldValue": "={{ $json.newEMPRESA }}"
+            },
+            {
+              "column": "ADMISSAO",
+              "fieldValue": "={{ $json.newDTADMISSAO }}"
+            },
+            {
+              "column": "CPF",
+              "fieldValue": "={{ $json.newCPF }}"
+            },
+            {
+              "column": "NOME",
+              "fieldValue": "={{ $json.newNOME }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        -1088,
+        2304
+      ],
+      "id": "92ac84a3-c687-4bdc-b8dd-878223d52364",
+      "name": "Microsoft Excel 3651",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "qVNQCSlloEIaDVkh",
+          "name": "Microsoft Excel account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "16a3dda6-2392-4cd1-8718-b0796939e11b",
+              "leftValue": "={{ $json.USUARIO }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -992,
+        1328
+      ],
+      "id": "2a2cfe93-5fb9-473e-a86b-a6d2d2d50390",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "71444506-cf11-4a21-bcac-8115f4fa6a29",
+              "leftValue": "={{ $json.USUARIO }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1024,
+        1008
+      ],
+      "id": "2491357e-897c-472b-820b-27c54fdadbb3",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "58320700-cabc-4ba6-9d0d-2aa3153d160b",
+              "leftValue": "={{ $json.USUARIO }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1024,
+        672
+      ],
+      "id": "ec5f6c16-cdcb-4f5d-8c5d-0a4d849d5cbb",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2128,
+        1088
+      ],
+      "id": "0c5bc129-e936-4911-abd7-f4c5944cc7f4",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7030f68c-a6ae-439b-9f2f-7b3eea2284e4",
+              "name": "senhaPadrao",
+              "value": "Mudar@1234",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1904,
+        1088
+      ],
+      "id": "2e4126ab-ea7a-48b5-9166-dab3539aa361",
+      "name": "SenhaPadrao"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -96,
+        1824
+      ],
+      "id": "4f340d77-030e-412f-8097-92628a83112e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "hsxC9jq8HH6VNhz8",
+          "mode": "list",
+          "cachedResultName": "Acessos - Gera AD"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        2016
+      ],
+      "id": "3c481e74-ddea-42de-8ad6-edc173d0fd12",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0827460e-0d1a-4c3d-91a3-bca3994902f8",
+              "name": "NOME",
+              "value": "={{ $json.newNOME }}",
+              "type": "string"
+            },
+            {
+              "id": "c896f47e-5e7a-4cce-aee5-a27374639fa5",
+              "name": "USUARIO",
+              "value": "={{ $json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "923f7a7e-3863-4f89-92e5-1b1c4fa970ba",
+              "name": "EMPRESA",
+              "value": "={{ $json.newEMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "04345048-4849-4766-bb9b-9f12bfb0fd1e",
+              "name": "CPF",
+              "value": "={{ $json.newCPF }}",
+              "type": "string"
+            },
+            {
+              "id": "8af64a88-dbf4-40e8-a41c-90aa8b209398",
+              "name": "CARGO",
+              "value": "={{ $json.newCARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "e7c1aa45-1efa-4dcd-8ad2-43075ffa79c7",
+              "name": "TELEFONE",
+              "value": "={{ $json.newTELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "0ceb1f67-cf58-40d9-b9cb-f63e4b772317",
+              "name": "senhaPadrao",
+              "value": "={{ $json.senhaPadrao }}",
+              "type": "string"
+            },
+            {
+              "id": "5bcab6ca-c39d-4978-898c-9c6021827e5b",
+              "name": "ID",
+              "value": "={{ $node[\"SenhaPadrao\"].json[\"ID\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "4d23ec7e-1467-4afe-9755-5cf3c31ef896",
+              "name": "TITULO",
+              "value": "={{ $node[\"SenhaPadrao\"].json[\"TITULO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "21a4cd06-e330-4b77-b9e7-acd163905277",
+              "name": "URL",
+              "value": "={{ $node[\"SenhaPadrao\"].json[\"URL\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1840,
+        2016
+      ],
+      "id": "c8208c51-299e-4ffb-96a0-83007d06b996",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "USUARIO",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        368,
+        2016
+      ],
+      "id": "a2c28491-a0b1-4cc9-9c65-a023f26cd6d9",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "70d30003-72be-495e-95be-eb8f0916a87f",
+              "name": "USUARIO",
+              "value": "={{ $json.primaryEmail.split(\"@\").first() }}",
+              "type": "string"
+            },
+            {
+              "id": "03271a62-76b8-4c1a-9640-dfbf94ae3d26",
+              "name": "Email",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        1840
+      ],
+      "id": "171034dd-14ae-45d7-9eff-28f677471431",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "784d0d91-6577-45ff-ad01-2b5906cf947b",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        672
+      ],
+      "id": "2ea41584-72b6-4c76-8c9b-11694ed0054b",
+      "name": "Filter3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "639b84fc-f162-468a-b2eb-21fbf82d91c6",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        1008
+      ],
+      "id": "acef1239-b787-4da0-8a39-667a86f752eb",
+      "name": "Filter4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f4313def-d7cd-46e6-96f1-6ac318d3e66e",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        1328
+      ],
+      "id": "056b6901-5b7a-4c0e-b972-b3be8732dbb6",
+      "name": "Filter5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1328,
+        928
+      ],
+      "id": "a599f576-81ce-4640-8fea-68b477b6a495",
+      "name": "Wait3",
+      "webhookId": "4b8de7d8-6f21-40e2-941f-d6a3e40ca765"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1328,
+        1088
+      ],
+      "id": "9ddc604c-a2d2-4749-b908-a0f3aea8029b",
+      "name": "Wait4",
+      "webhookId": "55e12818-d609-4d07-9b96-b935cb53a450"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1328,
+        1264
+      ],
+      "id": "92ee1ce3-8458-490c-a036-05e77f1cb645",
+      "name": "Wait5",
+      "webhookId": "68b9dd04-3af3-44a0-81ae-81fd88424812"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filter": {}
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        784
+      ],
+      "id": "61166f14-dbaa-43ef-a2d5-b14e8bdb3b65",
+      "name": "Google Workspace Admin",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "281f06e4-6710-4009-818b-d35b897be77f",
+              "leftValue": "={{ $json.name.fullName }}",
+              "rightValue": "={{ $('SenhaPadrao').item.json.newNOME }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        800
+      ],
+      "id": "19ec87c0-29d3-407b-9a35-a1b4ee672b08",
+      "name": "Filter6"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        672
+      ],
+      "id": "9fcb3498-ec2b-4fbc-9399-c5c778bd6254",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filter": {}
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        1120
+      ],
+      "id": "120f11e4-6dd6-46be-83ee-95364c824ccf",
+      "name": "Google Workspace Admin1",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "281f06e4-6710-4009-818b-d35b897be77f",
+              "leftValue": "={{ $json.name.fullName }}",
+              "rightValue": "={{ $('SenhaPadrao').item.json.newNOME }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        1120
+      ],
+      "id": "06176368-71a2-48c5-87d4-d08e6ccf489b",
+      "name": "Filter7"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -128,
+        1008
+      ],
+      "id": "a75fc82c-7c42-4604-a622-d5a4925ed42e",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filter": {}
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        1456
+      ],
+      "id": "19d37642-bcc5-4a66-a60c-621f72150c9f",
+      "name": "Google Workspace Admin2",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "281f06e4-6710-4009-818b-d35b897be77f",
+              "leftValue": "={{ $json.name.fullName }}",
+              "rightValue": "={{ $('SenhaPadrao').item.json.newNOME }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        1456
+      ],
+      "id": "aeceba3a-1a86-4c2c-8d90-ca22928a52e2",
+      "name": "Filter8"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -128,
+        1328
+      ],
+      "id": "d43c09c9-2499-498e-a038-79f2b6578c31",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/user",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+        "options": {}
+      },
+      "id": "9597e117-40b4-457e-9ce5-d99cdc72225b",
+      "name": "Google Workspace Frontline Starter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        1712
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1792,
+        1680
+      ],
+      "id": "acd800cf-fce8-4452-92ec-862de3d55ab9",
+      "name": "Merge5"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1792,
+        1216
+      ],
+      "id": "cf118d75-607c-4656-ac69-e7a708715714",
+      "name": "Merge6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/user",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+        "options": {}
+      },
+      "id": "1e1b3a83-4aad-4484-a93b-e72eed682b94",
+      "name": "Google Workspace Business Starter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        1248
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2512,
+        1312
+      ],
+      "id": "eb699e8d-e67a-4d73-86a2-546fbea81adc",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/user\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+        "options": {}
+      },
+      "id": "af4f7339-86a8-469f-b0e0-f3272c2a9daf",
+      "name": "Google Workspace Frontline Starter1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        544
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1792,
+        512
+      ],
+      "id": "987f3908-e5c5-4751-bfd5-5fd263f0ba62",
+      "name": "Merge7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/user\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+        "options": {}
+      },
+      "id": "3d9066af-297a-42bb-9c56-c8545de5c89f",
+      "name": "Google Workspace Business Starter1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1792,
+        816
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/user",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+        "options": {}
+      },
+      "id": "adede633-4d04-48bc-b027-9b99e9c9eee0",
+      "name": "Google Workspace Frontline Starter2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1936,
+        2432
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1744,
+        2400
+      ],
+      "id": "d00a6da8-00fc-4970-ac63-2f4fc0a6f2a5",
+      "name": "Merge8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/user\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+        "options": {}
+      },
+      "id": "98a8cea0-5375-4392-acbd-1b1d39e0fef3",
+      "name": "Google Workspace Business Starter2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1728,
+        2096
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        2256
+      ],
+      "id": "be4e0516-20a6-43c2-aa85-67fbbe110a44",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        640
+      ],
+      "id": "304b3251-3c98-40cb-9312-162b50b6c005",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        768,
+        2016
+      ],
+      "id": "f164c434-098a-421a-bd2a-ab463c397569",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4d009932-08ff-475b-b6ad-beda3501c1f3",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        672
+      ],
+      "id": "9d162d13-4bcc-401c-8f55-6e276ab8eb0c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e2607b03-2826-4efb-8b65-d6600dc2c943",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -656,
+        1008
+      ],
+      "id": "a649fc08-9526-412d-8c74-0f0eedfbeeee",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e64a01d2-b643-4ed0-93f4-ae39311d6d66",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -656,
+        1328
+      ],
+      "id": "457284da-f224-4995-9d10-8e046baa685f",
+      "name": "If2"
+    }
+  ],
+  "connections": {
+    "separaEmpresa": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IdContasGoogle": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IdContasGoogle3": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "IdContasGoogle4": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "criaEmailGaspar": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "criaEmailMDG": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "criaEmailACG": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Agente": {
+      "main": [
+        [
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Coordenadores": {
+      "main": [
+        [
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Lider": {
+      "main": [
+        [
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "/ACG/Precatório/Agente de Vendas": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/ACG/Precatório/BKO": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ACG/Precatório/Gerente": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/Agente de Vendas": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ACG": {
+      "main": [
+        [
+          {
+            "node": "/ACG/Precatório/Agente de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Precatório/BKO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ACG/Precatório/Gerente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/BKO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/Agente de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/Lider Comercial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/ACG/Consignado/Coordenadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/BKO": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/Coordenadores": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "MDG": {
+      "main": [
+        [
+          {
+            "node": "/MDG/Gerente Comercial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Agente de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Coordenação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Lider Comercial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/BackOffice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/ACG/Consignado/Lider Comercial": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "/MDG/Agente de Vendas": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/MDG/Coordenação": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "/MDG/Gerente Comercial": {
+      "main": [
+        [
+          {
+            "node": "Google Workspace Business Starter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/MDG/Lider Comercial": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "GASPAR": {
+      "main": [
+        [
+          {
+            "node": "Agente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Coordenadores",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Lider",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/MDG/Gerente Comercial1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/MDG/Gerente Comercial1": {
+      "main": [
+        [
+          {
+            "node": "Google Workspace Business Starter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/MDG/BackOffice": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Filter4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Filter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "criaEmailMDG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "criaEmailACG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "criaEmailGaspar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "SenhaPadrao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SenhaPadrao": {
+      "main": [
+        [
+          {
+            "node": "separaEmpresa",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter3": {
+      "main": [
+        [
+          {
+            "node": "GASPAR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter4": {
+      "main": [
+        [
+          {
+            "node": "ACG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter5": {
+      "main": [
+        [
+          {
+            "node": "MDG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Admin": {
+      "main": [
+        [
+          {
+            "node": "Filter6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter6": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "IdContasGoogle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Admin1": {
+      "main": [
+        [
+          {
+            "node": "Filter7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "IdContasGoogle4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter7": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Workspace Admin2": {
+      "main": [
+        [
+          {
+            "node": "Filter8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "IdContasGoogle3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter8": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Workspace Frontline Starter": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "Google Workspace Frontline Starter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge6": {
+      "main": [
+        [
+          {
+            "node": "Google Workspace Business Starter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Business Starter": {
+      "main": [
+        [
+          {
+            "node": "Merge ACG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge ACG": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge7": {
+      "main": [
+        [
+          {
+            "node": "Google Workspace Frontline Starter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Frontline Starter1": {
+      "main": [
+        [
+          {
+            "node": "Merge GASPAR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Business Starter1": {
+      "main": [
+        [
+          {
+            "node": "Merge GASPAR",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge GASPAR": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Frontline Starter2": {
+      "main": [
+        [
+          {
+            "node": "MDG2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge8": {
+      "main": [
+        [
+          {
+            "node": "Google Workspace Frontline Starter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Business Starter2": {
+      "main": [
+        [
+          {
+            "node": "MDG2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MDG2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Workspace Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Workspace Admin1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Workspace Admin2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Workflow Input Trigger": [
+      {
+        "json": {
+          "newCPF": "49420820807",
+          "newNOME": "MARIA EDUARDA GALIETA",
+          "newTELEFONE": "+551198450-3224",
+          "newCARGO": "Agente De Vendas Júnior",
+          "newEMPRESA": "MDG",
+          "newDTADMISSAO": "02/03/2026",
+          "newDTNASCIMENTO": "29/03/2006",
+          "NOME": "MARIA EDUARDA GALIETA",
+          "USUARIO": "maria.galieta",
+          "EMPRESA": "MDG INTERMEDIACOES DE NEGOCIOS EIRELI",
+          "CARGO": "AGENTE DE VENDAS",
+          "TELEFONE": "0",
+          "ID": "10172",
+          "TITULO": "Criação de criação - MDG",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=10172&"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "SenhaPadrao": [
+      {
+        "json": {
+          "newCPF": "49420820807",
+          "newNOME": "MARIA EDUARDA GALIETA",
+          "newTELEFONE": "+551198450-3224",
+          "newCARGO": "AGENTE DE VENDAS JUNIOR",
+          "newEMPRESA": "MDG",
+          "newDTADMISSAO": "02/03/2026",
+          "newDTNASCIMENTO": "29/03/2006",
+          "NOME": "MARIA EDUARDA GALIETA",
+          "USUARIO": "maria.galieta",
+          "EMPRESA": "MDG INTERMEDIACOES DE NEGOCIOS EIRELI",
+          "CARGO": "AGENTE DE VENDAS",
+          "TELEFONE": "0",
+          "ID": "10172",
+          "TITULO": "Criação de criação - MDG",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=10172&"
+        }
+      }
+    ]
+  },
+  "versionId": "fbf9814d-6f3b-4bc9-8511-d07061e427ec",
+  "activeVersionId": "fbf9814d-6f3b-4bc9-8511-d07061e427ec",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-02-14T19:38:24.774Z",
+      "createdAt": "2025-02-14T19:38:24.774Z",
+      "role": "workflow:owner",
+      "workflowId": "ClMoe4ihHgnc9C5S",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T18:01:49.860Z",
+    "createdAt": "2026-02-27T18:01:44.273Z",
+    "versionId": "fbf9814d-6f3b-4bc9-8511-d07061e427ec",
+    "workflowId": "ClMoe4ihHgnc9C5S",
+    "nodes": [
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.newEMPRESA.trim().toUpperCase() }}",
+                      "rightValue": "GASPAR",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      },
+                      "id": "748ab328-97db-456f-ae5c-f07da7449e6c"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "GASPAR"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "e44a0fb3-9470-43bc-a7ff-37ab0689915e",
+                      "leftValue": "={{ $json.newEMPRESA.trim().toUpperCase() }}",
+                      "rightValue": "ACG",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ACG"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "98ef700b-bcb8-40b6-8561-6b9f7be04e86",
+                      "leftValue": "={{ $json.newEMPRESA.trim().toUpperCase() }}",
+                      "rightValue": "MDG",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "MDG"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          -1664,
+          1072
+        ],
+        "id": "746e5681-407a-4900-b1a1-76266ef9c111",
+        "name": "separaEmpresa"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+                "name": "id",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+                "name": "primaryEmail",
+                "value": "={{ $json.primaryEmail }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          32,
+          672
+        ],
+        "id": "71e76a7e-e4e9-470f-900e-e5b403df5b93",
+        "name": "IdContasGoogle"
+      },
+      {
+        "parameters": {
+          "content": "## CRIA CONTA GOOGLE\n",
+          "height": 1080,
+          "width": 1876,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1040,
+          608
+        ],
+        "typeVersion": 1,
+        "id": "fa84522a-8728-4e50-ad00-a63b75ac7ad5",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+                "name": "id",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+                "name": "primaryEmail",
+                "value": "={{ $json.primaryEmail }}",
+                "type": "string"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          48,
+          1328
+        ],
+        "id": "7482f364-c16a-42cc-8c2d-c3bd7d29a893",
+        "name": "IdContasGoogle3"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "eb4ecf23-86c4-4548-b723-db47932cc7df",
+                "name": "id",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "d28ad6af-3e30-4b7c-ba60-eeb99bd4050d",
+                "name": "primaryEmail",
+                "value": "={{ $json.primaryEmail }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          48,
+          1008
+        ],
+        "id": "dfbf73be-6efa-439f-93d5-8ee733ae1e0b",
+        "name": "IdContasGoogle4"
+      },
+      {
+        "parameters": {
+          "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+          "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+          "password": "={{ $('SenhaPadrao').first().json.senhaPadrao }}",
+          "username": "={{ $json.USUARIO }}",
+          "domain": "mdgintermediacoes.com.br",
+          "additionalFields": {
+            "changePasswordAtNextLogin": true,
+            "phoneUi": {
+              "phoneValues": [
+                {
+                  "type": "mobile",
+                  "value": "={{ $json.newTELEFONE }}"
+                }
+              ]
+            }
+          }
+        },
+        "id": "ab519c90-557e-487d-bba7-f7aa556b4ed9",
+        "name": "criaEmailGaspar",
+        "type": "n8n-nodes-base.gSuiteAdmin",
+        "typeVersion": 1,
+        "position": [
+          -816,
+          672
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+          "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+          "password": "={{ $('SenhaPadrao').first().json.senhaPadrao }}",
+          "username": "={{ $json.USUARIO }}",
+          "domain": "mdgintermediacoes.com.br",
+          "additionalFields": {
+            "changePasswordAtNextLogin": true
+          }
+        },
+        "id": "e82f76b0-7113-4dde-a156-c9d1c81415e8",
+        "name": "criaEmailMDG",
+        "type": "n8n-nodes-base.gSuiteAdmin",
+        "typeVersion": 1,
+        "position": [
+          -816,
+          1328
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "firstName": "={{ $json.newNOME.toUpperCase().split(' ').slice(0, -1).join(' ') }}\n",
+          "lastName": "={{ $json.newNOME.toUpperCase().split(\" \").last() }}",
+          "password": "={{ $('SenhaPadrao').first().json.senhaPadrao }}",
+          "username": "={{ $json.USUARIO }}",
+          "domain": "acgconsultoria.com.br",
+          "additionalFields": {
+            "changePasswordAtNextLogin": true
+          }
+        },
+        "id": "ed29bcb7-b719-4f09-b29d-aa1879b80f6e",
+        "name": "criaEmailACG",
+        "type": "n8n-nodes-base.gSuiteAdmin",
+        "typeVersion": 1,
+        "position": [
+          -832,
+          1008
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Agente de Vendas\"\n}",
+          "options": {}
+        },
+        "id": "6ba0b043-2bf4-4ee0-a647-e7b09ab80cdf",
+        "name": "Agente",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          384
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Coordenadores\"\n}",
+          "options": {}
+        },
+        "id": "84e4cb64-52bc-40f3-bf92-9481c9cb5f3e",
+        "name": "Coordenadores",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          528
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\": \"/GASPAR ASSESSORIA/Líder Comercial\"\n}",
+          "options": {}
+        },
+        "id": "1fa97a72-af9a-4328-ac7f-c0595f59a2b0",
+        "name": "Lider",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          672
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\": \"/ACG/Precatório/Agente de Vendas\"\n}",
+          "options": {}
+        },
+        "id": "1dc8e1ac-d074-41f7-8bc6-df18aac780c5",
+        "name": "/ACG/Precatório/Agente de Vendas",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          960
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Precatório/BKO\"\n}",
+          "options": {}
+        },
+        "id": "af09dd9a-aaaa-4caf-8625-b68c376c9436",
+        "name": "/ACG/Precatório/BKO",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          1120
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\": \"/ACG/Precatório/Gerente\"\n}",
+          "options": {}
+        },
+        "id": "7fc030e0-d651-44c6-94aa-4e42beaebfdb",
+        "name": "ACG/Precatório/Gerente",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          1280
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Agente de Vendas\"\n}",
+          "options": {}
+        },
+        "id": "4daf933f-5777-483b-b05c-5f8e7ed7b3ee",
+        "name": "/ACG/Consignado/Agente de Vendas",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          1568
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "CONSULTOR",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      },
+                      "id": "8a548c91-7c7c-44c8-b589-eb8665edd483"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "CONSULTOR DE NEGOCIOS JUNIOR"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "BKO",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "BKO "
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "GERENTE PRECATORIO",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "GERENTE PRECA"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "47eeee0e-1485-4288-b811-818faf104934",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "ASSISTENTE OPERACIONAL",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ASSISTENTE OPERACIONAL"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "b71b7bbc-5e1f-48ad-a705-a35a32e56dca",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "AGENTE DE VENDAS",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "AGENTE DE VENDAS "
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "95bce708-5c96-452e-8f17-58198c6d8952",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "Líder Comercial",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Líder Comercial"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "599f3de0-d36b-4bef-8bd4-437569b65de0",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "SUPERVISOR",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "SUPERVISOR"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          736,
+          992
+        ],
+        "id": "06edcf66-bf6e-4c1d-932e-4da90f2af376",
+        "name": "ACG"
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{  \"orgUnitPath\":\"/ACG/Consignado/BKO\"\n}",
+          "options": {}
+        },
+        "id": "3df468c9-5e39-44b8-82e4-491bc607ad2d",
+        "name": "/ACG/Consignado/BKO",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          1424
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Coordenadores\"\n}",
+          "options": {}
+        },
+        "id": "5fa22896-5bba-4fed-ac6e-a69703950f83",
+        "name": "/ACG/Consignado/Coordenadores",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          1888
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "GERENTE",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "GERENTE COMERCIAL"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "AGENTE DE VENDAS",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      },
+                      "id": "ce327fe6-ee5b-43e1-b273-8aab75a6615b"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "AGENTE DE VENDAS"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "SUPERVISOR",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "SUPERVISOR"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "d3d82940-07fb-463f-87d8-a344232f8db6",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "LIDER ",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "LIDER COMERCIAL"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "b74bba44-1bd0-4749-afa3-9f0df3806106",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO }}",
+                      "rightValue": "ASSISTENTE OPERACIONAL",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ASSISTENTE OPERACIONAL"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          736,
+          1360
+        ],
+        "id": "8361d99d-631e-4c21-8816-84a37820c64c",
+        "name": "MDG"
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n\"orgUnitPath\":\"/ACG/Consignado/Lider Comercial\"\n}",
+          "options": {}
+        },
+        "id": "8efac6ea-fa40-4eec-bbe6-36c19af41fd3",
+        "name": "/ACG/Consignado/Lider Comercial",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          1728
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\": \"/MDG/Agente de Vendas\"\n}",
+          "options": {}
+        },
+        "id": "0ba05653-568f-4aba-a2fb-c696072d7eec",
+        "name": "/MDG/Agente de Vendas",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          2240
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Coordenação\"\n}",
+          "options": {}
+        },
+        "id": "f97ce8f9-f76d-467f-9ee4-3632977cbe0d",
+        "name": "/MDG/Coordenação",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          2384
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Gerente Comercial\"\n}",
+          "options": {}
+        },
+        "id": "725e3450-9a75-4867-99de-edea4587e62e",
+        "name": "/MDG/Gerente Comercial",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          2096
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          2304,
+          1312
+        ],
+        "id": "27cd62fe-ffd5-49ee-a6aa-bf0b2663fe14",
+        "name": "Merge ACG"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          2160,
+          640
+        ],
+        "id": "40f88071-3875-4446-a87b-71a251cd4524",
+        "name": "Merge GASPAR"
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Lider Comercial\"\n}",
+          "options": {}
+        },
+        "id": "ff185962-7c82-461c-a04a-d92c03fb8bec",
+        "name": "/MDG/Lider Comercial",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          2528
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                      "rightValue": "AGENTE DE VENDAS",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      },
+                      "id": "ab568d41-5d25-4e2e-b33c-56c0ea5be8b8"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "AGENTE DE VENDAS"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                      "rightValue": "SUPERVISOR",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "SUPERVISOR"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "4f0c8af2-3f81-4d51-b129-afc0cbe0a4a8",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                      "rightValue": "LIDER",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "LIDER"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                      "leftValue": "={{ $('SenhaPadrao').item.json.newCARGO.trim().toUpperCase().replaceSpecialChars() }}",
+                      "rightValue": "GERENTE",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "GERENTE"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          528,
+          640
+        ],
+        "id": "a48c5fd8-3a45-4b41-b08b-555dba908a1d",
+        "name": "GASPAR"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          2160,
+          2256
+        ],
+        "id": "0f1b1211-47c6-4b8e-b76e-4f4161b28c4a",
+        "name": "MDG2"
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"orgUnitPath\":\"/MDG/Gerente Comercial\"\n}",
+          "options": {}
+        },
+        "id": "e0282faa-7643-4579-bc27-602927d75e91",
+        "name": "/MDG/Gerente Comercial1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          816
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "gSuiteAdminOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n \"orgUnitPath\":\"/MDG/BackOffice\"\n}",
+          "options": {}
+        },
+        "id": "4d6e4674-b3e3-4536-aa67-c95693a21307",
+        "name": "/MDG/BackOffice",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1456,
+          2656
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "R8QudPAJcJ42wNUO",
+            "name": "Google account Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 15
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          192,
+          672
+        ],
+        "id": "b984c74b-c1ea-48d0-bb1a-0eb7d63bb889",
+        "name": "Wait",
+        "webhookId": "4719fa02-d116-4b62-b122-4639293c01c5"
+      },
+      {
+        "parameters": {
+          "amount": 15
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          240,
+          1008
+        ],
+        "id": "d0a37d9e-bde8-41d5-9da0-d7412ef7d54e",
+        "name": "Wait1",
+        "webhookId": "ed57b122-afe0-4c73-94b0-bbcdac17a52b"
+      },
+      {
+        "parameters": {
+          "amount": 15
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          240,
+          1328
+        ],
+        "id": "f02f9c9b-26c9-4df5-bac4-e795c01b8c3a",
+        "name": "Wait2",
+        "webhookId": "7bf0af5c-3cb1-4250-a325-b21cf1f04c6b"
+      },
+      {
+        "parameters": {
+          "resource": "worksheet",
+          "operation": "append",
+          "workbook": {
+            "__rl": true,
+            "value": "01NDI3H4QDNFBRJNR2YZFJE5RDJ65TQFC3",
+            "mode": "list",
+            "cachedResultName": "Banco de Dados - Usuários1",
+            "cachedResultUrl": "https://mdgintermediacoescombr-my.sharepoint.com/personal/suporte_ti_mdgintermediacoes_com_br/_layouts/15/Doc.aspx?sourcedoc=%7B14436903-3AB6-4AC6-9276-234FBB38145B%7D&file=Banco%20de%20Dados%20-%20Usu%C3%A1rios1.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+          },
+          "worksheet": {
+            "__rl": true,
+            "value": "{00000000-0001-0000-0000-000000000000}",
+            "mode": "list",
+            "cachedResultName": "Base",
+            "cachedResultUrl": "https://mdgintermediacoescombr-my.sharepoint.com/personal/suporte_ti_mdgintermediacoes_com_br/_layouts/15/Doc.aspx?sourcedoc=%7B14436903-3AB6-4AC6-9276-234FBB38145B%7D&file=Banco%20de%20Dados%20-%20Usu%C3%A1rios1.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Base!A1"
+          },
+          "fieldsUi": {
+            "values": [
+              {
+                "column": "E-MAIL/USUARIO",
+                "fieldValue": "={{ $json.primaryEmail }}"
+              },
+              {
+                "column": "TELEFONE",
+                "fieldValue": "={{ $json.newTELEFONE }}"
+              },
+              {
+                "column": "DATA DE NASCIMENTO",
+                "fieldValue": "={{ $json.newDTNASCIMENTO }}"
+              },
+              {
+                "column": "CARGO",
+                "fieldValue": "={{ $json.newCARGO }}"
+              },
+              {
+                "column": "EMPRESA",
+                "fieldValue": "={{ $json.newEMPRESA }}"
+              },
+              {
+                "column": "ADMISSAO",
+                "fieldValue": "={{ $json.newDTADMISSAO }}"
+              },
+              {
+                "column": "CPF",
+                "fieldValue": "={{ $json.newCPF }}"
+              },
+              {
+                "column": "NOME",
+                "fieldValue": "={{ $json.newNOME }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.microsoftExcel",
+        "typeVersion": 2.1,
+        "position": [
+          -1088,
+          2304
+        ],
+        "id": "92ac84a3-c687-4bdc-b8dd-878223d52364",
+        "name": "Microsoft Excel 3651",
+        "credentials": {
+          "microsoftExcelOAuth2Api": {
+            "id": "qVNQCSlloEIaDVkh",
+            "name": "Microsoft Excel account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "16a3dda6-2392-4cd1-8718-b0796939e11b",
+                "leftValue": "={{ $json.USUARIO }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          -992,
+          1328
+        ],
+        "id": "2a2cfe93-5fb9-473e-a86b-a6d2d2d50390",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "71444506-cf11-4a21-bcac-8115f4fa6a29",
+                "leftValue": "={{ $json.USUARIO }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          -1024,
+          1008
+        ],
+        "id": "2491357e-897c-472b-820b-27c54fdadbb3",
+        "name": "Filter1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "58320700-cabc-4ba6-9d0d-2aa3153d160b",
+                "leftValue": "={{ $json.USUARIO }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          -1024,
+          672
+        ],
+        "id": "ec5f6c16-cdcb-4f5d-8c5d-0a4d849d5cbb",
+        "name": "Filter2"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -2128,
+          1088
+        ],
+        "id": "0c5bc129-e936-4911-abd7-f4c5944cc7f4",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "7030f68c-a6ae-439b-9f2f-7b3eea2284e4",
+                "name": "senhaPadrao",
+                "value": "Mudar@1234",
+                "type": "string"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1904,
+          1088
+        ],
+        "id": "2e4126ab-ea7a-48b5-9166-dab3539aa361",
+        "name": "SenhaPadrao"
+      },
+      {
+        "parameters": {
+          "numberInputs": 3
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          -96,
+          1824
+        ],
+        "id": "4f340d77-030e-412f-8097-92628a83112e",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "hsxC9jq8HH6VNhz8",
+            "mode": "list",
+            "cachedResultName": "Acessos - Gera AD"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {
+            "waitForSubWorkflow": false
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          576,
+          2016
+        ],
+        "id": "3c481e74-ddea-42de-8ad6-edc173d0fd12",
+        "name": "Execute Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "0827460e-0d1a-4c3d-91a3-bca3994902f8",
+                "name": "NOME",
+                "value": "={{ $json.newNOME }}",
+                "type": "string"
+              },
+              {
+                "id": "c896f47e-5e7a-4cce-aee5-a27374639fa5",
+                "name": "USUARIO",
+                "value": "={{ $json.USUARIO }}",
+                "type": "string"
+              },
+              {
+                "id": "923f7a7e-3863-4f89-92e5-1b1c4fa970ba",
+                "name": "EMPRESA",
+                "value": "={{ $json.newEMPRESA }}",
+                "type": "string"
+              },
+              {
+                "id": "04345048-4849-4766-bb9b-9f12bfb0fd1e",
+                "name": "CPF",
+                "value": "={{ $json.newCPF }}",
+                "type": "string"
+              },
+              {
+                "id": "8af64a88-dbf4-40e8-a41c-90aa8b209398",
+                "name": "CARGO",
+                "value": "={{ $json.newCARGO }}",
+                "type": "string"
+              },
+              {
+                "id": "e7c1aa45-1efa-4dcd-8ad2-43075ffa79c7",
+                "name": "TELEFONE",
+                "value": "={{ $json.newTELEFONE }}",
+                "type": "string"
+              },
+              {
+                "id": "0ceb1f67-cf58-40d9-b9cb-f63e4b772317",
+                "name": "senhaPadrao",
+                "value": "={{ $json.senhaPadrao }}",
+                "type": "string"
+              },
+              {
+                "id": "5bcab6ca-c39d-4978-898c-9c6021827e5b",
+                "name": "ID",
+                "value": "={{ $node[\"SenhaPadrao\"].json[\"ID\"] }}",
+                "type": "string"
+              },
+              {
+                "id": "4d23ec7e-1467-4afe-9755-5cf3c31ef896",
+                "name": "TITULO",
+                "value": "={{ $node[\"SenhaPadrao\"].json[\"TITULO\"] }}",
+                "type": "string"
+              },
+              {
+                "id": "21a4cd06-e330-4b77-b9e7-acd163905277",
+                "name": "URL",
+                "value": "={{ $node[\"SenhaPadrao\"].json[\"URL\"] }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1840,
+          2016
+        ],
+        "id": "c8208c51-299e-4ffb-96a0-83007d06b996",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "USUARIO",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          368,
+          2016
+        ],
+        "id": "a2c28491-a0b1-4cc9-9c65-a023f26cd6d9",
+        "name": "Merge1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "70d30003-72be-495e-95be-eb8f0916a87f",
+                "name": "USUARIO",
+                "value": "={{ $json.primaryEmail.split(\"@\").first() }}",
+                "type": "string"
+              },
+              {
+                "id": "03271a62-76b8-4c1a-9640-dfbf94ae3d26",
+                "name": "Email",
+                "value": "={{ $json.primaryEmail }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          112,
+          1840
+        ],
+        "id": "171034dd-14ae-45d7-9eff-28f677471431",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "784d0d91-6577-45ff-ad01-2b5906cf947b",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          368,
+          672
+        ],
+        "id": "2ea41584-72b6-4c76-8c9b-11694ed0054b",
+        "name": "Filter3"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "639b84fc-f162-468a-b2eb-21fbf82d91c6",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          416,
+          1008
+        ],
+        "id": "acef1239-b787-4da0-8a39-667a86f752eb",
+        "name": "Filter4"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "f4313def-d7cd-46e6-96f1-6ac318d3e66e",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          416,
+          1328
+        ],
+        "id": "056b6901-5b7a-4c0e-b972-b3be8732dbb6",
+        "name": "Filter5"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -1328,
+          928
+        ],
+        "id": "a599f576-81ce-4640-8fea-68b477b6a495",
+        "name": "Wait3",
+        "webhookId": "4b8de7d8-6f21-40e2-941f-d6a3e40ca765"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -1328,
+          1088
+        ],
+        "id": "9ddc604c-a2d2-4749-b908-a0f3aea8029b",
+        "name": "Wait4",
+        "webhookId": "55e12818-d609-4d07-9b96-b935cb53a450"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -1328,
+          1264
+        ],
+        "id": "92ee1ce3-8458-490c-a036-05e77f1cb645",
+        "name": "Wait5",
+        "webhookId": "68b9dd04-3af3-44a0-81ae-81fd88424812"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "returnAll": true,
+          "filter": {}
+        },
+        "type": "n8n-nodes-base.gSuiteAdmin",
+        "typeVersion": 1,
+        "position": [
+          -480,
+          784
+        ],
+        "id": "61166f14-dbaa-43ef-a2d5-b14e8bdb3b65",
+        "name": "Google Workspace Admin",
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "281f06e4-6710-4009-818b-d35b897be77f",
+                "leftValue": "={{ $json.name.fullName }}",
+                "rightValue": "={{ $('SenhaPadrao').item.json.newNOME }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          -288,
+          800
+        ],
+        "id": "19ec87c0-29d3-407b-9a35-a1b4ee672b08",
+        "name": "Filter6"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1,
+        "position": [
+          -160,
+          672
+        ],
+        "id": "9fcb3498-ec2b-4fbc-9399-c5c778bd6254",
+        "name": "Merge2"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "returnAll": true,
+          "filter": {}
+        },
+        "type": "n8n-nodes-base.gSuiteAdmin",
+        "typeVersion": 1,
+        "position": [
+          -448,
+          1120
+        ],
+        "id": "120f11e4-6dd6-46be-83ee-95364c824ccf",
+        "name": "Google Workspace Admin1",
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "281f06e4-6710-4009-818b-d35b897be77f",
+                "leftValue": "={{ $json.name.fullName }}",
+                "rightValue": "={{ $('SenhaPadrao').item.json.newNOME }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          -272,
+          1120
+        ],
+        "id": "06176368-71a2-48c5-87d4-d08e6ccf489b",
+        "name": "Filter7"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1,
+        "position": [
+          -128,
+          1008
+        ],
+        "id": "a75fc82c-7c42-4604-a622-d5a4925ed42e",
+        "name": "Merge3"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "returnAll": true,
+          "filter": {}
+        },
+        "type": "n8n-nodes-base.gSuiteAdmin",
+        "typeVersion": 1,
+        "position": [
+          -480,
+          1456
+        ],
+        "id": "19d37642-bcc5-4a66-a60c-621f72150c9f",
+        "name": "Google Workspace Admin2",
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "281f06e4-6710-4009-818b-d35b897be77f",
+                "leftValue": "={{ $json.name.fullName }}",
+                "rightValue": "={{ $('SenhaPadrao').item.json.newNOME }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          -304,
+          1456
+        ],
+        "id": "aeceba3a-1a86-4c2c-8d90-ca22928a52e2",
+        "name": "Filter8"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1,
+        "position": [
+          -128,
+          1328
+        ],
+        "id": "d43c09c9-2499-498e-a038-79f2b6578c31",
+        "name": "Merge4"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/user",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+          "options": {}
+        },
+        "id": "9597e117-40b4-457e-9ce5-d99cdc72225b",
+        "name": "Google Workspace Frontline Starter",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1984,
+          1712
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "numberInputs": 4
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1792,
+          1680
+        ],
+        "id": "acd800cf-fce8-4452-92ec-862de3d55ab9",
+        "name": "Merge5"
+      },
+      {
+        "parameters": {
+          "numberInputs": 3
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1792,
+          1216
+        ],
+        "id": "cf118d75-607c-4656-ac69-e7a708715714",
+        "name": "Merge6"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/user",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+          "options": {}
+        },
+        "id": "1e1b3a83-4aad-4484-a93b-e72eed682b94",
+        "name": "Google Workspace Business Starter",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1984,
+          1248
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2512,
+          1312
+        ],
+        "id": "eb699e8d-e67a-4d73-86a2-546fbea81adc",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/user\n",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+          "options": {}
+        },
+        "id": "af4f7339-86a8-469f-b0e0-f3272c2a9daf",
+        "name": "Google Workspace Frontline Starter1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1984,
+          544
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "numberInputs": 4
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1792,
+          512
+        ],
+        "id": "987f3908-e5c5-4751-bfd5-5fd263f0ba62",
+        "name": "Merge7"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/user\n",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+          "options": {}
+        },
+        "id": "3d9066af-297a-42bb-9c56-c8545de5c89f",
+        "name": "Google Workspace Business Starter1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1792,
+          816
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/user",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+          "options": {}
+        },
+        "id": "adede633-4d04-48bc-b027-9b99e9c9eee0",
+        "name": "Google Workspace Frontline Starter2",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1936,
+          2432
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "numberInputs": 4
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1744,
+          2400
+        ],
+        "id": "d00a6da8-00fc-4970-ac63-2f4fc0a6f2a5",
+        "name": "Merge8"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/user\n",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"userId\":\"{{ $json.primaryEmail }}\"\n} ",
+          "options": {}
+        },
+        "id": "98a8cea0-5375-4392-acbd-1b1d39e0fef3",
+        "name": "Google Workspace Business Starter2",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1728,
+          2096
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2368,
+          2256
+        ],
+        "id": "be4e0516-20a6-43c2-aa85-67fbbe110a44",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2368,
+          640
+        ],
+        "id": "304b3251-3c98-40cb-9312-162b50b6c005",
+        "name": "No Operation, do nothing3"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          768,
+          2016
+        ],
+        "id": "f164c434-098a-421a-bd2a-ab463c397569",
+        "name": "No Operation, do nothing2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "4d009932-08ff-475b-b6ad-beda3501c1f3",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -640,
+          672
+        ],
+        "id": "9d162d13-4bcc-401c-8f55-6e276ab8eb0c",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "e2607b03-2826-4efb-8b65-d6600dc2c943",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -656,
+          1008
+        ],
+        "id": "a649fc08-9526-412d-8c74-0f0eedfbeeee",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "e64a01d2-b643-4ed0-93f4-ae39311d6d66",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -656,
+          1328
+        ],
+        "id": "457284da-f224-4995-9d10-8e046baa685f",
+        "name": "If2"
+      }
+    ],
+    "connections": {
+      "separaEmpresa": {
+        "main": [
+          [
+            {
+              "node": "Wait3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait4",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IdContasGoogle": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IdContasGoogle3": {
+        "main": [
+          [
+            {
+              "node": "Wait2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "IdContasGoogle4": {
+        "main": [
+          [
+            {
+              "node": "Wait1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "criaEmailGaspar": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "criaEmailMDG": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "criaEmailACG": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Agente": {
+        "main": [
+          [
+            {
+              "node": "Merge7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Coordenadores": {
+        "main": [
+          [
+            {
+              "node": "Merge7",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Lider": {
+        "main": [
+          [
+            {
+              "node": "Merge7",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "/ACG/Precatório/Agente de Vendas": {
+        "main": [
+          [
+            {
+              "node": "Merge6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/ACG/Precatório/BKO": {
+        "main": [
+          [
+            {
+              "node": "Merge6",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "ACG/Precatório/Gerente": {
+        "main": [
+          [
+            {
+              "node": "Merge6",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "/ACG/Consignado/Agente de Vendas": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "ACG": {
+        "main": [
+          [
+            {
+              "node": "/ACG/Precatório/Agente de Vendas",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/ACG/Precatório/BKO",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "ACG/Precatório/Gerente",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/ACG/Consignado/BKO",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/ACG/Consignado/Agente de Vendas",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/ACG/Consignado/Lider Comercial",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/ACG/Consignado/Coordenadores",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/ACG/Consignado/BKO": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/ACG/Consignado/Coordenadores": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 3
+            }
+          ]
+        ]
+      },
+      "MDG": {
+        "main": [
+          [
+            {
+              "node": "/MDG/Gerente Comercial",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/MDG/Agente de Vendas",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/MDG/Coordenação",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/MDG/Lider Comercial",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/MDG/BackOffice",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/ACG/Consignado/Lider Comercial": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "/MDG/Agente de Vendas": {
+        "main": [
+          [
+            {
+              "node": "Merge8",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/MDG/Coordenação": {
+        "main": [
+          [
+            {
+              "node": "Merge8",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "/MDG/Gerente Comercial": {
+        "main": [
+          [
+            {
+              "node": "Google Workspace Business Starter2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/MDG/Lider Comercial": {
+        "main": [
+          [
+            {
+              "node": "Merge8",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "GASPAR": {
+        "main": [
+          [
+            {
+              "node": "Agente",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Coordenadores",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Lider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "/MDG/Gerente Comercial1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/MDG/Gerente Comercial1": {
+        "main": [
+          [
+            {
+              "node": "Google Workspace Business Starter1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "/MDG/BackOffice": {
+        "main": [
+          [
+            {
+              "node": "Merge8",
+              "type": "main",
+              "index": 3
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Filter3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait1": {
+        "main": [
+          [
+            {
+              "node": "Filter4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait2": {
+        "main": [
+          [
+            {
+              "node": "Filter5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "criaEmailMDG",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter1": {
+        "main": [
+          [
+            {
+              "node": "criaEmailACG",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter2": {
+        "main": [
+          [
+            {
+              "node": "criaEmailGaspar",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "SenhaPadrao",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SenhaPadrao": {
+        "main": [
+          [
+            {
+              "node": "separaEmpresa",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter3": {
+        "main": [
+          [
+            {
+              "node": "GASPAR",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter4": {
+        "main": [
+          [
+            {
+              "node": "ACG",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter5": {
+        "main": [
+          [
+            {
+              "node": "MDG",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait3": {
+        "main": [
+          [
+            {
+              "node": "Filter2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait4": {
+        "main": [
+          [
+            {
+              "node": "Filter1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait5": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Admin": {
+        "main": [
+          [
+            {
+              "node": "Filter6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter6": {
+        "main": [
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "node": "IdContasGoogle",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Admin1": {
+        "main": [
+          [
+            {
+              "node": "Filter7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "node": "IdContasGoogle4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter7": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Google Workspace Admin2": {
+        "main": [
+          [
+            {
+              "node": "Filter8",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge4": {
+        "main": [
+          [
+            {
+              "node": "IdContasGoogle3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter8": {
+        "main": [
+          [
+            {
+              "node": "Merge4",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Google Workspace Frontline Starter": {
+        "main": [
+          [
+            {
+              "node": "Merge ACG",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge5": {
+        "main": [
+          [
+            {
+              "node": "Google Workspace Frontline Starter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge6": {
+        "main": [
+          [
+            {
+              "node": "Google Workspace Business Starter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Business Starter": {
+        "main": [
+          [
+            {
+              "node": "Merge ACG",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge ACG": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge7": {
+        "main": [
+          [
+            {
+              "node": "Google Workspace Frontline Starter1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Frontline Starter1": {
+        "main": [
+          [
+            {
+              "node": "Merge GASPAR",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Business Starter1": {
+        "main": [
+          [
+            {
+              "node": "Merge GASPAR",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge GASPAR": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Frontline Starter2": {
+        "main": [
+          [
+            {
+              "node": "MDG2",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge8": {
+        "main": [
+          [
+            {
+              "node": "Google Workspace Frontline Starter2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Business Starter2": {
+        "main": [
+          [
+            {
+              "node": "MDG2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MDG2": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Google Workspace Admin",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Google Workspace Admin1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Merge4",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Google Workspace Admin2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version fbf9814d",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2024-11-07T12:25:14.506Z",
+      "createdAt": "2024-11-07T12:25:14.506Z",
+      "id": "o0b1eCtfXeRfItda",
+      "name": "Gestão Acesso"
+    }
+  ]
+}

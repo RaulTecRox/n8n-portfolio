@@ -1,0 +1,601 @@
+{
+  "updatedAt": "2026-05-19T14:24:37.687Z",
+  "createdAt": "2025-06-24T14:07:06.260Z",
+  "id": "Sz3WgrgFBMlJWhDf",
+  "name": "Notificacao - log acesso rpa66-pln-vm",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 8
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "subject:\"Log RDP\" from:suporte@mdgintermediacoes.com.br"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "55451a31-7724-4dee-9874-bc726ccbed66",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "354YsBCaj8SFvfOe",
+          "name": "Gmail Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        -160
+      ],
+      "id": "ac7948b9-d89a-49f8-ad00-4c71f5ef79ec",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        672,
+        160
+      ],
+      "id": "b2ba2003-4a0f-406d-a842-7a0e8e7a093a",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        160
+      ],
+      "id": "705e86fe-dccb-49d1-997e-1a41dbb9f1a6",
+      "name": "Mark Read Gmail",
+      "webhookId": "da90d406-886a-4b61-8dc3-1d4e4d7bb2c7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "354YsBCaj8SFvfOe",
+          "name": "Gmail Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "66fdd67b-7d26-44ff-b151-c81f9a91db4e",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "0d90f44d-94f3-4889-824c-47f2b52263a9",
+              "name": "threadId",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            },
+            {
+              "id": "dd8c7afa-d653-42af-ac91-5e2cd21db0aa",
+              "name": "subject",
+              "value": "={{ $json.headers.subject.split(':').last().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "278b9b3a-8d71-4da4-97ab-2eea8264fc3a",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "2eb4b150-18a3-42a4-99ab-17f3fc0027da",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega o texto do primeiro (e único) item\nconst text = $json[\"text\"];\nconst lines = text.split('\\n');\nconst logs = [];\n\n// Regex corrigida para corresponder ao seu log\n// (Removemos a parte 'src-mac' que não existe)\nconst regex = /(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) firewall,info RDP-ACCESS: .*?proto TCP \\(SYN\\), ([\\d.]+):(\\d+)->([\\d.]+):(\\d+),/;\n\nfor (const line of lines) {\n  // Tenta encontrar a correspondência na linha\n  const match = line.match(regex);\n\n  // Se encontrar (match não for nulo)\n  if (match) {\n    // Adiciona os dados extraídos ao array 'logs'\n    logs.push({\n      timestamp: match[1],\n      source_ip: match[2],\n      source_port: match[3],\n      dest_ip: match[4],\n      dest_port: match[5],\n    });\n  }\n}\n\n// Retorna os dados formatados\n// O n8n criará um item de saída para cada log encontrado\nreturn logs.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "5cb2d22c-0837-4067-9d78-731393de1abe",
+      "name": "Code Formata texto"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -160
+      ],
+      "id": "f775cce0-4b5e-4f50-906f-09ed2424a1f2",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendMedia/CL121A",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "=BD1C059F3C4C-407B-8C87-DCE634D1E752"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"5519996109532\",\n  \"mediatype\": \"document\",\n  \"mimetype\": \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\",\n  \"caption\": \"log de acesso do dia {{ $now.format('dd/LL/yy') }}.\",\n  \"media\": \"{{ $json.data }}\",\n  \"fileName\": \"{{ $('Dados').item.json.subject }}.xlsx\",\n  \"delay\": 10000,\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}\n",
+        "options": {}
+      },
+      "id": "6b8568cf-354f-43b4-9542-989e8115c66c",
+      "name": "SendMedia1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        -160
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        -160
+      ],
+      "id": "211acf4a-5f0d-4d27-ac88-79aa9c4725db",
+      "name": "No Operation, do nothing1"
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Read Gmail": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Code Formata texto",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mark Read Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Formata texto": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "SendMedia1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendMedia1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "saveDataSuccessExecution": "none",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Gmail Trigger": {
+      "Gmail Trigger": {
+        "lastTimeChecked": 1782096904,
+        "possibleDuplicates": [
+          "19eed40c2df6436f",
+          "19ee81a6ae0f4c29"
+        ]
+      }
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "aa5b551f-33ae-4be8-9d26-47f6f4feac78",
+  "activeVersionId": "aa5b551f-33ae-4be8-9d26-47f6f4feac78",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-24T14:07:06.260Z",
+      "createdAt": "2025-06-24T14:07:06.260Z",
+      "role": "workflow:owner",
+      "workflowId": "Sz3WgrgFBMlJWhDf",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-05-19T14:24:43.061Z",
+    "createdAt": "2026-05-19T14:24:37.611Z",
+    "versionId": "aa5b551f-33ae-4be8-9d26-47f6f4feac78",
+    "workflowId": "Sz3WgrgFBMlJWhDf",
+    "nodes": [
+      {
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {
+                "hour": 8
+              }
+            ]
+          },
+          "simple": false,
+          "filters": {
+            "q": "subject:\"Log RDP\" from:suporte@mdgintermediacoes.com.br"
+          },
+          "options": {
+            "downloadAttachments": true
+          }
+        },
+        "type": "n8n-nodes-base.gmailTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "55451a31-7724-4dee-9874-bc726ccbed66",
+        "name": "Gmail Trigger",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "354YsBCaj8SFvfOe",
+            "name": "Gmail Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          640,
+          -160
+        ],
+        "id": "ac7948b9-d89a-49f8-ad00-4c71f5ef79ec",
+        "name": "Convert to File"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          672,
+          160
+        ],
+        "id": "b2ba2003-4a0f-406d-a842-7a0e8e7a093a",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "operation": "markAsRead",
+          "messageId": "={{ $json.id }}"
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          448,
+          160
+        ],
+        "id": "705e86fe-dccb-49d1-997e-1a41dbb9f1a6",
+        "name": "Mark Read Gmail",
+        "webhookId": "da90d406-886a-4b61-8dc3-1d4e4d7bb2c7",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "354YsBCaj8SFvfOe",
+            "name": "Gmail Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "66fdd67b-7d26-44ff-b151-c81f9a91db4e",
+                "name": "id",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "0d90f44d-94f3-4889-824c-47f2b52263a9",
+                "name": "threadId",
+                "value": "={{ $json.threadId }}",
+                "type": "string"
+              },
+              {
+                "id": "dd8c7afa-d653-42af-ac91-5e2cd21db0aa",
+                "name": "subject",
+                "value": "={{ $json.headers.subject.split(':').last().trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "278b9b3a-8d71-4da4-97ab-2eea8264fc3a",
+                "name": "text",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          224,
+          0
+        ],
+        "id": "2eb4b150-18a3-42a4-99ab-17f3fc0027da",
+        "name": "Dados"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Pega o texto do primeiro (e único) item\nconst text = $json[\"text\"];\nconst lines = text.split('\\n');\nconst logs = [];\n\n// Regex corrigida para corresponder ao seu log\n// (Removemos a parte 'src-mac' que não existe)\nconst regex = /(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) firewall,info RDP-ACCESS: .*?proto TCP \\(SYN\\), ([\\d.]+):(\\d+)->([\\d.]+):(\\d+),/;\n\nfor (const line of lines) {\n  // Tenta encontrar a correspondência na linha\n  const match = line.match(regex);\n\n  // Se encontrar (match não for nulo)\n  if (match) {\n    // Adiciona os dados extraídos ao array 'logs'\n    logs.push({\n      timestamp: match[1],\n      source_ip: match[2],\n      source_port: match[3],\n      dest_ip: match[4],\n      dest_port: match[5],\n    });\n  }\n}\n\n// Retorna os dados formatados\n// O n8n criará um item de saída para cada log encontrado\nreturn logs.map(item => ({ json: item }));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          0
+        ],
+        "id": "5cb2d22c-0837-4067-9d78-731393de1abe",
+        "name": "Code Formata texto"
+      },
+      {
+        "parameters": {
+          "operation": "binaryToPropery",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          864,
+          -160
+        ],
+        "id": "f775cce0-4b5e-4f50-906f-09ed2424a1f2",
+        "name": "Extract from File"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendMedia/CL121A",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "=BD1C059F3C4C-407B-8C87-DCE634D1E752"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"5519996109532\",\n  \"mediatype\": \"document\",\n  \"mimetype\": \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\",\n  \"caption\": \"log de acesso do dia {{ $now.format('dd/LL/yy') }}.\",\n  \"media\": \"{{ $json.data }}\",\n  \"fileName\": \"{{ $('Dados').item.json.subject }}.xlsx\",\n  \"delay\": 10000,\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}\n",
+          "options": {}
+        },
+        "id": "6b8568cf-354f-43b4-9542-989e8115c66c",
+        "name": "SendMedia1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1104,
+          -160
+        ],
+        "alwaysOutputData": false,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1328,
+          -160
+        ],
+        "id": "211acf4a-5f0d-4d27-ac88-79aa9c4725db",
+        "name": "No Operation, do nothing1"
+      }
+    ],
+    "connections": {
+      "Gmail Trigger": {
+        "main": [
+          [
+            {
+              "node": "Dados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark Read Gmail": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dados": {
+        "main": [
+          [
+            {
+              "node": "Code Formata texto",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Mark Read Gmail",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code Formata texto": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "SendMedia1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SendMedia1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version aa5b551f",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

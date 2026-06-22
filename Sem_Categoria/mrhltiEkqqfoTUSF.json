@@ -1,0 +1,617 @@
+{
+  "updatedAt": "2026-06-08T17:21:09.502Z",
+  "createdAt": "2026-05-04T17:59:33.952Z",
+  "id": "mrhltiEkqqfoTUSF",
+  "name": "Image to Text",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "econsig/image2text",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        -112
+      ],
+      "id": "1d178697-f228-4761-8375-766c8d104666",
+      "name": "Webhook",
+      "webhookId": "3d92299f-16b1-42cd-b9e9-b1270eb5d97b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('Webhook').first().json.body;\n\nreturn {body}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -112
+      ],
+      "id": "2d949842-b9d3-48cc-af87-a1c2adc3b931",
+      "name": "ValidatePost"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Segue Imagem (CAPTCHA)",
+        "options": {
+          "systemMessage": "=# Extrator de Texto de Imagem CAPTCHA com Ruído (Risco Central)\n\n## Descrição da imagem\n- Formato: base64 (codificada)\n- Extensão: .png\n- Conteúdo típico: **5 caracteres alfanuméricos** (letras maiúsculas A-Z e números 0-9)\n- Ruído presente: **Sempre há uma linha/risco horizontal atravessando o centro da imagem**, sobrepondo parcialmente os caracteres\n\n## Instruções de extração\n1. Ignore completamente qualquer linha, risco, traço ou ruído visual presente na imagem\n2. Concentre-se APENAS nos caracteres alfanuméricos visíveis (A-Z, 0-9)\n3. O ruído (risco central) NÃO faz parte do texto — desconsidere-o totalmente\n4. Retorne APENAS o texto exato de 5 caracteres extraído, sem formatação, sem explicações e sem comentários\n\n## Regras críticas\n- NÃO inclua o risco/traço como caractere no resultado.\n- NÃO confunda partes do risco com partes de letras ou números.\n- NÃO inclua espaço entre os caracteres. \n- Se um caractere estiver parcialmente obstruído pelo risco, use o contexto das partes visíveis para inferir o caractere correto.\n- A saída deve conter EXATAMENTE 5 caracteres, nada mais, nada menos.\n- Remova espaços entre os caracteres. \n\n## Exemplo de raciocínio (NÃO incluir na saída)\n- Se a imagem mostra \"A\" com um risco no meio, o caractere é \"A\", não \"A\" + risco\n- Se o risco cruza o \"8\" no meio, ainda é \"8\"\n- Se o risco cruza o \"0\" no meio, ainda é \"0\"\n\n## Saída esperada\n[5 caracteres alfanuméricos EXATOS - sem espaços, sem formatação, sem explicações]",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        -112
+      ],
+      "id": "edb3c66a-46fc-445f-adbf-2cf60bf2700d",
+      "name": "AI Agent",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1024,
+        -208
+      ],
+      "id": "88016071-0fb1-41c2-a910-8449dedf6afa",
+      "name": "Respond to Webhook mode Json"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "body.base64_file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        -112
+      ],
+      "id": "9d6e1074-cd92-4685-b6fe-4f3f10de87fd",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.error }}",
+                    "rightValue": "Insufficient quota detected",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "75a4f2ac-2d17-409d-b4b6-828c331b4ec9"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "402"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        -16
+      ],
+      "id": "0c07ab17-fd0f-47ce-9876-10ab5bc04629",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n\"message\": \"Insufficient quota detected\"\n}",
+        "options": {
+          "responseCode": 402
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1248,
+        -112
+      ],
+      "id": "c32d1eec-30b8-4fe0-a3b8-82bcb4514d2c",
+      "name": "Respond to Webhook Insufficient Quota"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n\"message\": {{ JSON.stringify($json.error) }}\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1248,
+        80
+      ],
+      "id": "feb00cf8-9454-4e41-a77e-114b44a1aa5e",
+      "name": "Respond to Webhook Generic Error"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "vision-model",
+          "mode": "list",
+          "cachedResultName": "vision-model"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        96
+      ],
+      "id": "1d19394b-6aa9-4e8f-a1a9-dad223c0e5bc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "DHx9N7W9uzOGEobG",
+          "name": "Litellm"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "ValidatePost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ValidatePost": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook mode Json",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook Insufficient Quota",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook Generic Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "27011",
+            "user-agent": "python-requests/2.34.2",
+            "accept-encoding": "gzip, deflate",
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "base64_file": "iVBORw0KGgoAAAANSUhEUgAAAeoAAACgCAYAAADD2S+EAAAQAElEQVR4AeydiUNUR77vf9XNvqOiIMqigAskUceYzZh9mUySyZ2byb3vL3zvzs1kZrI4mSRjjFlM1KgxoIAiiPsKKiCb8H6fwiZtS9MLDXTDr6Xs6nNq/Vad+q1VJzBpH0PAEDAEDAFDwBBIWwQCYh9DwBAwBAwBQ8AQSFsEMotQpy2M1jBDwBAwBAwBQ2B+EDBCPT+4WqmGgCFgCBgChkBKEDBCnRIYZyzELhoChoAhYAgYAnNGwAj1nCG0AgwBQ8AQMAQMgflDwAj1/GGbWSVbaw0BQ8AQMATSEgEj1Gk5LNYoQ8AQMAQMAUNgCgEj1FM42P+ZhYC11hAwBAyBZYOAEeplM9TWUUPAEDAEDIFMRMAIdSaOmrU5sxCw1hoChoAhMAcEjFDPATzLaggYAoaAIWAIzDcCRqjnG2Er3xDILASstYaAIZBmCBihTrMBseYYAoaAIWAIGALhCBihDkfD4oaAIZBZCFhrDYFlgIAR6mUwyNZFQ8AQMAQMgcxFwAh15o6dtdwQMAQyCwFrrSGQFAJGqJOCzTIZAoaAIWAIGAILg4AR6oXB2WoxBAwBQyCzELDWpg0CRqjTZiisIYaAIWAIGAKGwKMIGKF+FBO7YggYAoaAIZBZCCzp1hqhXtLDa50zBAwBQ8AQyHQEjFBn+gha+w0BQ8AQMAQyC4EEW2uEOkHALLkhYAgYAoaAIbCQCBihXki0rS5DwBAwBAwBQyBBBBaZUCfYWktuCBgChoAhYAgsMwSMUC+zAbfuGgKGgCFgCGQWAkaoExgvS2oIGAKGgCFgCCw0AkaoFxpxq88QMAQMAUPAEEgAASPUCYCVWUmttYaAIWAIGAJLAYFFI9R3794UC4aBzQGbAzYHbA4kOgeWAvFNpA+LRqgTaaSlnR8EJiYmZHR0VPpv35be873S0dkhbSfb5NfW1oRDa1ubtHd0SHd3t1y9dk2Gh4cTarQlNgTSHYGRkRG5fv269Jw7N/2stLYl/qyEnq+Tp07Jma4uuXT5sgwMDsr9+/dlcnIy3WGw9i0CAkaoFwH0dKlyfHxcF4gBT6S/++EH+fjTT+R///qh/N//+X8Jhf/3l/+Rv3z4F/nHJx/Lvv1fS6sS+tt37qRLN60dhkBKELijc/pUe7sc+PaAfPLZpzrnPxTmfqLPSyj9X//2kXzx5Rdy9NhRuabMLUwzzHNKGmuFLCkEjFAvqeGMrzNjY2NqdrgrV69elTNnzkibSgXhkgHxRANSAgSacKbrjNy4cV3u3RtSKWE8vkZlVCpr7HJCAEkXafpWX5+cOdslv+rz4ud72Heiz0soPWW1qTbqVPsp6e3tlaGhoeUErfU1TgSMUMcJ1FJKhlr68pXLXs194Ltv5eCPP8r58+dlUNVvSNmJ9hV1HZIAi8yVa1fl/IXzclnVebdu3fKq9UTLs/SGQDohwDNx9+5dVXtf88T00qVLMjAwIFxn7ifbViRonpHTyth+9/33cujIYeF3suVZvqWLgBHqpTu20z1DGrh586acU469vaNdPDev6um2Uye9ra1XifRttVMjaSe78JBvbHzME3vUeKfPnJaTKiV0nT0rV65ekSGVriHmpJtumEUWBAGrJDEEmKc8CxBn7MfMYSTeztOn/VzmOvfnOpdDkjplOeckGAyKc07sYwhEImCEOhKRJfgb7p9FBq797x9/LH/7x99l/4Fv5OTJk9Lff1tYmFLZ7f7+fjl2/Ljs/+Ybted9K7+c+MVLCixMc13cUtlOK8sQmAkB5ilapytXrsjRo0fl6/1fyxdffZVyiTcQCEhOTo5UVVXJnuefl93PPierVq2aqUl2bZkjsCQINSrb7p5ulRTb4gqkJc9SH3sWG6Tb7p4ewQnGS9JqV2vv6PCeq9dv3BCk7VTjMDwyopLHVenResH68uUrMnxvONXVpKw85gLtxOO9TZmXU6dOSYdidFrt92CHWeDS5Uuq+rwuaB7u3buntvf7Kas/XQtC0qO/fWqbhdnr6++TnnM90tXVJRdV/Xur75b37oewpY4BW3w0mA9nu7unbNH6vKB56jzdKai8eaZS1cKsrCwpLCyU1asqZENdvdTU1EhBQYHYxxCIRGBJEOpr168p17tf8DyOJ3y9f7+QJxKMpfYbL9XWk21yWG1fECFsx9iRF6qfE5OT3o7HQu5UekhX1R5zgTnxlw//Vz786EP56O9/k48//Vg+/9fnqhXYrzb8g/KzSlao8s9fuCAQLuyLC4XjYtXDXGHOnO0+K1evTTFe3xw44KXLI0eOyFk1a/Tf7vdjnGqtzGL1mXoxE/1w8Ac/9p2dncLv+RjvnOwcKS8r9yE7J4eqLRgCMyKwJAg1HHC3StR4YsYTkCzxtGxte1gCpwzKmhGpDLqIRHvt+nXpVumnvb1dOpAGVCKEcOMAs1BdgUCz2FPvbV3QkcoWsv7IfjK2jHHkuE/NhbD9sCpFMY9aH3zjmYs3O8FfR+pWXEMELGSzjKwv3X+DBxJym/aHgNalU+2w2GTP9Z4TsMI2Cw4E33fFxMf1GyeoGzdvyr1h1TBM3E/37kZtH3NycGjQa0zOqLYAhqy9s0O1B+fk5i3t3ywalKiFxnEjNzdHKipW+UA8jiyWZJkisCQItQpu3s4KVx9PYFvSPrU7/eXDvzwkhSNVXVPpPNPnAoTx5KmTcvTYMek8c9pvw0qlyi5efJBC+tRejdq4W9XgFy5dFNTG8eZPdTrGljGOHHfmAnMCxoJFG3PA4NCQ0HbslD3nzkmnMjvH1db+3Q/fyZdffSmf7t0rX+3bJxBvPOgXA9+54nP9xnXZrxIyWoQPP/qr913Y+0/69ZWwG+DHQz/KkZ9/lh8PHZJ9X38tP/70o1f/3rh5w2/r6+w87b3779y5K+NjmbsNb2R0RG6oGQgC/cVXXwhaAw42mSu+sfLn5efLWrVPY6POz8uPldzuL2MElgShZvwg1tjJ4gl3BwbkLDao1jApSuNIClPS1cOSdusDyRsJAymE+tI50MZu7R+e19io+Q0RirfNWcGgFKntrLSkVEqKi6VAFxTU1vHmD6VjLKiXQDx0fb6+6SdjFBqvyO+psX14zJESmQvMCdoIo0d7sc9CfAcGB7xd+uatW57hwV59puuM2vxPeiKNtI3WgnrBmjzz1b9ky0XihZnoOtvlT4+DiUOC9kElYzBo1W8C/YH5IODLwI6AixcvqnTdIxf0G5xgtrBPoxJGSzI6MuIZ5WTbF5kPZglNDMSSOUz7wgPjNTA4GJkt4d+/1XND8EegzwTGkrmUcIFxZgg9X6tWrFRCvVZWr14tubm5ceaeSzLLm6kILBlCnegAsCBHBqSqfTNI2iEJDGkMqSzRuhY6PcTi8pUrgjRIPNH68/LypHJNpdTW1Mi66nXeEzU3CRuad5YpKJBVK1dNlbW2WvKV6Ms8fRgbxig0XpHfjC1jHDnu/E6kSaQHV+pjYT+okubBHw9K68lWuXMn/U5kC3nhf6GagI8/+Vjt8B9p+Ku3wTJPIFghxoT242QIUb569Zp3FksEm1SkRRMDE4CE+8/PP3/klLx/f71PYIrmWhf1IEnjHHdYbe5oTGDIwAOmba7lR8sfer5wHqvWZ2KlEuycJJ6vaOXb9aWHwLIl1AwlD2N4QFqAWw/n3sPjSBxt3p7XJnz3nOvx+4YpKx0CCw/qWhafvr5b04cyxNs2nFtWlK+Q9evXy6ZNm6SlpcWH+vp6KSwqireYR9IFs4JSUFDoPVwh3o8kSPICUg/ST+sDjUc0iTk0howtYxw+5sQTrZ48SN1IfdeuX/e2zFMd7d5TvPd8r3c+Qn2eaLlzTQ8DwRxAbQ9xRiLFU7mn55xK0u3TGgCYi1aVoD0ed+96aZi8ECjaTb+wu4Mv/ZxruxLNT53su+d0O+zgtPWhgPZLQ/i4xiNh00cYktu3b3uNGg6WrTp3sMPjGAcTh7aA8U20zbHSO+cEZre8vFzWrVvnn6+GhgZZpTbqAmVmU/lcxGpLpty3dv6GQOC3qMVAgIc5Wrh67Zr3Luc87A8/+nDKlqV2PvKlQ2CB7lFb8BQDMZRwk4qUGLN47Ni+Q57atUuefeZZeX73bnni8SekrKws4cMYWPhp0927A2qbHvKnlIFtwg2LkuHa9anxCEnO+1QbwmJLHdFClKLmdBnpGunzTFeXnPi1Ve3Zpz2TNKdCk8js8VaVMIxaj9rVT546JUeO/izHfjkuPUqsb9y8KRDh0bFRgWCRfj6IUhJNTygL0jRSdejMbOJci1UIDABjBTO1T6Vyzqb/at9X8suJE4L3eqz8yd53zgl7pktKSqRhw0bZvm277HrySWneulW4JvYxBGIgkNGEGi4aqQB7LNx/jL7GfZvFa6aAPe5s91kJcfInT530izK2P7xkseWxjQX7HWmRTlgc4q44yYTUcW942EtyZ9R+elbt0/Hggbpt1cqVXi29+YEE/Vhzi2zZvEXq2NepknVtTa1sUIl6c9Mm2aShXq/Ha1PDro2aLz8/z5+6lGT3vNYiXHJGCiJEStD0eyaJOTSWydYfKx/4g/cdlU6RyEbHxryUGitfsvfpD4wI8wsNCse10nfefsYhNiGJmXlKnDlx4+YNZZbueQJNXgLlJNOGvNwp00h1dbUgIearOYOxTqasZPLgoT01H1qlVTUD9JFAf2cKpEF6Bh8kZwIe7gQ83HlmwTKZtsyWB0m5trbWE+SW5mavnUJLtXnTZv98ra5YLWA5Wxl2L1MQmN92ZjShhouGmyYQn1+oxL+CjgUOSYRwTdWePx36SeDKD3x3QA4dOeSJOAsB0jdEg3Tz3S4IA6pOGAUcgKh/YHAgZrU4irFo7Hl+j7z37h/lnT+8LTt37nzk4IWKVRXywp498u7b78grL70kj6tKvLS0NGb5LODrdDGvUYJPehgDJIuYGSMSXIuQnGeToCOyLuhP+ltdvVbWaSA+X5VDYJlX2JN7VINy9PgxQULEY/uzz/fKl//+Sn5QmzknwuH1n6yvQrT2o13Zvm2b17psqN8gK1as8CdsRUs/39d59lkDQhJ25DdvuPrLhx/Kp599Jt8f/EE6OjuF5wUMwXK+2ldRUSEv7nlB/vyf78sH7/9Z/vD7t2TXzieVSNdJoaq756teK3fpIZDRhBopBmka7houeyGGhwebAMHGjndWJWy4eR8ecPdw9XDxSDds6+k51yMQGwj32HjqtrGgxuw9f17wOkZiaO/skAscyNHf5yWnaHhkZ2d7VXZ19TovJSNFt6gkvampSarXrpUyJcI5miaUn9OTkKRbWqakgqbGJllbWeWlKQhwSXGJFBcXC/ZtnM9wkqmqrFSCNVU+izlpkLqcc6Fi4/724zzDPvmzqjkAU8aDEHeB85SQniXRvZitoW8E7M8QGOzOSMltp9q8RBmab/hNdCgROqtzknmApMhLHtDuQJRiVhRnArQklYzv2mod83LvIMjYxpk9ajLayJzGVnuStgAAEABJREFUPo2WImrCiBs8+6wBPHMzhzbh+cA5DUa293yvamkGPOMdUVRKfvJ8lZeVy/oHzxfPVvPWZuG5qVbGtbysbFEZm5R00gpZUARSTagXtPGLXRkLC/bXKS/ZS3Km66xfOA8dPiRIOJ9/8bngtcq+TIh2qiWbG2pz/OHHH+Szf+6VL778UjiXuE+JdCxcILwcWdisNrLGxkZZq8R5NgnQOedV16jyUHujDt+4caM0aCCOc8w6XbQbGxrkmaeflj27nxfs3E88/rj/3qQqcwi5JPlh6x2M0UwhySLnJRtq74sXL/m9xmyJSm0lkwJBwsTy87Gjfrz/9cUXgkYHlS4aHPwBmJOprXfhSoMRwdubQDzVNVPmDTUBYMMfGR1NdfHT5RUVFsmGDRuEZ6RU7dIwMc7Bxk0nsYghkBACRqgTguvhxBAOHv6hoXuCdN3X16eS83V/DjIHfHSqdIMdGy6f/anET5/u9FIv9kwceijj4VJj/0K6IgyqehuNAuUiYbFXFmeZaCUEAwHJz8sTDv7HaQwijeSLQwtSQLR8zjnvDJOTnSMsQhWrV0tjQ6MgiT+manACtje+uYYEwW88x2tranx9c90nCrGmz+FB0uwzMjIqMG3Xr98Q4nNtHnOD+YWXcq9qTphPSM3Mp6nzp08LR5pC2AYHB70WBXzmWu9i5UeKRprmOcKMc+XK1ZRuD4OJGRoakqF5OmkshFtefp5wkMnaqrUCc4u5xzkj1CF87DtxBAKJZ1lCOea5KywMqB1RVZ44cUK++/47wZb2o9q1uQZRZXFKphks4hB6pLh4y8nJyfH2xPUPtocgVSNdJ1p/cVGRNKma/Em1tz379DOy+7ndghS983c7pa6uTlXe1apSb5Jky0+0PemSnvGAqN6+c9sTzbm2KzR/ent75fsffvBz59Dhw/5wjv7+fn/GdiYT5mj40LfjJ34RAvFo6dL1OmYj7PiE2RjgdG2/tSv9EMhIQj2g0sNZtU8iTSJJpB+sUy3ipRQ4emFHRTWJlI2naevJNkEK7la7KwsRUhOEdypX7P9Hx0aF7SRIHkgILOizLdhw9RDnzZs3S7PaylBFr8NWVl6elK0M6Rhvcext7LlGasa7FRU6ixMSOoec4BEMcxC7R5mfwjknuXm5snLlSs8MxdNvxo3xg7gzlmhE8GnoPH3avwQDJyk0JdhXW9vaBPsqL8nA7oyX8mxjPh+I4qHMQTiMO2OLuQS1bqrrGh4ZlitXr/qT4OhnqspHsmVcCMRTVW5kOeyJZqsjDC3xyPv22xBIFIFAohnSIT0LGJIpgXg6tCmeNrAw46l77tw54TSrH3/6STiSEqmbezHKmL7N4n5OpSwC8ekbM0RYkCpWrfJ7ot968y159ZVXBI9dCOoMye1SEgg457xpAObkyZ07Bc3CCmWCJMYHBg17KeprmM5jx4/Lp3s/k72f7/W7B9o72+W7H74XNDAXLpwXmNJE5kmM6hO+zZxh7rDHHgfBxfb2TrQDEE0IKIF4ovnjTQ/zkp+XL/PFyMTbDku3dBDISELNgsXChkSKg81chwNiBpdNID7X8qLlR2pmcUaCwgZ38fIl7yCE+jse6Yg0hMHBIUEd2nu+V2Yj1KjdkG6r1Fa2qbFJtm7ZIhs3bJSqyiphIYnWznS5PpAhmhPwcs6pPTLfe83jOc8izfWZAvNgfHxMUJF39/QIjoZIzH7nQGur+O+2Vmk7eVKwS/eqffr2nTtenc74z1TmQlybb29vzh+4eOmSpNI27ZzTcSnw5hh2JHCGfTAQkPmwGLPlql5NPw0bG7xmBbwg2gsxNlbH0kYgsLS7F1/v4K4haATi8eWaWyoYguysbMnLzxceaH7HUyKL/ODggLB4I43jGBMtH8QCosE+5vIVK3w9C7ZwRGtUAtfRlqA1IRBPIOsiJJ30231weotV+cTEfe8kRZ9O/HpCtSsH5afDh1S13S44GUKUIdZsu7rV1+cPT1lMAh2rP3O9D/OKQxyHjxxSHFJlm3bOCc/z6ooK2fXkLtm5Y4cUFhYJHt/3Jybm2uxH8rMj4uWXXvJaK5653Nxcr2l5JKFdMAQSRMAItQIGQcNLEzsuKsv8vDz/gDvn9G7q/1h0kaKxv+EtPqCEd/x+9P3VOCmR7srVK8LbhNiOgyqURZxFLloL81X9Vr222p8tzPYoJOx4GYJoZS7k9UGVqFOpOcFxDomHU9hwemNhLcgvSNFi6sQ5QnSEcPq7cuWKQJBOnjolpzRwqh1M14WLF+TGzZv+mFXmxbXr1wVCTh7mS/RSM/8Oz8LQvSHp67vld0xwDCwYzLVnzjEeTlB1M+7sQuCUPfwzOIwk9Ew45+Zalc8PE4BJYOOGDf5oUJiETHrefCfsv7REwAi1DgsPckNDo6qGt/oXUmB7C0m5zqXmIdZqpv+QilmAcQriFDEORBlSdfZ0gogIaS9dvuzPJN77+T/l3/v2+QUNAk5ZEcmnf+azTWTtWqnWQHz6xjKMsGBWrlkjL7/4snAK28svcsLaY37rWE5OzpyItXPO56cOkejzBcdBTgtj/BhH7M84GWJ3XurEWBbxEwxmSb4yZKi+2ef//PN7vFMlzo8wb4ybc9HHTeL4OOfEOacpQ0Gj9mcIpAgBI9QKJLbplaoaRl3FmdbsAWY/8Ba16cIhr9EFPl9V1DzQmnzOfyzKSBF37t4RDrDA3oytneuEyArwguWUKYg6p5Bh10TCjkaknZtS+bEIITngiZybkxtZ7LL5zdhVVVUJtkPs9KHxRcLisBY8mJkDyQKCOYE60GAQjyyHsfZnsd+6KWe6utT23CZ4/yNJozWYacwjy5iP30h8nBhH/0tLSqWwoFDQujgHsRFPeOgPwbmpa5KBn0DA+X5xil5dbZ1s3bxFOHubZ/yx0DkAzc2yqalJamtqp5m3eLvqnJOgMgPgSV3OOY+d2McQSBECRqjDgCwrK5ft27fLG6+9Lu/98T15750/yisvvyxPPP6Ef6fy1IOYOsjYA81RjwScwqIt2KgBeWUhgXhYk2eMsrCiESgqKpbSkhJ/SAltnzHxMrhYVlYm27dtlx06thAlCCrMF+rQxoYGWb9uvaACTxYKiBvHQpZpPTnZ2Y8UMzo2JkjTSM9swQqpuB9JGO+FFKWjzzAqvNGptqZGvCmgoGDa7ANjCgNDIJ6iahetGPrAc4HNumVrs3DGPefXcw434Y/vvOvPtOelNPirxNvQQCAo2KMJxMU+hkCKEUgd1UlxwxajOB5iPKKRvLb4PcdblfNuEaRsFjK237BopaptwUDAO3hR70wPOISbAHFmG8+Nmze8I0ys+iHKRUVFaicr9io/2hzQuiiLgCSOupVyOXaSfd5I6A+FgQHvUY4NHImQfLHqTdX9AbVNp3KfPPhWVVZKJd7uqhmBsIJPqUqRvJikoCBfglnBpJufk50j5crkwQRk5+RMlwNmhOF79/yeYA65wa8ABg1MpxPOcyRH2+T3vasJhD3Q2Gir11YLe9+x16NhIHjpslnn+6ZNAhPD/cbGBqmrrdW5VOKl0mAwKE7n0jw3ec7FO+embdO1KkUXFhZ48wTPRmFhoWdK6Nempk0Cs4aPChI3c0MS/GTp3KFMAvEEs1tyQyAmAkaoZ4EIDpk9yCxaW1Rdhhq8qLBolhyJ3SopLVVGoFlDi5SVlUZRl03K6MiI3FS16c1bt7yzUaxaWGzKtGwIEfGH008KRGJkZNgfewoDgIMTkt6ly5eEQJxr3INoIhFC3B8uZ/5+4USFpzeB+HzVBA6opO/dG/aYJFtPTk62QKQJxMPLATfU2+fP9/o98/eGhsJvL0gcZoS3pOH5/PSup+Tpp572b77a9WDP966dT/p99ngsv/vOO/LO22/Liy+8IM8/t1tefflVn75aiTwMDc8ExMipOjnOxi94MuecQJBhzl584UV5cc8eqVhVEbUdAwOD3iRx9NgxOXzksJolTgnnHUTNEHGDZ4znl2eOeMRt+2kIzBkBI9SzQMjDDpdcrvZrbJzYe1moZsmS0C3UpGWlZUqkywSpzLmHbVss8iNKpJF6Bx5IuEjCsSqh3cWq9vZerVlZfisQnrR4UGMbbW1rlV9b24Tzx39tJT4VuE6Yvqbp2CZEPohNrHpTdZ+6qDNV++RD7RpXFTQLMMSfE756L5xXxuSy9PX1xcUAhcoJfTvnBAmTk9/WrFktqFTD5wdjhUkDJotDTWCAYAxknj/OTRGqvLw8gUivWVMpjY2NniF8TG2ynMWOfRbijaYIKRv/jPq6em+nbd6izOPWFkE9jD2XdEie2Hfx5cAeT7/nuRtJF+/c1HOE1oQ2E3iOoxU4MjriPe7ReHC+AQwqmqRo6SOvo7HgzXHl5Sv8cxx5334bAnNFwAh1HAgGA4HfVNTB1EHGQo7EOqAcPfHIpnAoBuroO3fvekIC4Y5MM9PvrGCWsDARgkqoOWDlROuv8tW+f8vf//EP+d+/fih/+8ff/ClYX/37K9n/zX7Zf+AbDQceBI3rtS+/+ko+/vQT+fa7b/3LJmaqK5OuDakKmm1QMCM//vSjEE61n1JifckzM4n2JaDzgkUalSkexXgRY/8OlcNiD5G+fPmy99LnhR0wXqH78/UNEYVII+HTLrYkbdywUTZu2KAq7XoNdcLbnWgv6R5uh/NzvVJNBdzHVgsT8rsdv/N7kWtqaqfU4FnZD2fL4F+TE5MCEzc2PiYT8WyEj+hrbk6uYFog5OTmRty1n4bA3BFIHdWZe1vStgTsjKhJCcRT1dDx+/f9yWRDQ4Mzql7Hx7k/JENqsx0fj77POrI9QbWZ5avdlbOZJycmBEemrq4ugUAhRXPiFZL16dOn5Wz3WWF7GMeahgeuca/zdKecVGJ28tRJ4axppFwkUraMRda70L9ZU8NDtPoZN+zC2PhPd52Z1iTQf1T8A6qtSATfUD35+XlSVVUpNetrZM2aNRJpamD7HNjfuHlTOJsd6Zq2hPKn6ts5FybZrxEIM6YapGZsz02NTYIamG2HEO9Q8BqX7N8IrnPOm19Q3yKNch9CjnYGyRubbnlZmTCvYAZkiXx4pjkABUaYeKLdgllD07By5QrJzclJNLulNwRiImCEOiZEImNKJFGZ3rl7Rznv+AlmrKJZtLGPog4lHpmehWNkeESGVf19/378JykFAwG/mGZlZ/m8ff19AkHiEA0IbKKLEd7mSN0ff/KxfK2SduvJ1oRseJH9SuXvCXFCmK3MsdFRr97uVTsxqnxU+z09PV7didQ7W95o95CmMVu0oCJublEb9QpPLJ1z01mQ0O6oNoS5MzY65k8um76ZwghtQeWO1/a2x5+QF9Uu+9abb8qbr78hz+/eLVu3bPFScLJVQpQh2ATiyZaTtvl0yJzT/3QuJdNGCDVqb9TfxJMpI8k8lm2ZIGCEWgca4gUh4+Qv4hAyCCdx7Jfcw6Z59eoVJXzDmiM1fxBipC7vrDU58a/5MQQAABAASURBVEih3B8dG5UxDRMz3H8kw4MLzjlPNJQyCNI6qm+OpUxWosNmfLa720uiELozZ86oKvy6lj3kX7Uoaf6BEUL9fK7nnFy4eNGf+NV/+7YgZTPOiTbfOScQR9ScqL0JSFLOsdjL9GccjYiaNTBvjCuzN30jRRHfBpXgkJDr6+o8QWZ/cPPWrYJduaGhQWpVVT1X3wrqQcomEE9R89OoGMbNiXMaxCXcLpgX/BQIxBMuwDIYAjEQMEKtAPX398vxX4770H+735+tPDY2Jlw/q6rh0GsGOWgEoqVZUvYHUzAVHi2S66jkkKaJP5pitiuTSuDHvGc3dm7s3bOlnu0edcM0QOhhWnrPnxccb7C/JiuRzlZfIvcCMimE2fIwZmd7uoVAfLa08dxzznlCPaFaDrD1ErMyU6JtkbAPTAB28WQZgrCiZoziNIgNGWep5559TngnOIe4rK5YLUjYM2ayizMioEOaBImeKso5p4xxwM8J5xIn9LJcPtbPpBEwQq3QITlfunxZzqj9EtvtFGFunbLptrZKR2en4A0K4YaAa5aU/TnnJKBB/yTyM6kXJicmZcIbYvVHnH8TmmdsbNzvuaZv42oLR/pDdZmsRASxpu9Ih9ioOXMcuzU2bLQNU8RqTCbUJh5nM+ecDMzCQ7QCaTdjRyAeLV2818GCcG/4nuDJfbbnrD+/mzkyODjg/Q24DxYwMgTi8ZYfK51zTglD0KuzIdJbNm/2EnR9/Qa/DQknQoi42CcuBCCtBE+pfSSubGGJJv28Z4wZ97AbFjUEUoKAEWqFkYeLh+zKlauCDfZ///pX+evfPpK9n38uPx06JBzdOaALsCZN6V/ABYQFleA0Lin6IMkhxRGQyHNyc4SXjaAiTYUNDYJ3/JdfZN/XX8uXX30pB388qCrlC14VTt0p6kbaFsN8QZUNDqfVDHD4yBH5+sA38tPhw3Ll6tVpD33STUzcnybcqeoQzBbjyHYwTtLbvm27oN7Oyc4W7qWqHisnPgTuq2YFb362ebGOxJfLUqU5AmnVPCPUD4aDRRXvX4gy3tEnT53yEvbFSxelr7/Pq5EfJE3ZVzArKBwiUZCfL1nBYNRy42XynXMSzM4SCQbUlj7i28x2oTWr10hjQ6MgeeERjNPRXFSjOLdBkPxboNpPqeahTdpOnvQMDa8rxCacjgTbKyYmVEFNQF0hyX+YLyzOvFjlvJoCOjo6PAbt7R2CaQAzAT4CEGrCZIRaPPmaRSDSbAXi+M96tU2zD7qosFCCOoecc3Mp2vImgwCQa9C/ZHJbHkMgJgJGqMMgYvGFIyYQD7s1L1GcczjNCGck4pGV8OAnsu4GlPDnFBZIMC9HRtRmOqkq8JUrV/pDLHhr0EsvvOjtmI+3tAh1yhw/SJV37w7Iud5e+eHgQfn+4A9ytrvb2/ZH1cY/x+JTn12J8+R9tWhrSCHd9A51qP7Z3oZ24YhK2BwVCnFmHhEg2qnqEKrt+vp62bhho7BdyiTpVCGbXDnBQMDvPce0FFQmOblSLJchEB2BmIQ6etaleYdFlbAQvcNTuLysXBfbcn+O8iN1KqUO6CJASIRgj+NtPDgoqOLy8jiMYZV/8YQ/w3zLFpWst8hGtWdWVVYJe2VhEpzTyh5pwOwXYGiwv6IC7j3fq7b8DjnV0S4QLPZ+z5576dwN4cAOARwOe3rPeSc+VKLevyDFXcW7mBeJsH+7qKjYJOkU45tocTyf2VnZ/hlOpQkr0XZY+qWLgBHqRRpbHm7UzxxCsWJFuVdnRjbFOecX4aysoDgXm5BOKIEeHRySodt3hC1ZdwfuemlPHnyoD49g1OCc+7xjxw6pXlvtTzHDTv4gWcJfMDbj4+PCWeS/qO36xK8nfP0JFzTfGRRCF5wQgmg81dXdn7gvOO+h9uYbxzW0Gs5X5lJSnXNO8tVUUlW1VqqqqiQ/Ly8l5Vohc0HAed8AnmnnUjPOYh9DIAyBJUaow3qWxlEk2JLiEoFIl5WVKaEskpkIZTAQ9NtscnJydSEISqwPBPM+3t737sndO3cEtfTIyOi0MxN1oDbFRt3Y0CChk6t4gxJnPa9cscLX51ziiw11Q6Au8WKPS5dkQCV6iDfSZqx2L9R9uuV0xvuQeBdjNhMMxu+Pa98H5PKVK3L12pRj2dQCHjN7zASUk5OdLYUFhYLJhDmUlZUt9lk8BBiTYDAggUBAnJuHSbV4XbOa0wiBQBq1Zdk0JT8vXzhHmXOY2QcL4eZBjwQgGAwK7wxG1RlUqTryfrTfEMhBJZTs8R0evuedysIJZk5OjqxatUqampq8zfrVl1+Rp3Y9JU2NjcIxmLTFucQXHeqg7pHRUS9Z8s21aO1cqtfv3rkrnCHe3t4uHDgTzAqkZBHH4RBGC8cxxnBqnJYqiunfL/DPysoS1N7ERRJ/ZsQ+hkAcCATiSJN2SViscKapr6v30kXaNTBKg5xzwoNdWloi9XV1wtnJnKMMQXbu0Yec6xDpwoICXQyyopT66GUkO9Suff19cqarS06f7pQrKuFBuLlOGygXz2HawJuROM2qpblFpt6u1CybN2/2p1qVlpZKjkpx7PV+tKZHr0CYh+4NqTR5TTh6FM/oR1Ol15V8VR9Xr13rx6RaTQFz0SzQM4hzr9qpL1y4IBwjmp2TLU4lLu6Fh0n9ER7056x/QSUK+ToXGDvGMBBw4pybNc983GR+hYf5qCMTyuT5LFTtRkFhoX+unXOLMh6ZgJW1cW4IZCShRnX7yksvC4H43CBYuNw82Cyy7H/d1NQoGzdulMKiwqgNYDEmPYxJNKk7ama9wev6Dnz3rfzryy8FuzGniWE71VsP/VEHjkm8IemtN38v//mn/5T/ePc9eWHPHoGQFxXNrJp/qJCwH2xz40AUAvGwW2kZxQSBzf5lnVNP7dqlmoUmwSQB/s65hNuMJgHsb/Xf8irR2byBJyQghHgqQWrLy82V3LxcCQYX99ENEep42r1U06DVKC8vk3I1X2Vn5yzVblq/0gCBxX3akwQA1d+G+npBqoaIJVnMgmVzzgmEtkwfaAhfQ0OjrF9XIytXrJRctT9Ha0ggEPBOZiz09DPWfuvIcrAZ9/b2Sntnh3SeOS3sCecQlMh0tA3JGXW8f2/x1mbhzGgkbL7r6uqkoDA6QxFZnq/3fK/3/r7Di0zGx/zJTZHpFvo3OFZWVsrGDRv9SV5oEaYC/VVtAhoFDRzDiVd1si9ZYA/50L17ckdV4Lfv3BbMEOPj91PTXZ1LTlxqykqwFLQxaGW8o+Ldu3GflQ5RBxMCGpeJiUnhWqj64AMTDy+2qFbNBm8iy1WGJHQ/Xb9h5NCI+Z0Tqu1I13ZauzIfgYwk1JkGOw80hBabNJIbkis2Yq47F3vRzVFuvbysXKW8csnOSZxzv6eq6IsXL0ydHqbxWPjBIEDU1lZVydNqu35y55MC0YqVL3Qfqf3q1auCY1l/f7+3V09MpIhQhSpJ4htGace27fLG66/Ln957T/7rzx/IB+9/IK+98pp/NSTamQ0bNggHw0DA6+vrhHFLoiqfBYalp6dXCMT9xYj/Al6enoi4OvPPiYkJGR0ZFSR24jOnmr+rjCtHpp5TtT4vOenTsY1nvzxtHR8f974SfPObw2dCLc3ROc1+/42KPc8HbwBjrEL30/UbBiMvP8973hNP13ZauzIfgYwm1Cyi9UjWaWqrDpdUmxob/duNvLS2fr0nABBE52ITamxgdSrVbmpqUkl8vSeaEO94px+e39dv3PASLu+U5nzucJt1ZDm0CyYClTgMRcWqVVKkKnr641zs9iI5IUWyr5gXdyCBIY1F1jOfv2cqG1s0W5rweN+6ZatqDVp8wASBNIeKv7y8XKqq1vqT3DY1bZJ6xR1TRTISHn2m76j/IUbM1/AFHSTDw0xtDr8GrpwvPqzSOnGkUkJ4mvmMQ5T7+vqV4bsoHac75UzXGUHFf+9Be2are2JyQgaHBlWrc0m6e7rlvGpcrl2/LsMjI96+y1yDGUSirqxcIzCKs5WXDvfuK/MxNDgkvJkuNM4wIunQNmvD0kIgowk1EhB2agLxdBoa55wnxrU1NbL9iSe8vRf7Z9WaSlV353jbZbztLSsrk21PbJPdz+2WJ3fulIaGBiWcRfFm93up2ap15uxZ+dcXX8hne/fK8RO/qMR7WZCSohUEoenvvy1stcpRFT2EBgIeLX3kdRzJrl+7LqEFOfL+wv924hwh4PGHIQkGp+J6ebo5EI0aHbfHWloECa9Fv0tLSqbvJxqB6EB8CMQTzR9Kf//+uKrRB3Q8BnRMx/TypIaF+7t//75XdyNNH/n5Z/Hn4HefFY5R5eCb2VqiqPu99ceOH5P933zjT7E7eeqkmgfuzJYtre+hJeGgn9OnT3vmg+14sz1Pad0Za1xaI5DRhDrdbNUQMaQymAYk/S2bNkuz2nu3bt0qSGfYPblPuoDan+OdGV4SVNsqdnmI9Pp16yS/IN8TmxxVGxJmKw9VIwspEm7X2a6p90q3tUl7R7s/8hM7du/58/6MauLd3d3S0dkpJ0+dkjZdTM+pnRvv5Vyta7Z6IvuDnbb3wnnhxRU9PT2y2AsZiyj7m7HV99++7VXISKSBCO9ptkExt9g6V1hYIDnKpAQCwcjuxf07EAh4HwU0EsTlkU98F+77lz+MCgQCxmtwaMjvkY8vd/KpwIgwMjws129c9/OE0+cuXrwozKloEjV5mHtDam5Bg8PZ8GxZ4+10v7a1CvMMzUuoZcEHtur8/AIhHrqert9jKlEjTXPQD/MJn4Q7artHc2CSdbqOWma2K6MJdbpBjrSEsxIOWHgQv/7a697G29jQ6F9JyCLtnEu62ahfUUNXVKwS4hB8iAmBeLwF4xDU0dkuhw4fkh8O/iDfff+9/w7F9+3/Wj7d+6l88tkn8sWXXwpS0G21RzrnxMVbiaZD5QuRPvLzETn444/ya2urqglv653F+WO72tGjR+XHn37yElC/9gl1bmRrIC7YgSFCnF1+7lyPV9tGpov39/j4mIA5gXi8+WZKR9t46Qlb325cvyFoLWZKl+prEN2BwQFPXHuU6YIYxaqDPBCsmzduylGVpA8fPuzPhYdhO6+MIUwTzFOonBxlBLFVE2AKQ9fT/VsfC880o4G6efOGNwdwfG+6t9valzkIGKGeh7FyLiDZWVle6sXmWVZaJrleKguIc4mQOnnog0TmvbPVhrqpsUlweqqrrfWHl0C4H0o8yw8W9+u6yPcoAULCQbqBiPqgkg7frUpUkaixQ7KtC0kBojYR7gU0Sx3cQopHLXrx0iVdoM8JKtPhe8PcmjUUFhYKGon6FPseQBRwhrpw8YJ/cQi/J1Sdyzfv2EabACYhya+9o8MTpmvXryVFEFFME8bG78vAwKAMarivcaRFmDoCzNusYMxwc2BgQDUhPV7jgb8B/UHKhjASZsiS1CU/T5CgVaMCw3Wmq0suXr4k/bf7vWNsXMA5AAAQAElEQVRYtEJpAwwFxJy5c1pt2cyzLtTkfbcEKfrOnTuqMr/ptSw3b970+MJsYnZYUVYua3WOo5lKZF6H2kP9BHBiPAnUGbof+Z2Tm+OfIc6+52yBkNYrMl2039jZr2HiuXbNazsmVPORype+RKvXri8fBALLp6vz31MWfFR8nEp18OBBQXpDVYhUwcI11xawwHNSWV1tnbz+6mvyh9//QbBdV+uilp+Xn1DxtOeeEk2I0HlVT0OkCMSReO4qMYDQko72s+gRiCdUkSaenJjwCzsSx8RkbA9nFmj8DgjEtYh5/YNotJ5sle9++E6+OXBAvtr3b/nsn3t9HOkRNXMy/abRE8qYjWn/UVNDTMET4sPebZg4pEjSJRJwXDrRekL2H9gvX3z1pRw6dMgTPUkxdbhz945AYNG4fP6vz71dGaIaq60QSfCKlKTBmTkQys8cw74bud8eZhT/gGTf8haqH4l9/zf7FacDXmUfqjfym6NYOeBn+7Zt3kQFkwATFZku2u/QeJzqOOWT0H6Yav/D/jMEUoCAEeoZQETK4WAJAvEZksx4icUJYnZNOeuzPd2CtIN0hhSHty4LCGHGzHFcpC0sAGVlZYKn8tYtW6RxY4Ow/xkplPtxFDOdhPZCQFhA2e9LII70ESLSJIa48JtAnGuJhHGVWikTCWtcJcpYebEPY49HqqZfsdInen9sdNTbVq9cveI9mPFChiDxHnJCm9rvYbaQxPpQj2v6ZPodahd5IVAhjQREgJejrFm9WphjoXTxfiPp+jnW3S2n2tulvaNdes6dU2J0Q+3uI/EW4+3b2JeZswQIJ+p55gDEhzqQpNG4tComPai8Bwejls/cpq8wJGzNi5SkaTf3QwUwJ8A+pLk5p31A64KKnRePYNJBMxVKn8g3baFP3T09ck41R4ODQ1GzwzhVrKqQyjWVsmLFSoHQEpDuYY6jZnxwg36BFeYIHO6ysrPmpDl7UKx9GQLTCBihnobitwhHZkIMCcR/uxNfjIeVxQqO/vjx4/5UMOyhLB7xlRBfKhZ8thuxpaWkpFgg4okS6/hqmlsqCDwEj609Y2OjcyssBblDBOL4L8fl0OGf5OejPytTdVp6z18QVLVsKUM7Ek5Ukq02oKYCQig/c4Bxq65e699cBkEK3Uv0e3x8XFXqA3Lp8mWBmEK0OWc83nIYF0wTaIFCAaYSZzucCyH+Z1VdzVGoqLshSLNhQt+Y+0jdx3TeHz5yRE0evd6ze2wML/WHW8YzQj2cmvft998Jp+gdPXbUOzKev3BBbvX1CczNw7nm7xdmCrQ/OTnZAuFGmwMRj7fG+6o5wTY9OjKSFgf8xNtuS5f+CBihnmGM8vxrBKukunqdlKr0ysOaCAFkwWIRRSrxEsPJU4JEgtTWo9w9nDeL3gxVJ3QJwsypSDjfVFRUSLKq1IQq1cRKeyQ86KVZ/1jcIXy31bYJQUDdPjyyeLZqnLEgbmfOnJmy8545rbbSa56gIFUiZUJwZu1UHDedpgkP+tNLWpwwhz0UTQhSI+rvROYX5RDA1RNbJWhdXWf9HINgI6Hi3T8lnaptXKXgq6rloc8Q0du3bwtqbcwyIYmZfPgmEFrbWrWsVmVeOv1bwEjLfAUT5jZ1hwcIHG2B8MLoIEnzXnKI/C21SZOX++F5iPOMIL2Tp7Oz09dJO9Bm4BGOlIqnOWmTCbSVgGSNVN2jEjtMWrSycrFVV6ySNavXSGlJieTm5ibkfT7l7zAiw0qoeeVptHpmu273DIGZEDBCPQMqqFs31G+YtlexmEIUZ0g66yUW0T5VnbLVif3Lf//kH/LNN9944sACNWvmOG+ywNPe9evWy3q2bSmTEWfWOSWbmAwIIZFC6HPbyZNCIB4rLxINdmoC8Vjp473vx0WJGxoPJLerV68JjES8+ZNN55zzCz8q1co1awRNyKqVq/yeeBypJMkPbb90+ZKgIfhs71756O8fedv10ePHBGLHYTc4Bx49dswfJcuWOYhjV1eX/KQaha/37xfClD33Gznw7bdqr/9eCWebxDNOEEOIOEwAdR46cljVzef8vumZJOnIbiI19+tzcuHiRS9NMz/aOzsESX7o3r3I5HH/pl0wAzCH+w8c0H4d8OaBaAXwnDdv3eqdNCHSMBj0K1r6yOuk5W11qWL0Isu338sXgSVBqCFU2DPrU+QlzKlfSKfV1dXeFly7vkaKCosEopjIVEGKYBFFlYqE06p2vl81YLvGE7pfJRsWqUTKDE/rnPMSGm/wqVm/XnixBu2EEFRVVgoB6c05F55tOo4kNClOpsL05XmJOOe8TXRgcMCra1lAY1U0X7bq0LggaUGIkLJYZGO1Z673IcaMTXFxiZSUlHpPYw5WgWDn5+UlXTxY0heObcUxy0vFrVNScSvS8ck2rxr3cX7rPdIguUKse871qI17KpxTqZN982yfiqX5YW5DBP1+6v4+gSmFYUCSR2qH0IF1rI6RBikU+zjEnnr5vnP3rtC3WPlnuw+xhtij0qettDla+rzcPMF3ALU3Wg6vNoqWeIbrE5OTMjY2LuMaJicmZ0ix1C5ZfxYKgSVBqJG2kLoIxFMBnlMCVlpaKo81t8hjjz0uqJdZaBMl1uFtYZFgwTijkgzEGi9r1IXhaZKJs/hDpGtrar3KrmLVKtmxfbsPHAFKu51zMxTtZEKyfBDtryTwCbgJIcSTxTnnmRzsseC4csUK8QuhLK8PWhkYwBXl5dr/bMHbGIfALZu3SHFJ8iefRaKIxuDGzZteOkVS3rdvn0rHrfq7Q478/LOXlg98e0Al8F/8NrXI/PH+RgrGFn3oyCGVoKds0RDdYCAgzs003+ItObXpmP8lxcWKcbFkZ2fFLJxnHGY9OzvHz9uYGUIJJkVp+6QyvhoJXbNvQyAFCARSUMaiF5FyyYs1RgNSDnZEPJDZr4ztCpVYsh1GOghJPp2nTwvSz3W1HSLRcS/ZcrOzs6WsrEzWqQaAE9D8W69aWmT6RDSVtpHi8GB1TjuWbEUP8lFEeHhwOepXqH0wUVWVVcr0rJLcnNyo6ZfqDeYO+3QJ9B/GpXpttaC5QfORqn6jHUD9yjnc3T3dgq0YFThSKtIu0jJS85WrVwVJNtl6h0eG5crVK3Lx4iXpv93vNSZsH0x0H3Ky9cebj5PmYGYLCwq86SFWPhdwkqUEHY/zABM9VoYH98HjqppR0JbdUtMKTPhcnusHxdpXihDI5GKWBKGerwGAsOXl5qo6rEJCtiukIJnjB2KNIxPbgPwimuSBGqFmOOf8AsSpaC/s2SOvvvKqQLAbNjTIs888I089uUvwDsfbGGlBpj+TEpBxH1QWmL6a6giLJKr5ho0NUltTIxUVSqgV11TXk+7lMZfWrF4tMCwQbSQ9nAGR9mBmnJs7ExWJARIuIfL6fPymTxUVFfq8rBbi81FHMmUGgkHfHpijYCAosT7OOX2eAhLMCiSkGUDdz/52tBZnz3YJjBHaDbGPITBHBAJzzL8ks3N61qXLl4VtKngB5+TkiFct19ZIQWHBnPs8OjYqt/puCYeLIFlDrDmuEtU4DzZcOIsr9jW+CcSjVeycEwgwkkxdXZ3wukCclFAz4xS3VVWrWzZvlnq14a9QtTOLKOkhC04VdVNBUv5xzqmqMVswIdTV1gt7vyFU2NEhUimvMM0LZAyRdgnEgw8ICMQaApfpJgEYQZjF9arBYZxLSkokHcaZNhQXFUuRqr+JxzNNnJt6OuJJG0rDswtxvnnzhnAE7Xwyv6E67XupIvBwvwIP/7RfINDX3+dPFQudCY0aEdVyRUVqJQUO9G871Sa/nDghFy5d8OpDpO2QEw6LOYs6gThtSySwKOFot04Xzmeffkaee/ZZgXDTFyS4RMpKJi31I01XrKrwb/yi7pKSUr94O8dCmEypmZsHp6bzFy7KBQ3MqVBPYLCaGhqlsbFRiouKQpcz7htV/jpV5Tc2NEhTY5OsX7deGP/F7giM9oqVK2XlipVCPGZ71MTMMaCeQY6Z+LcEML8wwZ7xWrVKqDOu+n4rwmKGwIwILClCDVGqr6/3kmNhQeGMHY7nIpItTl8XHpwJPTY+7t+Pi0doIwuqhso1a/yiCjGKp8yZ0kCQsWl1qx2xs/O0nOJtVSfb/Paljs5OwSO3u6dH7YBXhTbNVMZs11g4WCjKSkultrZWtqhk3by12b+DmReHNClhwEZaXlbmFzDnUks8nXOqQgxKfn6esC+VQHtol3OprUvS8BMMBAQ/B4gV/Ub1SjxP8QgEg9MtZq7Wq7Yj5FtAnGvTCdI8wtzEo5qjZzmFjrPtN27Y+GCetcimpiZZV71OysvKvYZlobsD8VypmqQVK1cI53rHqp/0FWqiwJ+iVBlLfjNnY+VjjNFYsU6U6TOF3wFak1j57L4hEAuBdCfUsdr/0H1sf3h+E4g/dDMFPyiTst9+6y3hjG0czViIky0aKRmu/dbNW3Lsl+P+jOlP9+6Vjz/9RPb+c6/fC/vNgQPCHlik72TrYZHhhDXa/+TOnfL7N96QP733H/L2W3+Qp3btkg0bNkiJqilJ51zqCOhU/+4Le2nHVN0/NjbmvWKT7Uem5Qst3Hjeg+8aZe62P7FNHn/scYF5CvUH4r1u3Tr53Y4dOiZvC3OMsQrdT/fv/v5+wfv7p0OHvOPaqI4zzpe7n3tO3nv3XXn37Xflmaef9vOsqHBhNQbMabZdYQaCWDMmsfDEVPN4y2OyY/sOz+BCdOPRQDGO+GAQphit1D1Lsdps95c2AkuKUKfc+zti7EPle8mnuVnqauukoLAwIlViPyFmnLfNXlROiero7JD29lMqVbdJa1ub/+443Sls5bqB7WtkJLEKNLVzzku2tL967VpBK7B1y1bhxQcE+tO8dauXfLDFY19kGxEqWeyOaA2ci77osBgidSB9rK2qEuogP9IF6k/P0OQXJOSYI2GfVGlKwoqcUzQQcB5PFn3ahgSJTwAOexAoiC6EGRUoNtt6nSeogjc1bfImAPDJDzuYBiIAceBlEJtU+mxqapS1a6u8FgLPY0nzz/j9cfH74+/enXoLlmoLGHsI1uZNm6WlpcVL18wx+oYNu7yszJ9zztyZ7+5xShhSPwGVdqz6mPMwVdXVa2WlSuE8NzwDsfIF9BkhXTArS1zA+fnunIuVze4bAjERWFKEOmZvU5SABbipcZM06cJbXFT8W6lJxpCqcUQhEMeZDFs15zCjTuxR9fevrb9Kp6rD7w7cTbKWh7OxQBZp27Eb79r5pLz5+pvy1ptveTs2Et9GlbKrKitVXVkmSAqzqfAgNBAmDu/Y+budsuvJJ2Wjqj5hCHY/t1uefuppgYhBzKn34ZbE/oV0iZRJIB47x/yloP0sxnl5uV4LUalScl1dnfD2JSTil158UfAHwMsdBzEYHwjVnuefl6eeekpID4GnHInyAW/yEYhHSZYWl+kHbYRBgwBXzHDSWmFBgYARe/tfO7Ff5QAADplJREFUeuEl2f3sc166RlJF0zOfHeF54iCVM11n5ExXl/BcxVsffcNTP1fHOhiMvVQOKxN95epV4eCZ4eHEGep422Xplh8CsWdfBmKClIOtuqV5ipOP/I7XBhjy/sZW3afqPc6IxrErJyfXnyqF5FlcXOTtbs7NjXNmQSEANyccoT7kjVvssb5x47ouMmeE06RQg0Ow2Q+LpzgnayW6X9M557l9CCeSb3V1tTSpvRqJx2P1QAJ6TL8J7COHELOosuiG296cc37ry8oVKwXitHnTJi89PabYN6s9HImqtqZW2IIEgQsEAnQxoYBEQxsYU8Y2ocxxJC4sKJT6kI1Y2+0xmOEbLAih+/SRON+hwG8IM+nwCcDTHWaoqbFJamtqpLi42EvjzrmoLaOP9HWTYol0Xl5W7udY1AwLdIPxYx5gg2XO0K+p8W72Y872O9T8aAuCKlWHmpWTk+MZvuq1Os9UY+AxUnzpI30NpZuPb+ecOC0YzdXkxIRM6j/9GdcfcxUmNDsrW5wLeCdIxo8AFhLxyQpm+RMMC4uKfNqI2/bTEEgagUDSOdM4I1IX0tf/+a//lpkC90gTqwuR3t/Y4iCg+uwLD3FOTrYU6UPJYjPTgxur/Hjv4y184cIFOXrsqHy69zMfjh4/pvbAboGJ4IhSpPF4y3uQbvrLOeeJB31Zr7bSZlWD73pyl7y450UvaT/37HNSqdI191mkWYxzdfF1znkckKhgWnAYQs2NNI1UvWPbNlldUSE52dk+naTph7nAnJhproRf++8P/lv+688fyJ//831v4//DW2/Jyy++JE+r/XWb9hViDE51ypiA2Z7n98iWzZs9dsU6T+LFAZwbGxpk2xNPyBOPP+Glz6LCokVHj3Fev269J8pP73pKXnn5ZfnjO9ig3xH27+OgyNyAMPN8RDaYZ6RYcYChwzfid2oDhlGMTJeq3845TzBLSkv9bgeYMZiyeMt34nTeBiUQDIpzTmBAOFSIQFwiPqVlpX68tumYlWmdEbftpyGQNAKBpHOmccaQBIZUM1NA4vFBufqWsBD5IA8PD0u49ze/eUOOc04CaoMqKCiUdbpwofKDWDvnZD4+qMI595iXSLDv+tcH5zV393QLEvdc63TOaX8CXjLGVgoxZjGqU5VugxIMpCaIt8dMpexNqvKnzxDmxoZG4TfpuLZCJesVK1YIEhfqbnBBunLOyWJ/WKQZ4/Ax93HtE32baa5EXiN9s2oKtmzeolqIJkEqXK/MDWaClStXSrGaE8rKylS7UCN1tbXC1rRiJU5oL+LFIVc1Nmgo1q+v8dhuUWK/YUO9V5sXqBp5JiI4H9g65zwDR9sZR5iuRp0PYAUOU6HZtxF/DRge2hetn1ynLOYYc2fjA/MI2hIYPOz8SOwQQdLKHD95eXmyZvUaqdFnlPkME0H98RZLWp4FfAw265xv0XGnz8x3xpx5TlvzcnN13It0rFdJTc16oS9cj7ceS2cIxEJgSRLqWJ1mQZlJguIa92LlD91nwcE79InHHhfOb2YBdc6Fbs/bNza39s4O4VWA2dk5wqKeoxLufFXIArdn9/Pyzh/e9lLUc88+K7/b8TtBKnr9tdfltVdelR3bt+siVePt2fPSjhQUytgyxuFSMnGucS8FVaS0iEIlyjBLSNbPPP2MStjbBLs3Y81cS2llMxRGHRC7kpJSZRIqvVQaYlwgrhDuvLx8z+TNkD3mJRibZ5562p+kh58Edn7s8hBA+hizgBgJOEWQs9RhLGCYILz0KUa26dslJSVeI/KCakbeVc3BO2+/I88/t1vn/g4/FpiLYC7KysqUOFcJzBomnng1J9MVWcQQiIHAsiTU0SRuHmgfwqRsOGhsbxDDPOXQA8HgNKTYauHUN6ndjXO1kXxqVYri4U3FQlOoEvtMEiAq1qrKKikrL/cOTUgxqBWnG5biCO2oVXXuJpUqsEsS6CvYtKianIM68FhG3ccileLqp4tDqqufZZ887ZwJL99OxjSK5AzRYU5MV5QmEeZQuRIBtBObdI49pu3HFo6KuVlxb9i40ROHUiUo2FKTabZzzhNa55xX7zr323exagcYa1+v1o3NHEK6ZvVqQWXNeFCvc1N5JMEP+RnPqT61TO9CoM5i1UI45x4p0Tnn2/nIjRkuQJhXrlwlEOnQM5IIoSY/jFFtbZ3ga0Go0eeAZwEtE/MKbPgm+G2OxSVeC+Gcm6FFdskQSA6BZUmoo0GFVIV0hZQVHt58/Q1p0oUSzjmcEKGeYwHgwX315VcEjvsFlTwhYnDz0eqJ93q09oTaRltJE295qUoX6nO9qsZDmCSyACbbDvpKnwnEI8vhGvdC+ER+c480kfnm4XdKi0QVjlYDiZN5xh74P/3Hn+TNN95QTcYOr8mA0Uh0DJxz3oYLk8dcJj8hGAx4YgNWeGi/9ebvBW92tEdokVLVuaAyvcwl+gbTwdkEaGt2bNsmEFjaFQgEpgmzc84zFeHXJMrHOQ7GnRS2ZrF9DGeyKEljXtaiwuoVrzVC1b9TtUqvvfqq/P7NN+WFPS9Iy9YWzzjHLNASGAIJIhBIMP2STs5ih3QFlxwesMvxxiMON2FxCYHAgoFEAbFCCmh5YMNCwlyzZrUgMYSnD+WL9v2IRKhSDBJ+eFvC47SVNkcrb76uI+nRZ6QqtAz00bn5lyDoK31GCgPbTMFrruMAwaKvSIZIbVvUPh6aa8yHZp13m/Xaxg0bVAW71ku7+fl5ntg654TxQp0M4WXMYCIpDy0R2iLKCA9Ih/xubt4qm9U+joq3vq5e1qxZI4z3XPsTyh96fhhL2ldVWSlI7BtVU7BlyxYJtYPvUKBdtBlTE31gDzvqZjCiPPoKM7Fu3TpfFs8t6djbHKo30W/nnBLqqeDcFJ7Mf2zRGx/Y2SHc4JtKfMQ+hsADBAIPvu0rBQjwkPLwQkx4cBNd2HjQkfpCkiBxrqWgaUuyCLABo+WGFwQJwlReVu41PexTf/3V17ytFylvoxJsCF9eXq4SmIDfmQCxDRE5iBjYQRCR0N//0/vywft/1vBBWPiz4PWPHXqhJw8MyYt79mhb3vde9v/9wX/53Rt8f/D+B/LaK6/IBiWQ9KFOtTr0BzMUmLB1qramRrB9P//cc2pj3iKVygDkqdlqofth9RkCqUIgkKqCrBzxe11ZKCrXVApS9WNqFyWEpIGY3xESNAQfKdKwfRgBJDCkarQNBAgQYbng5Zzz0nJ+fr7gD8F2J2zY2K6n8dC5x+lz+DNApHGqAiMC83Dqu1nwrWhWe3ezSuU+f3OzSrLNwu96JYJgLQv8oU4YXdoQaivtJdDGqevNUzZt+rl5qzQ0NAqaL/pMHtI16rVK1QJg787OylrgXlh1hkDqEAikrigrKYQA3qKoJtlj+x/vveelgZDUN9s30iFSQqgc+54ZATACKwLxmVMtn6tI2EiMqLIbGxpk185dgjf+O394R95S++mLaj9lPzY2VM56f373bnn5pZeFU+RQIWcYUoK2AC9x+sAedk58o4+vvvKqvPHaa/LsM88KhJ7nECk70/pn7TUEIhEwQh2JSAp+s2hCQJD6sCciCcQTlotEOFeI0TKAFYH4XMvL9PwQaggSjlkQa7zEseNuUfsy0idSNV75zElOB0M1DHbVa9f6Qzwyrf9oEugjfWA/c42quvFIR5pubGxS2/R6wYaM1zb+E5nWP2uvIRCJgBHqSETstyGwRBCAeGOKIRBfIt16pBvsxIAwE4g/kmAxL1jdhkAKEDBCnQIQrQhDIB0RQJpEqiQQT8c2pqJN9I0dGQTiqSjTyjAE0gkBI9TpNBrWFkPAEDAEFg8BqzlNETBCnaYDY80yBAwBQ8AQMARAwAg1KFgwBAwBQ8AQyCwEllFrjVAvo8G2rhoChoAhYAhkHgJGqDNvzKzFhoAhYAgYApmFwJxaa4R6TvBZZkPAEDAEDAFDYH4RMEI9v/ha6YaAIWAIGAKGwJwQWHBCPafWWmZDwBAwBAwBQ2CZIWCEepkNuHXXEDAEDAFDILMQMEI963jZTUPAEDAEDAFDYHERMEK9uPhb7YaAIWAIGAKGwKwIGKGeFZ7MummtNQQMAUPAEFh6CBihXnpjaj0yBAwBQ8AQWEIIGKFeQoOZWV2x1hoChoAhYAjEg4AR6nhQsjSGgCFgCBgChsAiIWCEepGAt2ozCwFrrSFgCBgCi4WAEerFQt7qNQQMAUPAEDAE4kDACHUcIFkSQyCzELDWGgKGwFJCYNEIdXHxSrFgGNgcsDlgc8DmQKJzYCkR4Xj6smiEOp7GWRpDwBBY+ghYDw0BQ2B2BIxQz46P3TUEDAFDwBAwBBYVASPUiwq/VW4IGAKZhYC11hBYeASMUC885lajIWAIGAKGgCEQNwJGqOOGyhIaAoaAIZBZCFhrlwYCRqiXxjhaLwwBQ8AQMASWKAJGqJfowFq3DAFDwBDILASstdEQMEIdDRm7bggYAoaAIWAIpAECRqjTYBCsCYaAIWAIGAKZhcBCttYI9UKibXUZAoaAIWAIGAIJImCEOkHALLkhYAgYAoaAIbCQCMydUC9ka60uQ8AQMAQMAUNgmSFghHqZDbh11xAwBAwBQyCzEFhuhDqzRsdaawgYAoaAIbDsETBCveyngAFgCBgChoAhkM4IGKFO59GxthkChoAhYAgsewSMUC/7KWAAGAKGgCFgCKQzAkao03l0Mqtt1lpDwBAwBAyBeUDACPU8gGpFGgKGgCFgCBgCqULACHWqkLRyMgsBa60hYAgYAhmCgBHqDBkoa6YhYAgYAobA8kTACPXyHHfrdWYhYK01BAyBZYyAEeplPPjWdUPAEDAEDIH0R8AIdfqPkbXQEMgsBKy1hoAhkFIEjFCnFE4rzBAwBAwBQ8AQSC0CRqhTi6eVZggYApmFgLXWEEh7BIxQp/0QWQMNAUPAEDAEljMCRqiX8+hb3w0BQyCzELDWLksEjFAvy2G3ThsChoAhYAhkCgL/HwAA//9BHqLJAAAABklEQVQDANj4M4dp4qvDAAAAAElFTkSuQmCC"
+          },
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/econsig/image2text",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "62b3c85d-1007-456a-99ea-13473afe6544",
+  "activeVersionId": "62b3c85d-1007-456a-99ea-13473afe6544",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-05-04T17:59:33.952Z",
+      "createdAt": "2026-05-04T17:59:33.952Z",
+      "role": "workflow:owner",
+      "workflowId": "mrhltiEkqqfoTUSF",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-06-08T17:21:51.779Z",
+    "createdAt": "2026-06-08T17:21:09.506Z",
+    "versionId": "62b3c85d-1007-456a-99ea-13473afe6544",
+    "workflowId": "mrhltiEkqqfoTUSF",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "econsig/image2text",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          -112
+        ],
+        "id": "1d178697-f228-4761-8375-766c8d104666",
+        "name": "Webhook",
+        "webhookId": "3d92299f-16b1-42cd-b9e9-b1270eb5d97b"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $('Webhook').first().json.body;\n\nreturn {body}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          224,
+          -112
+        ],
+        "id": "2d949842-b9d3-48cc-af87-a1c2adc3b931",
+        "name": "ValidatePost"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Segue Imagem (CAPTCHA)",
+          "options": {
+            "systemMessage": "=# Extrator de Texto de Imagem CAPTCHA com Ruído (Risco Central)\n\n## Descrição da imagem\n- Formato: base64 (codificada)\n- Extensão: .png\n- Conteúdo típico: **5 caracteres alfanuméricos** (letras maiúsculas A-Z e números 0-9)\n- Ruído presente: **Sempre há uma linha/risco horizontal atravessando o centro da imagem**, sobrepondo parcialmente os caracteres\n\n## Instruções de extração\n1. Ignore completamente qualquer linha, risco, traço ou ruído visual presente na imagem\n2. Concentre-se APENAS nos caracteres alfanuméricos visíveis (A-Z, 0-9)\n3. O ruído (risco central) NÃO faz parte do texto — desconsidere-o totalmente\n4. Retorne APENAS o texto exato de 5 caracteres extraído, sem formatação, sem explicações e sem comentários\n\n## Regras críticas\n- NÃO inclua o risco/traço como caractere no resultado.\n- NÃO confunda partes do risco com partes de letras ou números.\n- NÃO inclua espaço entre os caracteres. \n- Se um caractere estiver parcialmente obstruído pelo risco, use o contexto das partes visíveis para inferir o caractere correto.\n- A saída deve conter EXATAMENTE 5 caracteres, nada mais, nada menos.\n- Remova espaços entre os caracteres. \n\n## Exemplo de raciocínio (NÃO incluir na saída)\n- Se a imagem mostra \"A\" com um risco no meio, o caractere é \"A\", não \"A\" + risco\n- Se o risco cruza o \"8\" no meio, ainda é \"8\"\n- Se o risco cruza o \"0\" no meio, ainda é \"0\"\n\n## Saída esperada\n[5 caracteres alfanuméricos EXATOS - sem espaços, sem formatação, sem explicações]",
+            "passthroughBinaryImages": true
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          672,
+          -112
+        ],
+        "id": "edb3c66a-46fc-445f-adbf-2cf60bf2700d",
+        "name": "AI Agent",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1024,
+          -208
+        ],
+        "id": "88016071-0fb1-41c2-a910-8449dedf6afa",
+        "name": "Respond to Webhook mode Json"
+      },
+      {
+        "parameters": {
+          "operation": "toBinary",
+          "sourceProperty": "body.base64_file",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          448,
+          -112
+        ],
+        "id": "9d6e1074-cd92-4685-b6fe-4f3f10de87fd",
+        "name": "Convert to File"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.error }}",
+                      "rightValue": "Insufficient quota detected",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      },
+                      "id": "75a4f2ac-2d17-409d-b4b6-828c331b4ec9"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "402"
+              }
+            ]
+          },
+          "options": {
+            "fallbackOutput": "extra",
+            "ignoreCase": true
+          }
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4,
+        "position": [
+          1024,
+          -16
+        ],
+        "id": "0c07ab17-fd0f-47ce-9876-10ab5bc04629",
+        "name": "Switch"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n\"message\": \"Insufficient quota detected\"\n}",
+          "options": {
+            "responseCode": 402
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1248,
+          -112
+        ],
+        "id": "c32d1eec-30b8-4fe0-a3b8-82bcb4514d2c",
+        "name": "Respond to Webhook Insufficient Quota"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n\"message\": {{ JSON.stringify($json.error) }}\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1248,
+          80
+        ],
+        "id": "feb00cf8-9454-4e41-a77e-114b44a1aa5e",
+        "name": "Respond to Webhook Generic Error"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "vision-model",
+            "mode": "list",
+            "cachedResultName": "vision-model"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          656,
+          96
+        ],
+        "id": "1d19394b-6aa9-4e8f-a1a9-dad223c0e5bc",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "DHx9N7W9uzOGEobG",
+            "name": "Litellm"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "ValidatePost",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ValidatePost": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook mode Json",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook Insufficient Quota",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook Generic Error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 62b3c85d",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

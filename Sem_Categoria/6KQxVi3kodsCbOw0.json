@@ -1,0 +1,441 @@
+{
+  "updatedAt": "2025-12-19T02:30:08.101Z",
+  "createdAt": "2025-12-15T13:06:43.370Z",
+  "id": "6KQxVi3kodsCbOw0",
+  "name": "Relatório Diário IN100 QueroMais",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "triggerAtHour": 21,
+              "triggerAtMinute": 40
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -192
+      ],
+      "id": "c1a29213-d2af-4da1-ae96-d0a28be01bf2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -192
+      ],
+      "id": "e07be1e8-31d8-481e-a8d5-3fd335ae2004",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "sendTo": "daniel.gaspar@mdgintermediacoes.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+        "subject": "=Extração IN100 QueroMais dia {{ new Date().toLocaleDateString('pt-BR')}}",
+        "message": "=<p style=\"font-family: Arial, sans-serif; color: #333;\">Prezados</p>\n\n<p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Segue a extração realizada do sistema\n    <strong>IN100 QueroMais</strong>.\n</p>\n\n<p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Abaixo segue estatísticas:</p>\n\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\n    style=\"max-width:700px;margin:20px auto;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;background-color:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.12);\">\n\n    <thead>\n        <tr>\n            <th\n                style=\"padding:16px;background:linear-gradient(90deg,#0f9d58,#1e88e5);color:#ffffff;font-size:14px;font-weight:bold;text-transform:uppercase;text-align:center;\">\n                Status\n            </th>\n            <th\n                style=\"padding:16px;background:linear-gradient(90deg,#0f9d58,#1e88e5);color:#ffffff;font-size:14px;font-weight:bold;text-transform:uppercase;text-align:center;\">\n                Total\n            </th>\n        </tr>\n    </thead>\n\n    <tbody>\n        <tr style=\"background-color:#f7fbfa;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#0f9d58;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CODIFICADOS SUCESSO\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.consultedSuccess }}\n            </td>\n        </tr>\n\n        <tr style=\"background-color:#ffffff;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#e53935;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CODIFICADOS ERRO\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.consultedError }}\n            </td>\n        </tr>\n\n        <tr style=\"background-color:#f7fbfa;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#0f9d58;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CLIENTES ENCONTRADOS\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.completeBaseSuccess }}\n            </td>\n        </tr>\n\n        <tr style=\"background-color:#ffffff;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#e53935;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CLIENTES NÃO LOCALIZADOS\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.completeBaseError }}\n            </td>\n        </tr>\n    </tbody>\n\n</table>\n\n<p style=\"max-width:700px;margin:10px auto 0 auto;padding:12px 16px;\nfont-family:Arial,Helvetica,sans-serif;font-size:13px;color:#555;\nbackground-color:#f1f8f6;border-left:4px solid #0f9d58;border-radius:6px;\">\n    <strong>Observação:</strong> Os valores apresentados podem sofrer variações até o fechamento do dia\n    (00h), uma vez que se tratam de uma <strong>contagem parcial</strong> dos dados coletados\n    em suas respectivas plataformas no momento da extração.\n</p>\n\n\n</br>\n\n<p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Atenciosamente,</p>\n\n<table cellpadding=\"0\" cellspacing=\"0\" style=\"font-family:Arial,Helvetica,sans-serif;max-width:500px;\">\n    <tr>\n        <td style=\"padding-right:16px;vertical-align:top;\">\n            <!-- Ícone / Logo -->\n            <div\n                style=\"width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0f9d58,#1e88e5);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:24px;font-weight:bold;\">\n                MDG\n            </div>\n        </td>\n\n        <td style=\"vertical-align:top;\">\n            <!-- Nome -->\n            <div style=\"font-size:16px;font-weight:bold;color:#1e88e5;line-height:1.2;\">\n                Anderson Tome\n            </div>\n\n            <!-- Empresa -->\n            <div style=\"font-size:13px;font-weight:bold;color:#0f9d58;\">\n                MDG Intermediações\n            </div>\n\n            <!-- Linha -->\n            <div style=\"height:1px;background-color:#e0e0e0;margin:8px 0;\"></div>\n\n            <!-- Contatos -->\n            <div style=\"font-size:12px;color:#333333;line-height:1.6;\">\n                📧 <a href=\"mailto:anderson.tome@mdgintermediacoes.com.br\" style=\"color:#1e88e5;text-decoration:none;\">\n                    anderson.tome@mdgintermediacoes.com.br\n                </a><br>\n\n                📧 <a href=\"mailto:desenvolvimento@mdgintermediacoes.com.br\"\n                    style=\"color:#1e88e5;text-decoration:none;\">\n                    desenvolvimento@mdgintermediacoes.com.br\n                </a><br>\n\n                📞 <a href=\"tel:+5519981746254\" style=\"color:#1e88e5;text-decoration:none;\">\n                    +55 (19) 98174-6254\n                </a><br>\n\n                🌐 <a href=\"https://www.mdgintermediacoes.com.br\" style=\"color:#1e88e5;text-decoration:none;\">\n                    www.mdgintermediacoes.com.br\n                </a>\n            </div>\n        </td>\n    </tr>\n</table>",
+        "options": {
+          "appendAttribution": false,
+          "ccList": "raul.guimaraes@mdgintermediacoes.com.br"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -192
+      ],
+      "id": "180528ec-3fef-4b4a-aaab-b54bf26a7ce8",
+      "name": "Gmail",
+      "webhookId": "7157af12-0be4-4385-922f-ffa31d70e347",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "-1001534937224"
+            },
+            {
+              "name": "message",
+              "value": "=<b>📊 Relatório Diário — IN100 QUEROMAIS</b>\n\n<b>Status:</b> <code>CODIFICADOS SUCESSO</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.consultedSuccess }}\n\n<b>Status:</b> <code>CODIFICADOS ERRO</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.consultedError }}\n\n<b>Status:</b> <code>CLIENTES ENCONTRADOS</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.completeBaseSuccess }}\n\n<b>Status:</b> <code>CLIENTES NÃO ENCONTRADOS</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.completeBaseError }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        -192
+      ],
+      "id": "f566802a-b3c1-4b42-94e5-1f57489c6a16",
+      "name": "Envio telegram Kira Dev",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    'consulted' AS origem,\n    step,\n    COUNT(*) AS total\nFROM consulted\nWHERE \n    DATE(consulted_at) = CURDATE()\n    AND step IN ('SUCCESS', 'ERROR')\nGROUP BY step\n\nUNION ALL\n\nSELECT\n    'complete_base' AS origem,\n    step,\n    COUNT(*) AS total\nFROM complete_base\nWHERE \n    DATE(updated_at) = CURDATE()\n    AND step IN ('SUCCESS', 'ERROR')\nGROUP BY step\n\nORDER BY origem, step;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        224,
+        -192
+      ],
+      "id": "215e16ab-9343-419f-9029-8fb41c8fe0fb",
+      "name": "Count encodex",
+      "credentials": {
+        "mySql": {
+          "id": "T9AP63oSzVHyX8t2",
+          "name": "MariaDb In100 QueroMais"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const encodex = $('Count encodex').all();\n\nconst completeBaseError =\n  encodex.find(\n    item =>\n      item.json.origem === 'complete_base' &&\n      item.json.step === 'ERROR'\n  )?.json?.total ?? 0;\n\nconst completeBaseSuccess =\n  encodex.find(\n    item =>\n      item.json.origem === 'complete_base' &&\n      item.json.step === 'SUCCESS'\n  )?.json?.total ?? 0;\n\nconst consultedSuccess =\n  encodex.find(\n    item =>\n      item.json.origem === 'consulted' &&\n      item.json.step === 'SUCCESS'\n  )?.json?.total ?? 0;\n\nconst consultedError =\n  encodex.find(\n    item =>\n      item.json.origem === 'consulted' &&\n      item.json.step === 'ERROR'\n  )?.json?.total ?? 0;\n\nreturn {\n  completeBaseError,\n  completeBaseSuccess,\n  consultedSuccess,\n  consultedError\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -192
+      ],
+      "id": "ae039197-4538-4e88-956d-d3368ed0a9da",
+      "name": "Code in JavaScript",
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Count encodex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Envio telegram Kira Dev",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envio telegram Kira Dev": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Count encodex": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-11-20T19:00:21.014-03:00",
+          "Readable date": "November 20th 2025, 7:00:21 pm",
+          "Readable time": "7:00:21 pm",
+          "Day of week": "Thursday",
+          "Year": "2025",
+          "Month": "November",
+          "Day of month": "20",
+          "Hour": "19",
+          "Minute": "00",
+          "Second": "21",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ]
+  },
+  "versionId": "9d58932e-6cc9-4636-9e95-efe2abb47786",
+  "activeVersionId": "9d58932e-6cc9-4636-9e95-efe2abb47786",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-12-15T13:06:43.370Z",
+      "createdAt": "2025-12-15T13:06:43.370Z",
+      "role": "workflow:owner",
+      "workflowId": "6KQxVi3kodsCbOw0",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-19T02:29:35.385Z",
+    "createdAt": "2025-12-18T13:17:36.139Z",
+    "versionId": "9d58932e-6cc9-4636-9e95-efe2abb47786",
+    "workflowId": "6KQxVi3kodsCbOw0",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks",
+                "triggerAtDay": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "triggerAtHour": 21,
+                "triggerAtMinute": 40
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          -192
+        ],
+        "id": "c1a29213-d2af-4da1-ae96-d0a28be01bf2",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          -192
+        ],
+        "id": "e07be1e8-31d8-481e-a8d5-3fd335ae2004",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "sendTo": "daniel.gaspar@mdgintermediacoes.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+          "subject": "=Extração IN100 QueroMais dia {{ new Date().toLocaleDateString('pt-BR')}}",
+          "message": "=<p style=\"font-family: Arial, sans-serif; color: #333;\">Prezados</p>\n\n<p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Segue a extração realizada do sistema\n    <strong>IN100 QueroMais</strong>.\n</p>\n\n<p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Abaixo segue estatísticas:</p>\n\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\n    style=\"max-width:700px;margin:20px auto;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;background-color:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.12);\">\n\n    <thead>\n        <tr>\n            <th\n                style=\"padding:16px;background:linear-gradient(90deg,#0f9d58,#1e88e5);color:#ffffff;font-size:14px;font-weight:bold;text-transform:uppercase;text-align:center;\">\n                Status\n            </th>\n            <th\n                style=\"padding:16px;background:linear-gradient(90deg,#0f9d58,#1e88e5);color:#ffffff;font-size:14px;font-weight:bold;text-transform:uppercase;text-align:center;\">\n                Total\n            </th>\n        </tr>\n    </thead>\n\n    <tbody>\n        <tr style=\"background-color:#f7fbfa;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#0f9d58;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CODIFICADOS SUCESSO\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.consultedSuccess }}\n            </td>\n        </tr>\n\n        <tr style=\"background-color:#ffffff;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#e53935;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CODIFICADOS ERRO\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.consultedError }}\n            </td>\n        </tr>\n\n        <tr style=\"background-color:#f7fbfa;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#0f9d58;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CLIENTES ENCONTRADOS\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.completeBaseSuccess }}\n            </td>\n        </tr>\n\n        <tr style=\"background-color:#ffffff;\">\n            <td style=\"padding:14px;text-align:center;\">\n                <span\n                    style=\"display:inline-block;padding:6px 14px;border-radius:20px;background-color:#e53935;color:#ffffff;font-size:12px;font-weight:bold;\">\n                    CLIENTES NÃO LOCALIZADOS\n                </span>\n            </td>\n            <td style=\"padding:14px;text-align:center;font-size:16px;font-weight:bold;color:#1e88e5;\">\n                {{ $json.completeBaseError }}\n            </td>\n        </tr>\n    </tbody>\n\n</table>\n\n<p style=\"max-width:700px;margin:10px auto 0 auto;padding:12px 16px;\nfont-family:Arial,Helvetica,sans-serif;font-size:13px;color:#555;\nbackground-color:#f1f8f6;border-left:4px solid #0f9d58;border-radius:6px;\">\n    <strong>Observação:</strong> Os valores apresentados podem sofrer variações até o fechamento do dia\n    (00h), uma vez que se tratam de uma <strong>contagem parcial</strong> dos dados coletados\n    em suas respectivas plataformas no momento da extração.\n</p>\n\n\n</br>\n\n<p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Atenciosamente,</p>\n\n<table cellpadding=\"0\" cellspacing=\"0\" style=\"font-family:Arial,Helvetica,sans-serif;max-width:500px;\">\n    <tr>\n        <td style=\"padding-right:16px;vertical-align:top;\">\n            <!-- Ícone / Logo -->\n            <div\n                style=\"width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0f9d58,#1e88e5);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:24px;font-weight:bold;\">\n                MDG\n            </div>\n        </td>\n\n        <td style=\"vertical-align:top;\">\n            <!-- Nome -->\n            <div style=\"font-size:16px;font-weight:bold;color:#1e88e5;line-height:1.2;\">\n                Anderson Tome\n            </div>\n\n            <!-- Empresa -->\n            <div style=\"font-size:13px;font-weight:bold;color:#0f9d58;\">\n                MDG Intermediações\n            </div>\n\n            <!-- Linha -->\n            <div style=\"height:1px;background-color:#e0e0e0;margin:8px 0;\"></div>\n\n            <!-- Contatos -->\n            <div style=\"font-size:12px;color:#333333;line-height:1.6;\">\n                📧 <a href=\"mailto:anderson.tome@mdgintermediacoes.com.br\" style=\"color:#1e88e5;text-decoration:none;\">\n                    anderson.tome@mdgintermediacoes.com.br\n                </a><br>\n\n                📧 <a href=\"mailto:desenvolvimento@mdgintermediacoes.com.br\"\n                    style=\"color:#1e88e5;text-decoration:none;\">\n                    desenvolvimento@mdgintermediacoes.com.br\n                </a><br>\n\n                📞 <a href=\"tel:+5519981746254\" style=\"color:#1e88e5;text-decoration:none;\">\n                    +55 (19) 98174-6254\n                </a><br>\n\n                🌐 <a href=\"https://www.mdgintermediacoes.com.br\" style=\"color:#1e88e5;text-decoration:none;\">\n                    www.mdgintermediacoes.com.br\n                </a>\n            </div>\n        </td>\n    </tr>\n</table>",
+          "options": {
+            "appendAttribution": false,
+            "ccList": "raul.guimaraes@mdgintermediacoes.com.br"
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          672,
+          -192
+        ],
+        "id": "180528ec-3fef-4b4a-aaab-b54bf26a7ce8",
+        "name": "Gmail",
+        "webhookId": "7157af12-0be4-4385-922f-ffa31d70e347",
+        "executeOnce": true,
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "iEXJKdMeC12THwyd",
+            "name": "Gmail Desenvolvimento"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "phone",
+                "value": "-1001534937224"
+              },
+              {
+                "name": "message",
+                "value": "=<b>📊 Relatório Diário — IN100 QUEROMAIS</b>\n\n<b>Status:</b> <code>CODIFICADOS SUCESSO</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.consultedSuccess }}\n\n<b>Status:</b> <code>CODIFICADOS ERRO</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.consultedError }}\n\n<b>Status:</b> <code>CLIENTES ENCONTRADOS</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.completeBaseSuccess }}\n\n<b>Status:</b> <code>CLIENTES NÃO ENCONTRADOS</code>\n<b>Total:</b> {{ $('Code in JavaScript').item.json.completeBaseError }}\n"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          896,
+          -192
+        ],
+        "id": "f566802a-b3c1-4b42-94e5-1f57489c6a16",
+        "name": "Envio telegram Kira Dev",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT\n    'consulted' AS origem,\n    step,\n    COUNT(*) AS total\nFROM consulted\nWHERE \n    DATE(consulted_at) = CURDATE()\n    AND step IN ('SUCCESS', 'ERROR')\nGROUP BY step\n\nUNION ALL\n\nSELECT\n    'complete_base' AS origem,\n    step,\n    COUNT(*) AS total\nFROM complete_base\nWHERE \n    DATE(updated_at) = CURDATE()\n    AND step IN ('SUCCESS', 'ERROR')\nGROUP BY step\n\nORDER BY origem, step;\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          224,
+          -192
+        ],
+        "id": "215e16ab-9343-419f-9029-8fb41c8fe0fb",
+        "name": "Count encodex",
+        "credentials": {
+          "mySql": {
+            "id": "T9AP63oSzVHyX8t2",
+            "name": "MariaDb In100 QueroMais"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const encodex = $('Count encodex').all();\n\nconst completeBaseError =\n  encodex.find(\n    item =>\n      item.json.origem === 'complete_base' &&\n      item.json.step === 'ERROR'\n  )?.json?.total ?? 0;\n\nconst completeBaseSuccess =\n  encodex.find(\n    item =>\n      item.json.origem === 'complete_base' &&\n      item.json.step === 'SUCCESS'\n  )?.json?.total ?? 0;\n\nconst consultedSuccess =\n  encodex.find(\n    item =>\n      item.json.origem === 'consulted' &&\n      item.json.step === 'SUCCESS'\n  )?.json?.total ?? 0;\n\nconst consultedError =\n  encodex.find(\n    item =>\n      item.json.origem === 'consulted' &&\n      item.json.step === 'ERROR'\n  )?.json?.total ?? 0;\n\nreturn {\n  completeBaseError,\n  completeBaseSuccess,\n  consultedSuccess,\n  consultedError\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          -192
+        ],
+        "id": "ae039197-4538-4e88-956d-d3368ed0a9da",
+        "name": "Code in JavaScript",
+        "executeOnce": true
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Count encodex",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gmail": {
+        "main": [
+          [
+            {
+              "node": "Envio telegram Kira Dev",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envio telegram Kira Dev": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Count encodex": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Gmail",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 9d58932e",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}

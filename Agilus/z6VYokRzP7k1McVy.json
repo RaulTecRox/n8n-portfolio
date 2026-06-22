@@ -1,0 +1,529 @@
+{
+  "updatedAt": "2025-12-18T13:29:38.535Z",
+  "createdAt": "2025-06-06T18:44:01.756Z",
+  "id": "z6VYokRzP7k1McVy",
+  "name": "Cadastro AF copy",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c342345c-3d75-4d10-b50f-5171754fada1",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "a802dfcb-1ca5-41ed-8809-8a8107204e8e",
+      "name": "Webhook",
+      "webhookId": "c342345c-3d75-4d10-b50f-5171754fada1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('Webhook').first().json.body\n\nreturn body;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e681ca7a-6212-4800-b44b-70bd6a0ca1f5",
+      "name": "Get Body"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2fceb35f-e1e1-45a4-97fc-a6f9bc227aaa",
+              "leftValue": "={{ $json.bcolib_descricao }}",
+              "rightValue": "={{ $('Get Body').item.json.digitacao_banco }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "6a9208a7-1d22-40da-a5bf-0db9b0c97cc7",
+      "name": "Filter bank"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DECLARE @data_current SMALLDATETIME = GETDATE();\n\nEXEC [dbo].[pr_banco_simulador] @data = @data_current,\n\t@orgao = {{ $('Get Body').item.json.orgav_codigo }}"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "5d4b95a8-3577-4dab-a60d-d5f3168a7b33",
+      "name": "Run pr_banco_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DECLARE @data_current SMALLDATETIME = GETDATE();\n\nEXEC [dbo].[pr_tabela_simulador] @data = @data_current,\n  @orgao = {{ $('Get Body').item.json.orgav_codigo }},\n  @banco = {{ $('Filter bank').item.json.bcolib_codigo }}"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        208
+      ],
+      "id": "ea39bf59-4095-4dd8-903f-2fc30fe2e703",
+      "name": "Run pr_tabela_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb92949c-f840-4d87-8d0e-155155c3e523",
+              "leftValue": "={{ $json.tbb_descricao }}",
+              "rightValue": "={{ $('Get Body').item.json.digitacao_tbb_descricao }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        208
+      ],
+      "id": "26b1025a-4598-49bb-b247-06f92eb45b96",
+      "name": "Filter tbb_descricao"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC [dbo].[pr_valor_parcela_simulador] @orgao = {{ $('Get Body').item.json.orgav_codigo }},\n  @banco = {{ $('Filter bank').item.json.bcolib_codigo }},\n  @tabela = {{ $('Filter tbb_descricao').item.json.tbb_codigo }},\n  @valor_parcela = {{ $('Get Body').item.json.digitacao_valor_parcela }},\n  @valor_refin = 0,\n  @valor_tac = 0,\n  @valor_compra_divida = 0\n  "
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        208
+      ],
+      "id": "a027c3ef-1c33-4d15-a6d6-31bc8e181c27",
+      "name": "Run pr_valor_parcela_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ce28405-8ae4-4bdd-ad93-3b0508c892b4",
+              "leftValue": "={{ $json.itb_qtde_parcelas }}",
+              "rightValue": 96,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        208
+      ],
+      "id": "cd1484d5-3834-409b-be0c-459d67cabbbd",
+      "name": "Filter itb_qtde_parcelas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC [dbo].[pr_comissao_simulador] @orgao = {{ $('Get Body').item.json.orgav_codigo }},\n  @banco = {{ $('Filter bank').item.json.bcolib_codigo }},\n  @tabela = {{ $('Filter tbb_descricao').item.json.tbb_codigo }},\n  @agente = {{ $('Get User By Name').item.json.usu_codigo }},\n  @tem_meta = 0,\n  @valor_parcela = {{ $('Get Body').item.json.digitacao_valor_parcela }},\n  @valor_contrato = NULL,\n  @valor_refin = 0,\n  @valor_compra = 0,\n  @custo_portabilidade = 0\n  "
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        912,
+        208
+      ],
+      "id": "d0b26969-7699-4c73-abe3-31adffdca97b",
+      "name": "Run pr_comissao_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0491a6df-48f2-4fbd-93e1-ab53f7fa6a4e",
+              "leftValue": "={{ $json.qtde_parcelas }}",
+              "rightValue": 96,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        400
+      ],
+      "id": "a5f68bf8-934c-4197-b3cf-02f72a002249",
+      "name": "Filter qtde_parcelas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT TOP 1 * FROM dbo.usuario WHERE usu_nome = '{{ $('Get Body').item.json.login_cadastramento }}'"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "065776a5-9613-4896-848f-2333650ea19a",
+      "name": "Get User By Name",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/agilus/cliente/upsert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Get Body').item.json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        400
+      ],
+      "id": "83bdb008-e9b2-4cce-a6ae-cd01667e9f98",
+      "name": "Get Client Code",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DECLARE @data_current SMALLDATETIME = GETDATE();\nDECLARE @af_codigo INT;\nEXEC [dbo].[pr_af_i] @con_codigo = {{ $('Get Client Code').item.json.Con_codigo }},\n\t@data = @data_current,\n\t@ent_codigo = 1,\n\t@valor_af = {{ $('Filter itb_qtde_parcelas').item.json.valor_contrato }},\n\t@qtde_parcelas = {{ $('Filter itb_qtde_parcelas').item.json.itb_qtde_parcelas }},\n\t@valor_parcela = {{ $('Get Body').item.json.digitacao_valor_parcela }},\n\t@bcolib_codigo = {{ $('Get Body').item.json.banco_codigo }},\n\t@orgav_codigo = {{ $('Get Body').item.json.orgav_codigo }}, --dbo.orgaoav\n\t@fil_codigo = 1, --dbo.filial\n\t@rep_codigo = 604, --dbo.representante\n\t@rem_codigo = NULL,\n\t@tbb_codigo = NULL,\n\t@nome_tabela = '{{ $('Get Body').item.json.digitacao_tbb_descricao }}', --pr_tabela_simulador\n\t@ttb_codigo = 5, --dbo.tipo_tabela_banco\n\t@data_vencimento_inicial = NULL,\n\t@data_vencimento_final = NULL,\n\t@valor_refin = NULL,\n\t@refin_parcela_inicial = NULL,\n\t@refin_parcela_final = NULL,\n\t@refin_mes_referencia = NULL,\n\t@comissao_empresa = 42.7069, --pr_comissao_simulador\n\t@codigo_contrato_banco = '{{ $('Get Body').item.json.digitacao_codigo_contrato_banco }}',\n\t@data_liberacao_banco = NULL,\n\t@usu_codigo_atendente = 631,\n\t@usu_codigo_liberacao = NULL, --dbo.usuario\n\t@valor_tac = NULL,\n\t@codigo_barras = NULL,\n\t@af_codigo = @af_codigo output,\n\t@nome_servico = 'Digitação Automática',\n\t@bonus_empresa = 0,\n\t@diferimento_empresa = 0,\n\t@faf_codigo = 10, -- dbo.fase_af\n\t@sba_codigo = NULL,\n\t@numero_operacao_banco = NULL,\n\t@prc_codigo = 18, --dbo.parceiro;\n\t@valor_portado = NULL,\n\t@bcolib_codigo_portado = NULL,\n\t@valor_parcela_portada = NULL,\n\t@tmi_codigo = 1, --dbo.tipo_midia\n\t@tlc_codigo = 2, --tipo_liberacao_contrato\n\t@link_formalizacao = 'https://bmg.com.br/formalizacao',\n\t@valor_liberado = NULL,\n\t@prazo_restante_portado = NULL,\n\t@numero_contrato_portado = NULL,\n\t@observacao_portabilidade = NULL;\nSELECT @af_codigo AS af_codigo;"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        400
+      ],
+      "id": "72c5a5f6-ab44-4a0a-99fd-15c87e199851",
+      "name": "Run pr_af_i",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        912,
+        400
+      ],
+      "id": "6b3a4a85-8ac0-42ae-bfca-4b93e02a5e1c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        400
+      ],
+      "id": "8b4ad1fb-6e4f-4e23-8a4c-20a74c6a6569",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Body": {
+      "main": [
+        [
+          {
+            "node": "Get User By Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_banco_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter bank",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter bank": {
+      "main": [
+        [
+          {
+            "node": "Run pr_tabela_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_tabela_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter tbb_descricao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter tbb_descricao": {
+      "main": [
+        [
+          {
+            "node": "Run pr_valor_parcela_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_valor_parcela_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter itb_qtde_parcelas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter itb_qtde_parcelas": {
+      "main": [
+        [
+          {
+            "node": "Run pr_comissao_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_comissao_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter qtde_parcelas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User By Name": {
+      "main": [
+        [
+          {
+            "node": "Run pr_banco_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter qtde_parcelas": {
+      "main": [
+        [
+          {
+            "node": "Get Client Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Client Code": {
+      "main": [
+        [
+          {
+            "node": "Run pr_af_i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_af_i": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "4dff3f20-682c-4644-bb82-43015afdaca4",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-06T18:44:01.756Z",
+      "createdAt": "2025-06-06T18:44:01.756Z",
+      "role": "workflow:owner",
+      "workflowId": "z6VYokRzP7k1McVy",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2025-03-06T21:04:26.904Z",
+      "createdAt": "2025-03-06T14:34:43.037Z",
+      "id": "KGLw2ngNzHtwIRB0",
+      "name": "Agilus"
+    },
+    {
+      "updatedAt": "2025-02-18T14:02:38.331Z",
+      "createdAt": "2025-02-18T14:02:38.331Z",
+      "id": "Bd8bdkbUuGWtSaFv",
+      "name": "Saque Complementar"
+    }
+  ]
+}

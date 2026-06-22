@@ -1,0 +1,1168 @@
+{
+  "updatedAt": "2025-01-29T12:52:24.114Z",
+  "createdAt": "2024-12-23T17:39:00.051Z",
+  "id": "JzLQd13AYgxrvp1B",
+  "name": "1C - MDG Margem",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        -100
+      ],
+      "id": "4f95eb5f-3ab6-4c46-b983-59c3a8e6df0b",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a38844c2-29c0-4428-9c9d-f1e5f3cc8d00",
+              "name": "payload",
+              "value": "={{ $json.payload }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -60,
+        320
+      ],
+      "id": "8b40c9a0-120c-45ce-840a-7f9b9fd353da",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a38844c2-29c0-4428-9c9d-f1e5f3cc8d00",
+              "name": "payload",
+              "value": "={{ $json.payload}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        100
+      ],
+      "id": "66094ff1-736f-4f4b-833b-e2d7ad06362f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Criando um array para armazenar os resultados\nconst result = [];\n\n// Iterando por cada item em 'items'\nfor (const item of items) {\n  // Pegando o JSON da entrada de cada item\n  const data = JSON.parse(item.json.payload);\n\n  // Verificando se data é um array\n  if (Array.isArray(data)) {\n    // Iterando sobre os dados dentro de 'data'\n    for (const entry of data) {\n      const beneficiario = entry.Beneficiario;\n      const resumoFinanceiro = entry.ResumoFinanceiro;\n      const dadosBancarios = entry.DadosBancarios;\n\n      // Criando o objeto com todos os campos\n      const extractedData = {\n        // Beneficiario\n        nomeBeneficiario: beneficiario.Nome,\n        cpfBeneficiario: beneficiario.CPF,\n        dataNascimento: beneficiario.DataNascimento,\n        beneficio: beneficiario.Beneficio,\n        situacao: beneficiario.Situacao,\n        dib: beneficiario.DIB,\n        ddb: beneficiario.DDB,\n        nomeMae: beneficiario.NomeMae,\n        rg: beneficiario.Rg,\n        sexo: beneficiario.Sexo,\n        especie: beneficiario.Especie,\n        pa: beneficiario.PA,\n        rl: beneficiario.RL,\n        bloqueadoEmprestimo: beneficiario.BloqueadoEmprestimo,\n        permiteEmprestimo: beneficiario.PermiteEmprestimo,\n        uf: beneficiario.UF,\n        ufBeneficio: beneficiario.UFBeneficio,\n        endereco: beneficiario.Endereco,\n        bairro: beneficiario.Bairro,\n        cidade: beneficiario.Cidade,\n        cep: beneficiario.CEP,\n        \n        // ResumoFinanceiro\n        valorBeneficio: resumoFinanceiro.ValorBeneficio,\n        baseCalculo: resumoFinanceiro.BaseCalculo,\n        margemDisponivelEmprestimo: resumoFinanceiro.MargemDisponivelEmprestimo,\n        margemDisponivelRmc: resumoFinanceiro.MargemDisponivelRmc,\n        margemDisponivelRcc: resumoFinanceiro.MargemDisponivelRcc,\n        totalEmprestimos: resumoFinanceiro.TotalEmprestimos,\n        totalParcelas: resumoFinanceiro.TotalParcelas,\n        totalContrato: resumoFinanceiro.TotalContrato,\n        possuiCartao: resumoFinanceiro.PossuiCartao,\n        descontoAssociacao: resumoFinanceiro.DescontoAssociacao,\n        \n        // DadosBancarios\n        agenciaPagto: dadosBancarios.AgenciaPagto,\n        agencia: dadosBancarios.Agencia,\n        banco: dadosBancarios.Banco,\n        contaPagto: dadosBancarios.ContaPagto,\n        meioPagamento: dadosBancarios.MeioPagamento,\n        \n        // Outros campos\n        dadosRepresentante: entry.DadosRepresentante || [], // Pode estar vazio\n        rmc: entry.Rmc || [], // Pode estar vazio\n        rcc: entry.RCC || [], // Pode estar vazio\n        associacao: entry.Associacao || [], // Pode estar vazio\n        pdfBase64: entry.PdfBase64 // Pode ser null\n      };\n\n      // Adicionando o objeto extraído ao array de resultados\n      result.push(extractedData);\n    }\n  } else {\n    console.log('Erro: data não é um array', data);\n  }\n}\n\n// Retornando todos os dados extraídos\nreturn result.map(item => ({\n  json: item\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        100
+      ],
+      "id": "8e029149-63bd-4291-af05-fdb235c1d2c2",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6248544-2ade-4fad-ac60-e4e564a6479c",
+              "name": "nomeBeneficiario",
+              "value": "={{ $json.nomeBeneficiario }}",
+              "type": "string"
+            },
+            {
+              "id": "155e0b81-4259-4a5b-8587-cc5d3e33b6d0",
+              "name": "cpfBeneficiario",
+              "value": "={{ $json.cpfBeneficiario }}",
+              "type": "string"
+            },
+            {
+              "id": "6797a987-f278-46b1-b97d-343f6230257f",
+              "name": "dataNascimento",
+              "value": "={{ $json.dataNascimento }}",
+              "type": "string"
+            },
+            {
+              "id": "ff55ed99-cf55-4148-bac5-60c064ce9d8b",
+              "name": "beneficio",
+              "value": "={{ $json.beneficio }}",
+              "type": "string"
+            },
+            {
+              "id": "cb5669e4-99f4-475d-bcc1-ca26aa72f61e",
+              "name": "situacao",
+              "value": "={{ $json.situacao }}",
+              "type": "string"
+            },
+            {
+              "id": "c5729eb6-1bd1-45db-ad13-eee1eba3e2a2",
+              "name": "especie",
+              "value": "={{ $json.especie }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1060,
+        100
+      ],
+      "id": "d80f839d-2ead-4dc7-b926-2baaf78668eb",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Iterando sobre todos os itens recebidos\nconst resultado = items.map(item => {\n  const dados = item.json;  // Acessando os dados de cada item\n\n  // Acessando o campo de data de nascimento do beneficiário\n  const dataNascimento = dados.dataNascimento;\n\n  // Convertendo a data de nascimento para um objeto Date\n  const nascimento = new Date(dataNascimento);\n  const hoje = new Date();\n\n  // Calculando a diferença de anos\n  let idade = hoje.getFullYear() - nascimento.getFullYear();\n\n  // Verificando se o aniversário já passou neste ano\n  const mesAtual = hoje.getMonth();\n  const mesNascimento = nascimento.getMonth();\n  const diaAtual = hoje.getDate();\n  const diaNascimento = nascimento.getDate();\n\n  // Ajustando a idade caso o aniversário ainda não tenha ocorrido neste ano\n  if (mesAtual < mesNascimento || (mesAtual === mesNascimento && diaAtual < diaNascimento)) {\n    idade--;\n  }\n\n  // Retornando os dados completos junto com a idade calculada\n  return {\n    json: {\n      nomeBeneficiario: dados.nomeBeneficiario,\n      cpfBeneficiario: dados.cpfBeneficiario,\n      idade: idade,\n      beneficio: dados.beneficio,\n      situacao: dados.situacao,\n      especie: dados.especie\n    }\n  };\n});\n\n// Retornando todos os resultados processados\nreturn resultado;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        100
+      ],
+      "id": "297ff406-83ba-42ea-9e3f-5c48f832d96a",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// A entrada no nó Filter é acessada via 'items'\nconst items = $input.all(); \n\n// Criação de um array para armazenar os resultados\nconst result = [];\n\nitems.forEach(item => {\n    let data;\n\n    try {\n        // O payload pode ser um JSON com ou sem a chave \"data\"\n        const parsedPayload = JSON.parse(item.json.payload);\n\n        // Verifica se o payload tem a chave \"data\" ou não\n        if (parsedPayload.statusCode === 200 && parsedPayload.data) {\n            data = parsedPayload.data;\n        } else {\n            // Caso contrário, trata como um objeto simples\n            data = [parsedPayload];  // Coloca o objeto em um array para processar da mesma forma\n        }\n\n        // Adicionar log para depuração\n        console.log('Parsed Payload:', parsedPayload);\n\n    } catch (error) {\n        // Se não conseguir fazer o parse, trata como dados inválidos\n        data = [];\n    }\n\n    // Verifica se 'data' é um array antes de tentar usar forEach\n    if (Array.isArray(data)) {\n        // Para cada item dentro do array 'data', extraímos o nome e telefone\n        data.forEach(entry => {\n            const nome = entry.NOME || \"Nome não disponível\";  // Checamos se o nome existe\n            const telefone = entry.TELEFONE || \"Telefone não disponível\";  // Checamos se o telefone existe\n            result.push({ NOME: nome, TELEFONE: telefone });  // Adiciona ao resultado\n        });\n    } else {\n        // Caso 'data' não seja um array (caso do objeto simples), tratamos de outra forma\n        const nome = data.NOME || \"Nome não disponível\";\n        const telefone = data.TELEFONE || \"Telefone não disponível\";\n        result.push({ NOME: nome, TELEFONE: telefone });\n    }\n});\n\n// Retorna os dados formatados\nreturn result.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        300
+      ],
+      "id": "2143d61a-2b69-43ad-b923-c633ac942be2",
+      "name": "sepradadosCredilus"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "credilus",
+          "mode": "list",
+          "cachedResultName": "credilus"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "cpf",
+              "value": "={{ $json.cpfBeneficiario }}"
+            }
+          ]
+        },
+        "options": {
+          "outputColumns": [
+            "payload"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -280,
+        320
+      ],
+      "id": "7632bc4d-c1e2-4669-aaa5-81dc44a254a2",
+      "name": "MySQL Credilus",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "yXCqmzb5SFMt7iX4",
+          "name": "rpa_margemlus"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8da07770-be73-4058-a06f-6fcc53dc964a",
+              "leftValue": "={{ $json.especie }}",
+              "rightValue": "21",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "0c52d505-e814-4d3e-983a-2f2e3a0f9f66",
+              "leftValue": "={{ $json.especie }}",
+              "rightValue": "32",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "00257876-ec6a-4e6b-9068-26aa1229719e",
+              "leftValue": "={{ $json.especie }}",
+              "rightValue": "41",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "193508bf-aae5-4c12-8148-018a01eb4e85",
+              "leftValue": "={{ $json.especie }}",
+              "rightValue": "42",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "4a9bdc58-1954-46c9-83d8-8645137f2c06",
+              "leftValue": "={{ $json.especie }}",
+              "rightValue": "46",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "5496f457-ee2a-46bd-bca7-dfdcce5c2952",
+              "leftValue": "={{ $json.especie }}",
+              "rightValue": "57",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "d00c937c-f1cd-4e69-9783-9505706c9737",
+              "leftValue": "={{ $json.especie }}",
+              "rightValue": "92",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1460,
+        100
+      ],
+      "id": "420f6600-734f-40f7-a09d-2fdd67a0b16c",
+      "name": "Filter Espécie "
+    },
+    {
+      "parameters": {
+        "jsCode": "// A entrada no nó Filter é acessada via 'items'\nconst items = $input.all(); \n\n// Criação de um array para armazenar os resultados\nconst result = [];\n\nitems.forEach(item => {\n    // O payload já está em formato de string, por isso usamos JSON.parse\n    const data = JSON.parse(item.json.payload);\n\n    // Verificamos se 'data' é um array antes de tentar usar forEach\n    if (Array.isArray(data)) {\n        // Para cada registro dentro do payload, extraímos o nome e telefone\n        data.forEach(entry => {\n            const nome = entry.NOME || \"Nome não disponível\";  // Checamos se o nome existe\n            const telefone = entry.TELEFONE || \"Telefone não disponível\";  // Checamos se o telefone existe\n            result.push({ NOME: nome, TELEFONE: telefone });  // Adiciona ao resultado\n        });\n    } else {\n        // Caso 'data' não seja um array, tratamos de outra forma\n        const nome = data.NOME || \"Nome não disponível\";\n        const telefone = data.TELEFONE || \"Telefone não disponível\";\n        result.push({ NOME: nome, TELEFONE: telefone });\n    }\n});\n\n// Retorna os dados formatados\nreturn result.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        500
+      ],
+      "id": "16b63d33-82e7-4549-8fa0-b52ad2561480",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bbdbb401-a1ea-49a5-a3b3-1a931a462f83",
+              "leftValue": "={{ $json.NOME }}",
+              "rightValue": "Nome não disponível",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "a14d20b8-9c7a-4c52-a86c-47d236c28750",
+              "leftValue": "={{ $json.NOME }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b7e91776-4ddd-449f-a054-5081464925a1",
+              "leftValue": "={{ $json.TELEFONE }}",
+              "rightValue": "Telefone não disponível",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        500
+      ],
+      "id": "61b57ade-502a-4482-9f78-051380d74388",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bbdbb401-a1ea-49a5-a3b3-1a931a462f83",
+              "leftValue": "={{ $json.NOME }}",
+              "rightValue": "Nome não disponível",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "bbc1a92a-5b13-4c62-8176-58f728e5fa4b",
+              "leftValue": "={{ $json.TELEFONE }}",
+              "rightValue": "Telefone não disponível",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "290d4d3b-95ed-48fd-91d4-e12b5e3133f6",
+              "leftValue": "={{ $json.NOME }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        300
+      ],
+      "id": "3a64f6b9-6a32-4ceb-ad5a-ae130cbb9002",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1480,
+        400
+      ],
+      "id": "ef69d693-aed8-4bdc-9a74-ade11635faf2",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "6f3fd574-e5b2-4c47-89c8-35f3d1bb1132",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2200,
+        400
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6d089b0-76ce-4c71-a36b-e11ae91e705c",
+              "name": "firtName",
+              "value": "={{ $json.nameParted.first() }}",
+              "type": "string"
+            },
+            {
+              "id": "cf862e00-1336-4eee-b202-6352245b7f85",
+              "name": "lastName",
+              "value": "={{ $json.nameParted.last() }}",
+              "type": "string"
+            },
+            {
+              "id": "7f3301d2-61a5-4636-9071-45b12e046627",
+              "name": "number",
+              "value": "={{ $json.number.slice(2) }}",
+              "type": "string"
+            },
+            {
+              "id": "1698af2d-d6c3-4950-b63f-8f0ea97b6aa2",
+              "name": "grupoOrigem",
+              "value": "={{ $json.grupoOrigem }}",
+              "type": "string"
+            },
+            {
+              "id": "27f5902c-9805-48fa-90e3-f15a04ef1bf8",
+              "name": "idGrupoUsuario",
+              "value": "={{ $json.idGrupoUsuario }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2e90e677-5339-4fda-a8a7-4337e9bf890b",
+      "name": "Remove +55",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1920,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO contacts (external_group_id, phone, first_name, second_name, created_by, send_per)\nVALUES \n    ((SELECT id FROM branchs WHERE active = 1 AND external_group_id = '{{ $json.idGrupoUsuario}}'), '{{ $json.number }}', '{{ $json.firtName }}', '{{ $json.lastName }}', 'rpa.margilus','[\"sms\"]')\nON DUPLICATE KEY UPDATE\n    external_group_id = (SELECT id FROM branchs WHERE active = 1 AND external_group_id = '{{ $json.idGrupoUsuario }}'),\n    first_name = VALUES(first_name),\n    second_name = VALUES(second_name),\n    created_by = VALUES(created_by),\n    send_per = VALUES(send_per)",
+        "options": {}
+      },
+      "id": "8e17b38a-5dda-43cf-9317-88308768fa7d",
+      "name": "Save Contacts",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        700
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "PPS78JUtnilF97qD",
+          "name": "messages_hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "nameParted",
+              "type": "arrayValue",
+              "arrayValue": "={{ $json['NOME'].split(' ') }}"
+            },
+            {
+              "name": "number",
+              "stringValue": "=55{{ $json[\"TELEFONE\"] }}"
+            },
+            {
+              "name": "idGrupoUsuario",
+              "stringValue": "=14"
+            },
+            {
+              "name": "grupoOrigem",
+              "stringValue": "MDG MARGEM"
+            }
+          ]
+        },
+        "include": "selected",
+        "options": {
+          "ignoreConversionErrors": false
+        }
+      },
+      "id": "75ff95ea-c413-4aef-99f8-dac91778809b",
+      "name": "splitNomecliente",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        1680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a26f1eb-cf34-4720-815c-3ed7dff90281",
+              "name": "LAST_ID",
+              "value": "={{ $json.LAST_ID }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -60,
+        100
+      ],
+      "id": "c2127485-8234-428d-85b0-6757e9c63a23",
+      "name": "Edit OFFSET"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Incrementa o OFFSET em 100 para a próxima execução\nconst lastID = $('Edit OFFSET').first().json.LAST_ID || 0;\nreturn {\n  json: {\n    OFFSET: lastID + 1 + 500  // Incrementa  para a próxima página de resultados\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3340,
+        1460
+      ],
+      "id": "bef76aaa-4a11-428b-8158-74e631638d0b",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1b6a0670-8b66-40f2-9902-01fa3ca69558",
+              "leftValue": "={{ $json.payload }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        200,
+        320
+      ],
+      "id": "4fe6dc72-9163-4ac5-94bd-864b15ee66df",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3820,
+        1460
+      ],
+      "id": "1b18e00e-d303-4b87-9863-f31846d2cb45",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "DADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -300,
+        100
+      ],
+      "id": "4f308367-87e7-4b23-8c46-f85f82cf67bb",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FHQF5SJm4DnhmXnj",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "DADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "LAST_ID": "={{ $json.OFFSET }}",
+            "row_number": "={{ $('Google Sheets').first().json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "LAST_ID",
+              "displayName": "LAST_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3560,
+        1460
+      ],
+      "id": "e7f153ba-fd1c-498c-b7c7-d8d8ffd369ff",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FHQF5SJm4DnhmXnj",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -680,
+        100
+      ],
+      "id": "8b887beb-c8e9-4a10-a068-4ef0f814f5f3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2500,
+        700
+      ],
+      "id": "1833ea35-7cf8-4e47-aa4a-3b53a3836726",
+      "name": "Wait",
+      "webhookId": "37ffcc64-1e8e-4aa6-bec3-6d707a92e3a2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * \nFROM external\nWHERE id > {{ $json[\"LAST_ID\"] }}\nORDER BY id\nLIMIT 500;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        160,
+        100
+      ],
+      "id": "06c39d18-4f3b-47dc-ae00-422c9896ac11",
+      "name": "MySQL External",
+      "credentials": {
+        "mySql": {
+          "id": "yXCqmzb5SFMt7iX4",
+          "name": "rpa_margemlus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c110e54f-b41a-481c-a0da-36bb9add994e",
+              "leftValue": "={{ $json.idade }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "398d8a89-69d3-4fd2-9067-7d9112a7f039",
+              "leftValue": "={{ $json.idade }}",
+              "rightValue": 68,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1900,
+        100
+      ],
+      "id": "0f3013cb-97cf-4a75-a70e-47c6055be0ac",
+      "name": "Filter Idade"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Filter Espécie ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Filter Idade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sepradadosCredilus": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL Credilus": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Espécie ": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "splitNomecliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove +55": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Contacts": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "splitNomecliente": {
+      "main": [
+        [
+          {
+            "node": "Remove +55",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit OFFSET": {
+      "main": [
+        [
+          {
+            "node": "MySQL External",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "sepradadosCredilus",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        []
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Edit OFFSET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL External": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Idade": {
+      "main": [
+        [
+          {
+            "node": "MySQL Credilus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "8f3f3f5b-75cb-4a36-83c6-652e86e64738",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-12-23T17:39:00.051Z",
+      "createdAt": "2024-12-23T17:39:00.051Z",
+      "role": "workflow:owner",
+      "workflowId": "JzLQd13AYgxrvp1B",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2024-11-29T03:33:19.043Z",
+      "createdAt": "2024-11-29T03:33:19.043Z",
+      "id": "dUa6vMZCm6XkgP1j",
+      "name": "projeto-emocionado-01"
+    },
+    {
+      "updatedAt": "2024-09-23T19:31:45.386Z",
+      "createdAt": "2024-09-23T19:31:45.386Z",
+      "id": "v6ur1JZfXU0M3ks9",
+      "name": "SMS"
+    }
+  ]
+}

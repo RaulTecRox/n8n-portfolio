@@ -1,0 +1,614 @@
+{
+  "updatedAt": "2025-08-25T12:35:13.849Z",
+  "createdAt": "2025-08-18T16:54:28.579Z",
+  "id": "6isGmtAl12oCX0Ih",
+  "name": "Extrator de dados",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        256
+      ],
+      "id": "d40230b3-2144-46a7-ad64-3353c39e73d7",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"NOME\": \"JOSE CLAUDIO DE SOUZA\",\n  \"CPF\": \"008.221.751-34\",\n  \"execução/cumprimento de sentença\": \"0003097-37.2014.4.01.3400\",\n  \"Mandado de Segurança\": \"0039117- 76.2004.4.01.3400\",\n  \"valor total bruto\": \"R$347.651,01\",\n  \"atualizado\": \"01/05/2022\",\n  \"PSS\": \"R$19.642,56\"\n}",
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1936,
+        256
+      ],
+      "id": "16cda7b3-a830-4ec7-b7f4-4858f3f7954d",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "gemma2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        496
+      ],
+      "id": "6654df9c-e7dc-4ab2-9f08-c31053385f9b",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pOegylLBwaHAjzk2",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1408c517-ee9b-4165-8126-8677c8fb41d8",
+              "name": "NOME",
+              "value": "={{ $json.output.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "c3c25598-7e13-4673-904b-e40831124214",
+              "name": "CPF",
+              "value": "={{ $json.output.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "c7ff3ec7-b99e-4402-99bf-2d1c0547c1dd",
+              "name": "execução/cumprimento de sentença",
+              "value": "={{ $json.output['execução/cumprimento de sentença'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e4fa9b86-03fe-4845-b837-fe008d1a80c2",
+              "name": "Mandado de Segurança",
+              "value": "={{ $json.output['Mandado de Segurança'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3c666d11-c0b3-4bcc-a7a4-074071fedf72",
+              "name": "valor total bruto",
+              "value": "={{ $json.output['valor total bruto'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f43af1bb-cb14-451c-9265-396f9c4464f4",
+              "name": "atualizado",
+              "value": "={{ $json.output.atualizado }}",
+              "type": "string"
+            },
+            {
+              "id": "47912ce2-2e50-463a-85a9-c404f4e91bda",
+              "name": "PSS",
+              "value": "={{ $json.output.PSS }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2288,
+        256
+      ],
+      "id": "d2b05c7d-ba63-4cfa-a9ec-4436791fa193",
+      "name": "dados"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_iFRwj3Pgdg5t-gHPQBfah1BVkVLb2J5XZgdZkOh4Ug",
+          "mode": "list",
+          "cachedResultName": "ANFIP - TERMO INDIVIDUAL DE ACORDO ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_iFRwj3Pgdg5t-gHPQBfah1BVkVLb2J5XZgdZkOh4Ug/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_iFRwj3Pgdg5t-gHPQBfah1BVkVLb2J5XZgdZkOh4Ug/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NOME": "={{ $json.NOME }}",
+            "CPF": "={{ $json.CPF }}",
+            "execução/cumprimento de sentença": "={{ $json['execução/cumprimento de sentença'] }}",
+            "valor total bruto": "={{ $json['valor total bruto'] }}",
+            "Mandado de Segurança": "={{ $json['Mandado de Segurança'] }}",
+            "atualizado": "={{ $json.atualizado }}",
+            "PSS": "={{ $json.PSS }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NOME",
+              "displayName": "NOME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CPF",
+              "displayName": "CPF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "execução/cumprimento de sentença",
+              "displayName": "execução/cumprimento de sentença",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mandado de Segurança",
+              "displayName": "Mandado de Segurança",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor total bruto",
+              "displayName": "valor total bruto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "atualizado",
+              "displayName": "atualizado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PSS",
+              "displayName": "PSS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2496,
+        256
+      ],
+      "id": "81b0ec3a-435d-423d-98ec-651d49d85abc",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1056,
+        176
+      ],
+      "id": "f34485da-1a14-4aa6-a61f-4d13ef638116",
+      "name": "Download file",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1M5EB9rHCLNyL8mkrIlNhBIylBOXpPYYj",
+          "mode": "list",
+          "cachedResultName": "ANFIP",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1M5EB9rHCLNyL8mkrIlNhBIylBOXpPYYj"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        272,
+        368
+      ],
+      "id": "23cb0f89-d274-490c-a08a-08b334089226",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fcb2a474-90cd-4fa5-b0f9-8a176e18947f",
+              "leftValue": "={{ $json.mimeType }}",
+              "rightValue": "application/pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        176
+      ],
+      "id": "5096a7bf-0bc2-415c-9289-c02e516d409e",
+      "name": "Filter pdf"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1408,
+        176
+      ],
+      "id": "f38a6c63-6826-4315-ad84-ffd6b0ee81a9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        16
+      ],
+      "id": "c4d475e2-4d2a-4423-a0c5-e6692d6d0fe0",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download file').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1Z6yIx_rRh0MeWn7yBirtlaSTBGDEpLg0",
+          "mode": "list",
+          "cachedResultName": "Processado",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Z6yIx_rRh0MeWn7yBirtlaSTBGDEpLg0"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2704,
+        256
+      ],
+      "id": "3b490a50-21de-4387-a5d5-821ad0d02ca5",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "limit": 1,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1M5EB9rHCLNyL8mkrIlNhBIylBOXpPYYj",
+            "mode": "list",
+            "cachedResultName": "ANFIP",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1M5EB9rHCLNyL8mkrIlNhBIylBOXpPYYj"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        496,
+        176
+      ],
+      "id": "bfbb4150-10b3-40f7-bfd2-2fb2fdfbb6b7",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        288,
+        176
+      ],
+      "id": "108c93f5-b8a7-4b32-91a8-35be6a7753ee",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Filter pdf": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Filter pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 60,
+    "saveDataSuccessExecution": "none"
+  },
+  "staticData": {
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-08-20T12:06:48Z"
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6a7e6519-ede4-43af-894f-960d6c76dfe5",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-18T16:54:28.579Z",
+      "createdAt": "2025-08-18T16:54:28.579Z",
+      "role": "workflow:owner",
+      "workflowId": "6isGmtAl12oCX0Ih",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

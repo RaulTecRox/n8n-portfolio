@@ -1,0 +1,911 @@
+{
+  "updatedAt": "2025-03-17T12:53:02.288Z",
+  "createdAt": "2025-03-14T17:48:00.967Z",
+  "id": "pdbvT2jTUaTcMeq7",
+  "name": "convert json",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "cpfs_bmg",
+          "mode": "list",
+          "cachedResultName": "cpfs_bmg"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "error_message",
+              "condition": "IS NOT NULL"
+            },
+            {
+              "column": "error_json",
+              "condition": "IS NULL"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        220,
+        -165
+      ],
+      "id": "3b36e51e-b33a-4a0d-99ff-962860d44301",
+      "name": "MySQL",
+      "credentials": {
+        "mySql": {
+          "id": "fPwgeEpjllC7rjHG",
+          "name": "GovServLus MariaDB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        -165
+      ],
+      "id": "6056950e-75df-4025-9836-5dc560de1c54",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allData = $(\"Loop Over Items\").first().json;\n\nreturn {\n  \"xml\": allData.error_message.replace(/^500 - \"/, \"\").replace(/\"$/, \"\").replace(/^\"|\"$/g, \"\").replace(/\\\\\"/g, '\"')\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        -240
+      ],
+      "id": "6e8f7fd9-b356-4a7b-93bd-af9168f0da77",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "amount": 0.5
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        -165
+      ],
+      "id": "3aeec134-423d-4359-81b7-20294d0d2fb9",
+      "name": "Wait",
+      "webhookId": "24ee9067-7351-491a-9b04-d10cf15a85e4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allData = $('XML error').first().json\n\nreturn {\"data\": JSON.stringify(allData)};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        -280
+      ],
+      "id": "6b21c24c-03a0-4513-87ed-0309091a5df3",
+      "name": "Code1",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        -280
+      ],
+      "id": "8d02b8fd-8d42-457b-ab89-306f6f8eead6",
+      "name": "XML error",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "cpfs_bmg",
+          "mode": "list",
+          "cachedResultName": "cpfs_bmg"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "cpf",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "error_json",
+              "value": "={{ $json.data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        1540,
+        -240
+      ],
+      "id": "2bc14718-6e27-4896-ab74-c5843b6857bf",
+      "name": "MySQL1",
+      "credentials": {
+        "mySql": {
+          "id": "fPwgeEpjllC7rjHG",
+          "name": "GovServLus MariaDB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "e869054d-af4e-40ee-a131-5a63dc935e58",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -165
+      ],
+      "id": "f93a9a17-ded4-4bb1-abcf-50416ccd8632",
+      "name": "Webhook",
+      "webhookId": "e869054d-af4e-40ee-a131-5a63dc935e58"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "408c1885-4bf2-40b9-ba26-0c7a86b27461",
+              "leftValue": "={{ $json.xml }}",
+              "rightValue": "<",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        -240
+      ],
+      "id": "9c8312bf-91b2-4ad0-b2e4-a2281a5cc901",
+      "name": "Is XML"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "cpfs_bmg",
+          "mode": "list",
+          "cachedResultName": "cpfs_bmg"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "cpf",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "step",
+              "value": "={{ $('Loop Over Items').item.json.step }}"
+            },
+            {
+              "column": "error_message",
+              "value": "={{ $('Loop Over Items').item.json.error_message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        1100,
+        -100
+      ],
+      "id": "2721804b-1d45-4d51-bcd2-0bef4ee1369e",
+      "name": "MySQL2",
+      "credentials": {
+        "mySql": {
+          "id": "fPwgeEpjllC7rjHG",
+          "name": "GovServLus MariaDB"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        220,
+        -540
+      ],
+      "id": "ae3fd829-7809-4969-b208-4bbe986b93b0",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "-1001534937224"
+            },
+            {
+              "name": "message",
+              "value": "=Que Truaiste deu erro no conversor de json:\n\n{{ $json.execution.error.message }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "html"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7aebd9e7-344a-4575-94a2-b17ab3535050",
+      "name": "Envio telegram erro",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        -540
+      ],
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "MySQL": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Is XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML error": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "MySQL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "MySQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is XML": {
+      "main": [
+        [
+          {
+            "node": "XML error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MySQL2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL2": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Envio telegram erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "connection": "upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "http",
+            "x-forwarded-for": "200.176.4.97, 10.3.60.26",
+            "host": "n8napp",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "accept-language": "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "upgrade-insecure-requests": "1",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
+            "priority": "u=0, i"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook-test/e869054d-af4e-40ee-a131-5a63dc935e58",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "ca3ec9f7-7f27-4a23-b17c-d06b9b8f21b6",
+  "activeVersionId": "ca3ec9f7-7f27-4a23-b17c-d06b9b8f21b6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-03-14T17:48:00.967Z",
+      "createdAt": "2025-03-14T17:48:00.967Z",
+      "role": "workflow:owner",
+      "workflowId": "pdbvT2jTUaTcMeq7",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "ca3ec9f7-7f27-4a23-b17c-d06b9b8f21b6",
+    "workflowId": "pdbvT2jTUaTcMeq7",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "select",
+          "table": {
+            "__rl": true,
+            "value": "cpfs_bmg",
+            "mode": "list",
+            "cachedResultName": "cpfs_bmg"
+          },
+          "returnAll": true,
+          "where": {
+            "values": [
+              {
+                "column": "error_message",
+                "condition": "IS NOT NULL"
+              },
+              {
+                "column": "error_json",
+                "condition": "IS NULL"
+              }
+            ]
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          220,
+          -165
+        ],
+        "id": "3b36e51e-b33a-4a0d-99ff-962860d44301",
+        "name": "MySQL",
+        "credentials": {
+          "mySql": {
+            "id": "fPwgeEpjllC7rjHG",
+            "name": "GovServLus MariaDB"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          440,
+          -165
+        ],
+        "id": "6056950e-75df-4025-9836-5dc560de1c54",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "jsCode": "const allData = $(\"Loop Over Items\").first().json;\n\nreturn {\n  \"xml\": allData.error_message.replace(/^500 - \"/, \"\").replace(/\"$/, \"\").replace(/^\"|\"$/g, \"\").replace(/\\\\\"/g, '\"')\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          660,
+          -240
+        ],
+        "id": "6e8f7fd9-b356-4a7b-93bd-af9168f0da77",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "amount": 0.5
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1760,
+          -165
+        ],
+        "id": "3aeec134-423d-4359-81b7-20294d0d2fb9",
+        "name": "Wait",
+        "webhookId": "24ee9067-7351-491a-9b04-d10cf15a85e4"
+      },
+      {
+        "parameters": {
+          "jsCode": "const allData = $('XML error').first().json\n\nreturn {\"data\": JSON.stringify(allData)};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1320,
+          -280
+        ],
+        "id": "6b21c24c-03a0-4513-87ed-0309091a5df3",
+        "name": "Code1",
+        "alwaysOutputData": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "dataPropertyName": "xml",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          1100,
+          -280
+        ],
+        "id": "8d02b8fd-8d42-457b-ab89-306f6f8eead6",
+        "name": "XML error",
+        "alwaysOutputData": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "table": {
+            "__rl": true,
+            "value": "cpfs_bmg",
+            "mode": "list",
+            "cachedResultName": "cpfs_bmg"
+          },
+          "dataMode": "defineBelow",
+          "columnToMatchOn": "cpf",
+          "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "error_json",
+                "value": "={{ $json.data }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          1540,
+          -240
+        ],
+        "id": "2bc14718-6e27-4896-ab74-c5843b6857bf",
+        "name": "MySQL1",
+        "credentials": {
+          "mySql": {
+            "id": "fPwgeEpjllC7rjHG",
+            "name": "GovServLus MariaDB"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "path": "e869054d-af4e-40ee-a131-5a63dc935e58",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          -165
+        ],
+        "id": "f93a9a17-ded4-4bb1-abcf-50416ccd8632",
+        "name": "Webhook",
+        "webhookId": "e869054d-af4e-40ee-a131-5a63dc935e58"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "408c1885-4bf2-40b9-ba26-0c7a86b27461",
+                "leftValue": "={{ $json.xml }}",
+                "rightValue": "<",
+                "operator": {
+                  "type": "string",
+                  "operation": "startsWith"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          880,
+          -240
+        ],
+        "id": "9c8312bf-91b2-4ad0-b2e4-a2281a5cc901",
+        "name": "Is XML"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "table": {
+            "__rl": true,
+            "value": "cpfs_bmg",
+            "mode": "list",
+            "cachedResultName": "cpfs_bmg"
+          },
+          "dataMode": "defineBelow",
+          "columnToMatchOn": "cpf",
+          "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "step",
+                "value": "={{ $('Loop Over Items').item.json.step }}"
+              },
+              {
+                "column": "error_message",
+                "value": "={{ $('Loop Over Items').item.json.error_message }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          1100,
+          -100
+        ],
+        "id": "2721804b-1d45-4d51-bcd2-0bef4ee1369e",
+        "name": "MySQL2",
+        "credentials": {
+          "mySql": {
+            "id": "fPwgeEpjllC7rjHG",
+            "name": "GovServLus MariaDB"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          220,
+          -540
+        ],
+        "id": "ae3fd829-7809-4969-b208-4bbe986b93b0",
+        "name": "Error Trigger"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "phone",
+                "value": "-1001534937224"
+              },
+              {
+                "name": "message",
+                "value": "=Que Truaiste deu erro no conversor de json:\n\n{{ $json.execution.error.message }}"
+              },
+              {
+                "name": "parse_mode",
+                "value": "html"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "7aebd9e7-344a-4575-94a2-b17ab3535050",
+        "name": "Envio telegram erro",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          460,
+          -540
+        ],
+        "executeOnce": true
+      }
+    ],
+    "connections": {
+      "MySQL": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Is XML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML error": {
+        "main": [
+          [
+            {
+              "node": "Code1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "node": "MySQL1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MySQL1": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "MySQL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is XML": {
+        "main": [
+          [
+            {
+              "node": "XML error",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MySQL2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MySQL2": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "node": "Envio telegram erro",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}

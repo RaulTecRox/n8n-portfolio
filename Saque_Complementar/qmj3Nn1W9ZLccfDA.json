@@ -1,0 +1,670 @@
+{
+  "updatedAt": "2025-06-09T14:31:27.917Z",
+  "createdAt": "2025-03-06T21:05:34.529Z",
+  "id": "qmj3Nn1W9ZLccfDA",
+  "name": "AGILUS - Cadastro AF",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agilus/af/create",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        100
+      ],
+      "id": "a64871ae-37b2-4775-82e8-cb50921c55bb",
+      "name": "Webhook",
+      "webhookId": "ec9c1af9-f8a9-4711-ad24-e564ee8960e9"
+    },
+    {
+      "parameters": {
+        "jsCode": "let rawBody = $input.first().json.body;\n\n// Etapa 1: Remover quebras de linha reais e espaços extras\nrawBody = rawBody.replace(/[\\n\\r]/g, '').trim();\n\n// Etapa 2: Corrigir campos faltando (exemplo: \"banco_codigo\": , → \"banco_codigo\": null)\nrawBody = rawBody.replace(/\"banco_codigo\":\\s*,/, '\"banco_codigo\": null,');\n\n// Etapa 3: Fazer o parse\nlet parsedBody;\n\ntry {\n  parsedBody = JSON.parse(rawBody);\n} catch (error) {\n  throw new Error(\"Erro ao fazer o parse do JSON: \" + error.message);\n}\n\nreturn parsedBody;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        100
+      ],
+      "id": "48a3c39e-8a73-4538-b02f-93746fd4a06f",
+      "name": "Get Body"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2fceb35f-e1e1-45a4-97fc-a6f9bc227aaa",
+              "leftValue": "={{ $json.bcolib_descricao }}",
+              "rightValue": "={{ $('Get Body').item.json.digitacao_banco }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1060,
+        100
+      ],
+      "id": "9317cd32-8fab-4b3c-b39e-9f186ea65732",
+      "name": "Filter bank"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DECLARE @data_current SMALLDATETIME = GETDATE();\n\nEXEC [dbo].[pr_banco_simulador] @data = @data_current,\n\t@orgao = {{ $('Get Body').item.json.orgav_codigo }}"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        100
+      ],
+      "id": "c005de6c-3787-424b-8d4c-b0dabea1c8e6",
+      "name": "Run pr_banco_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DECLARE @data_current SMALLDATETIME = GETDATE();\n\nEXEC [dbo].[pr_tabela_simulador] @data = @data_current,\n  @orgao = {{ $('Get Body').item.json.orgav_codigo }},\n  @banco = {{ $('Filter bank').item.json.bcolib_codigo }}"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        1280,
+        100
+      ],
+      "id": "34f0d93a-86ba-447a-87d7-cdf03c0dc962",
+      "name": "Run pr_tabela_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb92949c-f840-4d87-8d0e-155155c3e523",
+              "leftValue": "={{ $('Get Body').item.json.digitacao_tbb_descricao }}",
+              "rightValue": "={{ $json.tbb_descricao }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1500,
+        100
+      ],
+      "id": "acb5cbc1-003d-4a6c-a21d-2d0852000db4",
+      "name": "Filter tbb_descricao"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC [dbo].[pr_valor_parcela_simulador] @orgao = {{ $('Get Body').item.json.orgav_codigo }},\n  @banco = {{ $('Filter bank').item.json.bcolib_codigo }},\n  @tabela = {{ $('Filter tbb_descricao').item.json.tbb_codigo }},\n  @valor_parcela = {{ $('Get Body').item.json.digitacao_valor_parcela }},\n  @valor_refin = 0,\n  @valor_tac = 0,\n  @valor_compra_divida = 0\n  "
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        1720,
+        100
+      ],
+      "id": "b42020c1-105a-4eb5-b9c7-fe4b91466704",
+      "name": "Run pr_valor_parcela_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ce28405-8ae4-4bdd-ad93-3b0508c892b4",
+              "leftValue": "={{ $json.itb_qtde_parcelas }}",
+              "rightValue": "={{ $('Get Body').item.json.digitacao_qtd_parcela }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1940,
+        100
+      ],
+      "id": "2539707f-b360-4ee7-abf2-13b9c5b55974",
+      "name": "Filter itb_qtde_parcelas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC [dbo].[pr_comissao_simulador] @orgao = {{ $('Get Body').item.json.orgav_codigo }},\n  @banco = {{ $('Filter bank').item.json.bcolib_codigo }},\n  @tabela = {{ $('Filter tbb_descricao').item.json.tbb_codigo }},\n  @agente = {{ $('Get User By Name').item.json.usu_codigo }},\n  @tem_meta = 0,\n  @valor_parcela = {{ $('Get Body').item.json.digitacao_valor_parcela }},\n  @valor_contrato = NULL,\n  @valor_refin = 0,\n  @valor_compra = 0,\n  @custo_portabilidade = 0\n  "
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        2160,
+        100
+      ],
+      "id": "3ff254ae-8834-4940-93d8-5606ea689c16",
+      "name": "Run pr_comissao_simulador",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0491a6df-48f2-4fbd-93e1-ab53f7fa6a4e",
+              "leftValue": "={{ $json.qtde_parcelas }}",
+              "rightValue": 96,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2380,
+        100
+      ],
+      "id": "e9438a63-4b95-43d6-b427-8d39ba8c5e3d",
+      "name": "Filter qtde_parcelas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT TOP 1 * FROM dbo.usuario WHERE usu_nome = '{{ $('Get Body').item.json.login_cadastramento }}'"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        100
+      ],
+      "id": "7d26141b-c584-4dd7-8bc8-4a01d75ad9a0",
+      "name": "Get User By Name",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/agilus/cliente/upsert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Get Body').item.json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        100
+      ],
+      "id": "33b4c101-e75d-4cea-b48e-05b400efc452",
+      "name": "Get Client Code",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DECLARE @data_current SMALLDATETIME = GETDATE();\nDECLARE @af_codigo INT;\nEXEC [dbo].[pr_af_i] @con_codigo = {{ $('Get Client Code').item.json.Con_codigo }},\n\t@data = @data_current,\n\t@ent_codigo = 1,\n\t@valor_af = {{ $('Filter itb_qtde_parcelas').item.json.valor_contrato }},\n\t@qtde_parcelas = {{ $('Filter itb_qtde_parcelas').item.json.itb_qtde_parcelas }},\n\t@valor_parcela = {{ $('Get Body').item.json.digitacao_valor_parcela }},\n\t@bcolib_codigo = {{ $('Run pr_banco_simulador').item.json.bcolib_codigo }},\n\t@orgav_codigo = {{ $('Get Body').item.json.orgav_codigo }}, --dbo.orgaoav\n\t@fil_codigo = 1, --dbo.filial\n\t@rep_codigo = 604, --dbo.representante\n\t@rem_codigo = NULL,\n\t@tbb_codigo = NULL,\n\t@nome_tabela = '{{ $('Get Body').item.json.digitacao_tbb_descricao }}', --pr_tabela_simulador\n\t@ttb_codigo = 5, --dbo.tipo_tabela_banco\n\t@data_vencimento_inicial = NULL,\n\t@data_vencimento_final = NULL,\n\t@valor_refin = NULL,\n\t@refin_parcela_inicial = NULL,\n\t@refin_parcela_final = NULL,\n\t@refin_mes_referencia = NULL,\n\t@comissao_empresa = 42.7069, --pr_comissao_simulador\n\t@codigo_contrato_banco = '{{ $('Get Body').item.json.digitacao_codigo_contrato_banco }}',\n\t@data_liberacao_banco = NULL,\n\t@usu_codigo_atendente = {{ $('Get User By Name').item.json.usu_codigo }},\n\t@usu_codigo_liberacao = NULL, --dbo.usuario\n\t@valor_tac = NULL,\n\t@codigo_barras = NULL,\n\t@af_codigo = @af_codigo output,\n\t@nome_servico = 'Digitação Automática',\n\t@bonus_empresa = 0,\n\t@diferimento_empresa = 0,\n\t@faf_codigo = 10, -- dbo.fase_af\n\t@sba_codigo = NULL,\n\t@numero_operacao_banco = NULL,\n\t@prc_codigo = 18, --dbo.parceiro;\n\t@valor_portado = NULL,\n\t@bcolib_codigo_portado = NULL,\n\t@valor_parcela_portada = NULL,\n\t@tmi_codigo = 1, --dbo.tipo_midia\n\t@tlc_codigo = 2, --tipo_liberacao_contrato\n\t@link_formalizacao = '{{ $('Get Body').item.json.link_formalizacao }}',\n\t@valor_liberado = NULL,\n\t@prazo_restante_portado = NULL,\n\t@numero_contrato_portado = NULL,\n\t@observacao_portabilidade = NULL;\nSELECT @af_codigo AS af_codigo;"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        2820,
+        100
+      ],
+      "id": "f90e8e50-6642-4116-a6b3-ccc8a5bc3aa2",
+      "name": "Run pr_af_i",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3260,
+        0
+      ],
+      "id": "8d339fc9-6b39-4328-8de2-36bd48f69c41",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3040,
+        0
+      ],
+      "id": "8ff0c4f7-59b3-4717-9f36-92cf94992273",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "exec pr_ordena_acompanhamento {{ $json.af_codigo }}, 'link de formalização: {{ $('Get Body').item.json.link_formalizacao }}.', 'BACKOFFICE'"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        3040,
+        200
+      ],
+      "id": "9553b70f-46b5-4cf3-a3da-9d9754e23917",
+      "name": "Insert Acompanhamento  Lik Formalização",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3260,
+        200
+      ],
+      "id": "fe6fa9bc-57b2-4ae2-8a90-7ece055c5b25",
+      "name": "No Operation, do nothing1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Body": {
+      "main": [
+        [
+          {
+            "node": "Get User By Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_banco_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter bank",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter bank": {
+      "main": [
+        [
+          {
+            "node": "Run pr_tabela_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_tabela_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter tbb_descricao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter tbb_descricao": {
+      "main": [
+        [
+          {
+            "node": "Run pr_valor_parcela_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_valor_parcela_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter itb_qtde_parcelas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter itb_qtde_parcelas": {
+      "main": [
+        [
+          {
+            "node": "Run pr_comissao_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_comissao_simulador": {
+      "main": [
+        [
+          {
+            "node": "Filter qtde_parcelas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User By Name": {
+      "main": [
+        [
+          {
+            "node": "Run pr_banco_simulador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter qtde_parcelas": {
+      "main": [
+        [
+          {
+            "node": "Get Client Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Client Code": {
+      "main": [
+        [
+          {
+            "node": "Run pr_af_i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run pr_af_i": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Acompanhamento  Lik Formalização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Acompanhamento  Lik Formalização": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Get Client Code": [
+      {
+        "json": {
+          "Con_codigo": 106218,
+          "Con_cpf": "04131243474",
+          "Con_matricula": "1204155493",
+          "Con_nome": "MARIA VALDECIR BARBOSA FERREIRA",
+          "Con_endereco": "R PE RAIMUNDO DA SILVA",
+          "Con_endnumero": "419",
+          "Con_complemento": null,
+          "Con_telefone": "19993418990",
+          "Con_bairro": "VILA CALIFORNIA",
+          "Con_cidade": "SAO PAULO",
+          "Con_uf": "SP",
+          "Con_cep": "03214000",
+          "Con_rg": "288432617",
+          "Con_org_emissor": null,
+          "Con_data_nasc": "1977-09-19T00:00:00.000Z",
+          "Con_estado_civil": "solteiro",
+          "Con_sexo": "F",
+          "Bcolib_codigo_conta": 237,
+          "Con_agencia": "928",
+          "Con_conta_corrente": "4845013",
+          "Orgav_codigo": 57,
+          "uni_codigo": null,
+          "Con_observacao": null,
+          "Con_renda": null,
+          "Con_endereco_orgao": null,
+          "Con_endnumero_orgao": null,
+          "Con_complemento_orgao": null,
+          "Con_telefone_orgao": null,
+          "Con_bairro_orgao": null,
+          "Con_cidade_orgao": null,
+          "Con_uf_orgao": null,
+          "Con_cep_orgao": null,
+          "Con_cargo": null,
+          "Con_data_admissao": null,
+          "Con_salario": 1518,
+          "Con_margem_consignavel": null,
+          "Con_data_cadastramento": "2025-06-09T09:18:00.000Z",
+          "con_login_cadastramento": "DIGITADOR",
+          "usr_coleta_assinatura": null,
+          "con_senha_orgao": null,
+          "con_poupanca": false,
+          "con_referencia_endereco": null,
+          "con_especie": "21",
+          "usr_nome_mae": "ALAIDE FELIX BARBOSA FERREIRA",
+          "usr_nome_pai": null,
+          "usr_naturalidade": null,
+          "usr_uf_nasc": null,
+          "usr_data_emissao_rg": null,
+          "usr_desbloqueado": null,
+          "usr_dia_desbloqueio": null,
+          "usr_recebe_por_cartao_magnetico": false,
+          "usr_digitar_por_valor_liberado": null,
+          "con_data_in100": null
+        }
+      }
+    ],
+    "Run pr_af_i": [
+      {
+        "json": {
+          "af_codigo": 241665
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.6",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.6",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.6",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "1100",
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "content-type": "application/json",
+            "user-agent": "axios/1.8.3",
+            "accept-encoding": "gzip, compress, deflate, br"
+          },
+          "params": {},
+          "query": {},
+          "body": "{\n  \"cpf\": \"04131243474\",\n  \"matricula\": \"1204155493\",\n  \"nome\": \"MARIA VALDECIR BARBOSA FERREIRA\",\n  \"rua\": \"R PE RAIMUNDO DA SILVA\n\",\n  \"numero\": \"419\n\",\n  \"telefone\": \"19993418990\n\",\n  \"bairro\": \"VILA CALIFORNIA\",\n  \"cidade\": \"SAO PAULO\",\n  \"estado\": \"SP\",\n  \"cep\": \"03214000\",\n  \"rg\": \"288432617\",\n  \"data_nascimento\": \"19/09/1977\",\n  \"estado_civil\": \"solteiro\",\n  \"sexo\": \"F\",\n  \"banco_codigo\": 237,\n  \"banco_agencia\": \"928\",\n  \"banco_conta_corrente\": \"4845013\",\n  \"orgav_codigo\": 57 ,\n  \"salario\": 1518,\n  \"login_cadastramento\": \"DIGITADOR\",\n  \"banco_poupanca\": false,\n  \"especie\": 21,\n  \"nome_mae\": \"ALAIDE FELIX BARBOSA FERREIRA\",\n  \"recebe_cartao_magnetico\": false,\n  \"digitacao_banco\": \"BMG\",\n  \"digitacao_tbb_descricao\": \"INSS - SAQUE COMPLEMENTAR | UNICA\",\n  \"digitacao_valor_parcela\": 8.15,\n  \"digitacao_qtd_parcela\": 96,\n  \"digitacao_codigo_contrato_banco\": \"97985787\",\n  \"link_formalizacao\": \"https://www.bancobmg.com.br/formalizacao/e6AXs98R\"\n}",
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook-test/agilus/af/create",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "8b633e05-63b2-4e40-9017-f1f066109e31",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-03-06T21:05:34.529Z",
+      "createdAt": "2025-03-06T21:05:34.529Z",
+      "role": "workflow:owner",
+      "workflowId": "qmj3Nn1W9ZLccfDA",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2025-02-18T14:02:38.331Z",
+      "createdAt": "2025-02-18T14:02:38.331Z",
+      "id": "Bd8bdkbUuGWtSaFv",
+      "name": "Saque Complementar"
+    },
+    {
+      "updatedAt": "2025-03-06T21:04:26.904Z",
+      "createdAt": "2025-03-06T14:34:43.037Z",
+      "id": "KGLw2ngNzHtwIRB0",
+      "name": "Agilus"
+    }
+  ]
+}

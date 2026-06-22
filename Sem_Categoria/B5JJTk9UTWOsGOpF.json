@@ -1,0 +1,276 @@
+{
+  "updatedAt": "2026-03-20T19:39:23.074Z",
+  "createdAt": "2026-03-20T19:23:51.423Z",
+  "id": "B5JJTk9UTWOsGOpF",
+  "name": "Evolution · Instâncias + Ofertas",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "evolution/create-instance",
+        "options": {
+          "responseData": "auto"
+        }
+      },
+      "name": "Webhook Create Instance",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "47872306-aaa6-4ce9-8922-385bf622b825",
+      "webhookId": "b2992ad4-3cc8-4082-9201-ee7b7a3aa696"
+    },
+    {
+      "parameters": {
+        "url": "={{$env.EVO_BASE_URL || 'http://10.3.255.202:8080'}}/instance/create",
+        "jsonParameters": true,
+        "options": {}
+      },
+      "name": "Create Instance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        272,
+        0
+      ],
+      "id": "057f9525-a846-45ef-896c-caf32a34b0ad"
+    },
+    {
+      "parameters": {
+        "url": "={{$env.EVO_BASE_URL || 'http://10.3.255.202:8080'}}/instance/connect/{{ $json.instance.instanceName || $json.instanceName || $json.instance?.instance_name }}",
+        "options": {}
+      },
+      "name": "Connect Instance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        528,
+        0
+      ],
+      "id": "305c2335-a2c6-4f92-be9b-8f3bb7325b3a"
+    },
+    {
+      "parameters": {
+        "functionCode": "const createItem = $items(\"Create Instance\", 0, 0)[0]?.json || {};\nconst connectItem = items[0]?.json || {};\nreturn [{\n  json: {\n    instance: createItem.instance?.instanceName || createItem.instanceName || connectItem.instance?.instanceName || null,\n    status: connectItem.instance?.status || connectItem.instance?.state || createItem.instance?.status || 'desconhecido',\n    pairingCode: connectItem.qrcode?.pairingCode || connectItem.pairingCode || null,\n    base64: connectItem.qrcode?.base64 || connectItem.base64 || null,\n    message: connectItem.message || null\n  }\n}];"
+      },
+      "name": "Prepare QR Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "fcb192c2-4837-4817-9c48-3e0199e9cdbb"
+    },
+    {
+      "parameters": {
+        "responseMode": "lastNode",
+        "options": {
+          "responseCode": 200,
+          "responseContentType": "application/json"
+        }
+      },
+      "name": "Return QR",
+      "type": "n8n-nodes-base.httpResponse",
+      "typeVersion": 1,
+      "position": [
+        960,
+        0
+      ],
+      "id": "ac4420cc-8671-4e08-bc91-2b8079c75bdf"
+    },
+    {
+      "parameters": {},
+      "id": "fca51ebb-69af-4dc6-b9fe-1a2e35bd4ceb",
+      "name": "Cron (30m)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        224,
+        288
+      ],
+      "notes": "Ajuste o intervalo (ex.: a cada 30 min)."
+    },
+    {
+      "parameters": {
+        "url": "https://api.mercadolibre.com/sites/MLB/search",
+        "options": {},
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "q",
+              "value": "headset+plantronics+c3220"
+            },
+            {
+              "name": "sort",
+              "value": "price_asc"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "id": "9beb2495-d409-45f4-bf3a-65d310d1fea3",
+      "name": "Fetch ML Deals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        448,
+        288
+      ],
+      "notes": "Pode duplicar este nó para buscas diferentes (categorias/termos)."
+    },
+    {
+      "parameters": {
+        "functionCode": "const results = items[0].json.results || []\nconst cfg = {\n  maxPrice: 400,\n  minDiscountPct: 10\n}\nconst store = getWorkflowStaticData('global')\nif (!store.seen) {\n  store.seen = []\n}\nconst fresh = []\nfor (const product of results) {\n  const price = product.price\n  const original = product.original_price || price\n  const discount = original > price ? (1 - price / original) * 100 : 0\n  const wasSeen = store.seen.includes(product.id)\n  if (!wasSeen && price <= cfg.maxPrice && discount >= cfg.minDiscountPct) {\n    fresh.push({\n      id: product.id,\n      title: product.title,\n      price: price,\n      original_price: original,\n      discount_pct: Number(discount.toFixed(1)),\n      permalink: product.permalink,\n      thumbnail: product.thumbnail,\n      shipping: product.shipping?.free_shipping ? 'Frete grátis' : 'Frete calculado',\n      seller_level: product.seller?.seller_reputation?.level_id || ''\n    })\n  }\n}\nif (fresh.length === 0) {\n  return []\n}\nstore.seen = [...fresh.map(f => f.id), ...store.seen].slice(0, 50)\nreturn fresh.map(f => ({ json: f }))\n"
+      },
+      "id": "6076f0c8-5a2a-4d71-a71b-e6365452771e",
+      "name": "Filter & Prep",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        704,
+        288
+      ],
+      "notes": "Ajuste os thresholds em cfg (preço/desconto)."
+    },
+    {
+      "parameters": {
+        "functionCode": "const campaignId = $env.ML_CAMPAIGN_ID || 'COLOQUE_SEU_CAMPAIGN_ID'\nconst utm = 'utm_source=whatsapp&utm_medium=grupo&utm_campaign=afiliados'\nreturn items.map(item => {\n  const link = `${item.json.permalink}?tool=linkgenerator&campaign_id=${campaignId}&${utm}`\n  const message = [\n    '💥 Oferta Mercado Livre',\n    `Produto: ${item.json.title}`,\n    `Preço: R$ ${item.json.price.toFixed(2)}`,\n    item.json.original_price > item.json.price ? `Antes: R$ ${item.json.original_price.toFixed(2)} (-${item.json.discount_pct}% )` : null,\n    item.json.shipping,\n    '',\n    `Link: ${link}`\n  ].filter(Boolean).join('\n')\n  return { json: { ...item.json, affiliate_link: link, message } }\n})\n"
+      },
+      "id": "875b9e99-bdfa-4c68-9672-9d0aa0328054",
+      "name": "Build Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        944,
+        288
+      ],
+      "notes": "Inclui parâmetros de afiliado + corpo do texto."
+    },
+    {
+      "parameters": {
+        "url": "={{$env.EVO_BASE_URL || 'http://10.3.255.202:8080'}}/message/sendText/{{$env.EVO_INSTANCE || 'grupo-whats'}}",
+        "jsonParameters": true,
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "9a3d73fe-12ab-4252-8d8d-5f987932504b",
+      "name": "Send via Evolution API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        288
+      ],
+      "notes": "Usa o endpoint /message/sendText/:instanceName da Evolution API. Ajuste INSTANCE, API key e o número/GroupJid com variáveis de ambiente."
+    }
+  ],
+  "connections": {
+    "Webhook Create Instance": {
+      "main": [
+        [
+          {
+            "node": "Create Instance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Instance": {
+      "main": [
+        [
+          {
+            "node": "Connect Instance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Connect Instance": {
+      "main": [
+        [
+          {
+            "node": "Prepare QR Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron (30m)": {
+      "main": [
+        [
+          {
+            "node": "Fetch ML Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch ML Deals": {
+      "main": [
+        [
+          {
+            "node": "Filter & Prep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Prep": {
+      "main": [
+        [
+          {
+            "node": "Build Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Message": {
+      "main": [
+        [
+          {
+            "node": "Send via Evolution API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "803000af-0314-4855-8b6c-8f2d535962df",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-20T19:23:51.423Z",
+      "createdAt": "2026-03-20T19:23:51.423Z",
+      "role": "workflow:owner",
+      "workflowId": "B5JJTk9UTWOsGOpF",
+      "projectId": "gFw9T73PG6yNA59g"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

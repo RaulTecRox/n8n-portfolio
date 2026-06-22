@@ -1,0 +1,105 @@
+{
+  "updatedAt": "2025-06-13T16:58:50.263Z",
+  "createdAt": "2025-06-13T16:45:37.312Z",
+  "id": "fkC5yR7xNKxekLZW",
+  "name": "My workflow 13",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "62bf10ed-a7c9-437b-ac82-8fbad38ea84a",
+      "name": "When chat message received",
+      "webhookId": "b9391a00-1836-4fa9-bd2f-554aa222bbbf"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "3f44e99d-6504-43cd-917a-5d25324215c6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:4b-it-q4_K_M",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        200,
+        200
+      ],
+      "id": "e5cd75d5-3762-4e77-ab78-80a8a5f36af4",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pOegylLBwaHAjzk2",
+          "name": "Ollama account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6bdcbdb9-1389-4657-af53-f39e59b5973b",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-06-13T16:45:37.312Z",
+      "createdAt": "2025-06-13T16:45:37.312Z",
+      "role": "workflow:owner",
+      "workflowId": "fkC5yR7xNKxekLZW",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

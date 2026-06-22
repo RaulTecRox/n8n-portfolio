@@ -1,0 +1,3480 @@
+{
+  "updatedAt": "2025-11-12T11:52:30.154Z",
+  "createdAt": "2025-05-16T18:04:48.361Z",
+  "id": "ubzMbO2YI1QatLEH",
+  "name": "Consulta Margem - Amigoz copy 3",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        540
+      ],
+      "id": "a7da75e5-afae-4132-a981-25a5537be56a",
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba3f2894-b0dc-40e8-b236-b47c36c9e351",
+              "name": "data",
+              "value": "={{ $('When Executed by Another Workflow').item.json.query.replaceAll('.','').replaceAll('-','').padStart(11, 0) }}",
+              "type": "string"
+            },
+            {
+              "id": "4ec2ef88-701c-48f8-adea-1a4f883e228c",
+              "name": "type",
+              "value": "cpf",
+              "type": "string"
+            },
+            {
+              "id": "1ed2c516-6124-4af5-9261-a960f4394f79",
+              "name": "Authorization",
+              "value": "SvykkclF002Y2GPgAkANSEDmpxdiQcoIt1XOeUPw1a0603e5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        680
+      ],
+      "id": "76fb24af-379b-48cc-9222-5928ffa58af9",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.3.60.14:9001/api/v1/in100/authorizations/authorizer",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$('Dados').first().json.Authorization}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "={{ $('Dados').first().json.type }}"
+            },
+            {
+              "name": "data",
+              "value": "={{ $('Dados').first().json.data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "585c60c9-9c71-4b5e-b75c-6168f224de30",
+      "name": "Iniciar RPA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -260,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "seconds"
+      },
+      "id": "d967ae90-224b-4b7c-858a-e7bd923a55b5",
+      "name": "Aguardar 10s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        160,
+        760
+      ],
+      "webhookId": "e53f7680-0c08-49a5-a19c-19b8b6088550"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.data.document.status_document.step }}",
+              "value2": "Concluído"
+            },
+            {
+              "value1": "={{ $json.data.document.status_document.step }}",
+              "value2": "Erro"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "b0e5f5c3-9236-43d9-bbdb-f779509a0347",
+      "name": "step é Final?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8fa82d28-6754-4368-b3ad-a0136859ac89",
+              "leftValue": "={{ $json.data.document.status_document.step }}",
+              "rightValue": "Concluído",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        580
+      ],
+      "id": "ba8418bd-b280-4ea5-8a89-20af86f5a2db",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const payloads = items[0].json.data.document.historical_documents.payload;\n\nconst benefícios = payloads.map((beneficioArray, index) => {\n  const beneficioObj = {};\n\n  beneficioArray.forEach(campo => {\n    beneficioObj[campo.title] = campo.value;\n  });\n\n  return {\n    json: {\n      beneficio_index: index + 1,\n      ...beneficioObj\n    }\n  };\n});\n\nreturn benefícios;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        400
+      ],
+      "id": "a754513c-bd14-488e-9aec-51ba3e9eba29",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/simulacao-saque/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token1').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "numero_cpf",
+              "value": "={{ $json.numero_cpf }}"
+            },
+            {
+              "name": "convenio",
+              "value": "={{ $json.convenio }}"
+            },
+            {
+              "name": "margem",
+              "value": "={{ $json.margem }}"
+            },
+            {
+              "name": "tipo_produto",
+              "value": "={{ $json.tipo_produto }}"
+            },
+            {
+              "name": "data_nascimento",
+              "value": "={{ $json.data_nascimento }}"
+            },
+            {
+              "name": "=id_cliente_cartao",
+              "value": "={{ $json.id_cliente_cartao }}"
+            },
+            {
+              "name": "tipo_margem",
+              "value": "={{ $json.tipo_margem }}"
+            },
+            {
+              "name": "qtd_parcelas",
+              "value": "={{ $json.qtd_parcelas }}"
+            },
+            {
+              "name": "valor",
+              "value": "={{ $json.valor }}"
+            },
+            {
+              "name": "limite_pre_aprovado",
+              "value": "={{ $json.limite_pre_aprovado }}"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4060,
+        0
+      ],
+      "id": "7b4c0d3d-b884-4a99-be3d-8b2341bd8ea0",
+      "name": "HTTP simulacao-saque",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "46857448-9683-422c-b277-744bf3926233",
+              "name": "cpf_cliente",
+              "value": "={{ $json.nu_cpf }}",
+              "type": "string"
+            },
+            {
+              "id": "95e4f663-4e62-4878-a931-08ea808559e7",
+              "name": "convenio",
+              "value": "={{ $('Filter').item.json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "a0c849ee-b0fd-49ee-a9d4-eab9ef913146",
+              "name": "margem",
+              "value": "={{ \n  parseFloat(\n    $('Merge').item.json[\"CRÉDIO CONSIGNADO VALOR\"]\n      .split('$')\n      .pop()                // ou .last(), dependendo da versão do n8n\n      .replace('.', '')     // remove o ponto dos milhares\n      .replace(',', '.')    // troca a vírgula por ponto decimal\n  )\n}}",
+              "type": "number"
+            },
+            {
+              "id": "8cca16d8-05d9-48ce-a3b4-76a15eb93abf",
+              "name": "tipo_produto",
+              "value": "={{ $('Filter').item.json.produtos[1].codigo_produto }}",
+              "type": "number"
+            },
+            {
+              "id": "ff2ef2ef-a131-45b2-960a-19bf39afedb3",
+              "name": "data_nascimento",
+              "value": "={{ $json.dt_nascimento }}",
+              "type": "string"
+            },
+            {
+              "id": "e3f99f33-38dc-437b-ab60-0142973959ab",
+              "name": "id_cliente_cartao",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3460,
+        -320
+      ],
+      "id": "ef53e3fa-cace-490a-bb19-6fe84a3ccc3a",
+      "name": "Edit simulacao-limite"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "46857448-9683-422c-b277-744bf3926233",
+              "name": "numero_cpf",
+              "value": "={{ $('Edit simulacao-limite').item.json.nu_cpf }}",
+              "type": "string"
+            },
+            {
+              "id": "95e4f663-4e62-4878-a931-08ea808559e7",
+              "name": "convenio",
+              "value": "={{ $('Filter').item.json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "a0c849ee-b0fd-49ee-a9d4-eab9ef913146",
+              "name": "margem",
+              "value": "={{ \n  parseFloat(\n    $('Merge').item.json[\"CRÉDIO CONSIGNADO VALOR\"]\n      .split('$')\n      .pop()                // ou .last(), dependendo da versão do n8n\n      .replace('.', '')     // remove o ponto dos milhares\n      .replace(',', '.')    // troca a vírgula por ponto decimal\n  )\n}}",
+              "type": "number"
+            },
+            {
+              "id": "8cca16d8-05d9-48ce-a3b4-76a15eb93abf",
+              "name": "tipo_produto",
+              "value": "={{ $('Filter').item.json.produtos[1].codigo_produto }}",
+              "type": "number"
+            },
+            {
+              "id": "ff2ef2ef-a131-45b2-960a-19bf39afedb3",
+              "name": "data_nascimento",
+              "value": "={{ $('Edit simulacao-limite').item.json.dt_nascimento }}",
+              "type": "string"
+            },
+            {
+              "id": "e3f99f33-38dc-437b-ab60-0142973959ab",
+              "name": "id_cliente_cartao",
+              "value": "={{ $('Edit simulacao-limite').item.json.cliente_cartao_beneficio_id }}",
+              "type": "number"
+            },
+            {
+              "id": "3e046903-c304-457d-8ced-4987c5a5be62",
+              "name": "tipo_margem",
+              "value": "=3",
+              "type": "number"
+            },
+            {
+              "id": "d2a26af0-08b7-47dc-9d88-7c121d58fa4f",
+              "name": "qtd_parcelas",
+              "value": "=84",
+              "type": "number"
+            },
+            {
+              "id": "303baf94-ba90-42ae-bd5f-a7c4a7b0001a",
+              "name": "valor",
+              "value": "={{ $json.simulacao.valor_saque }}",
+              "type": "number"
+            },
+            {
+              "id": "2b53e475-cf81-4d51-9d2a-b0034917aaad",
+              "name": "limite_pre_aprovado",
+              "value": "={{ $json.simulacao_data.limite_pre_aprovado }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3920,
+        -340
+      ],
+      "id": "ca9df47e-e7a9-4abb-bd80-ccf32fff7096",
+      "name": "Edit simulacao-saque",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/criar-cliente/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "nome_cliente",
+              "value": "={{ $json.nome_cliente }}"
+            },
+            {
+              "name": "nu_cpf",
+              "value": "={{ $json.nu_cpf }}"
+            },
+            {
+              "name": "numero_telefone",
+              "value": "={{ $json.numero_telefone }}"
+            },
+            {
+              "name": "escolaridade",
+              "value": "={{ $json.escolaridade }}"
+            },
+            {
+              "name": "margem",
+              "value": "={{ $json.margem }}"
+            },
+            {
+              "name": "margem_compra",
+              "value": "={{ $json.margem_compra }}"
+            },
+            {
+              "name": "margem_saque",
+              "value": "={{ $json.margem_saque }}"
+            },
+            {
+              "name": "dt_nascimento",
+              "value": "={{ $json.dt_nascimento }}"
+            },
+            {
+              "name": "numero_matricula",
+              "value": "={{ $json.numero_matricula }}"
+            },
+            {
+              "name": "convenio_id",
+              "value": "={{ $json.convenio_id }}"
+            },
+            {
+              "name": "ocupacao",
+              "value": "={{ $json.ocupacao }}"
+            },
+            {
+              "name": "tipo_produto",
+              "value": "={{ $json.tipo_produto }}"
+            },
+            {
+              "name": "folha",
+              "value": "={{ $json.folha }}"
+            },
+            {
+              "name": "tipo_vinculo",
+              "value": "={{ $json.tipo_vinculo }}"
+            },
+            {
+              "name": "instituidor",
+              "value": "={{ $json.instituidor }}"
+            },
+            {
+              "name": "convenio_siape",
+              "value": "={{ $json.convenio_siape }}"
+            },
+            {
+              "name": "classificacao_siape",
+              "value": "={{ $json.classificacao_siape }}"
+            },
+            {
+              "name": "tipo_margem",
+              "value": "={{ $json.tipo_margem }}"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        40
+      ],
+      "id": "e266302a-b07c-4a17-8935-ef88247f7dd4",
+      "name": "HTTP criar-cliente2",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/simulacao-limite/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cpf_cliente",
+              "value": "={{ $json.cpf_cliente }}"
+            },
+            {
+              "name": "convenio",
+              "value": "={{ $json.convenio }}"
+            },
+            {
+              "name": "margem",
+              "value": "={{ $json.margem }}"
+            },
+            {
+              "name": "tipo_produto",
+              "value": "={{ $json.tipo_produto }}"
+            },
+            {
+              "name": "data_nascimento",
+              "value": "={{ $json.data_nascimento }}"
+            },
+            {
+              "name": "=id_cliente_cartao",
+              "value": "={{ $json.id_cliente_cartao }}"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3680,
+        -320
+      ],
+      "id": "710c44c1-5252-41c2-a426-53f4a3e2ca4b",
+      "name": "HTTP simulacao-limite2",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA IN100 CREDILUS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 700,
+        "width": 1320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        340
+      ],
+      "typeVersion": 1,
+      "id": "cd61d715-4f88-4a87-8950-704575f5ac8a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "http://10.3.60.14:9001/api/v1/credilink/search/wsdl/cpf",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.data.document.info }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer ***REDACTED***"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 100000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        560
+      ],
+      "id": "955d96f4-667b-4025-b79e-e3a529f4437c",
+      "name": "Consulta credilus",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1040,
+        520
+      ],
+      "id": "61ed945a-e502-43f5-b1f8-387c41d4743d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').first().json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').first().json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1240,
+        520
+      ],
+      "id": "5bac1deb-b2be-4c05-b37f-9aab12255831",
+      "name": "token1",
+      "retryOnFail": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5da54f6-133a-4efe-a52b-893bf15f7ad7",
+              "name": "nome_cliente",
+              "value": "={{ $('Merge').item.json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "2c4b5af8-ef69-4f52-b569-654c92d9ff78",
+              "name": "nu_cpf",
+              "value": "={{ $('Merge').item.json.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+              "type": "string"
+            },
+            {
+              "id": "1aac03d1-968e-4b18-b8a3-d51c09793086",
+              "name": "numero_telefone",
+              "value": "={{ \n  (() => {\n    const tel = $('Consulta credilus').first().json.data[0].TELEFONE.replace(/\\D/g, '');\n    return tel.length === 11 \n      ? tel.replace(/^(\\d{2})(\\d{5})(\\d{4})$/, '($1) $2-$3') \n      : tel.replace(/^(\\d{2})(\\d{4})(\\d{4})$/, '($1) $2-$3');\n  })()\n}}\n",
+              "type": "string"
+            },
+            {
+              "id": "8cbc18e3-9fa3-4d1d-ab11-2610dfe20fc7",
+              "name": "escolaridade",
+              "value": "=2",
+              "type": "number"
+            },
+            {
+              "id": "441b2dc4-f312-4512-b5e7-b04064adb7e2",
+              "name": "margem",
+              "value": "={{ \n  parseFloat(\n    $('Merge').item.json[\"CRÉDIO CONSIGNADO VALOR\"]\n      .split('$')\n      .pop()                // ou .last(), dependendo da versão do n8n\n      .replace('.', '')     // remove o ponto dos milhares\n      .replace(',', '.')    // troca a vírgula por ponto decimal\n  )\n}}",
+              "type": "number"
+            },
+            {
+              "id": "59e9d5c4-ebd8-42a8-94a8-25656496a7d0",
+              "name": "margem_compra",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "a35ef8f4-b4f5-4b84-8318-7bbc68c5c0f4",
+              "name": "margem_saque",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "8d1c00db-2033-424c-84c6-a025de180b2e",
+              "name": "dt_nascimento",
+              "value": "={{ $('Consulta credilus').first().json.data[0].NASC }}",
+              "type": "string"
+            },
+            {
+              "id": "2e26c3d8-ec6a-4f09-9235-3664cb7cf190",
+              "name": "numero_matricula",
+              "value": "={{ $('Merge').item.json[\"NÚMERO BENEFÍCIO | ESTADO\"].split('|').first().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "32eb5683-7d69-4d00-b8b1-d8328a116886",
+              "name": "convenio_id",
+              "value": "={{ $('Filter').item.json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "50bf2843-7613-46d7-aa7e-6b64b1a87d3c",
+              "name": "ocupacao",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "3037df5d-d14e-4e83-a544-70c7d194560c",
+              "name": "tipo_produto",
+              "value": "=7",
+              "type": "number"
+            },
+            {
+              "id": "a69c1597-52a9-4810-bd81-27532319fa48",
+              "name": "folha",
+              "value": "=41",
+              "type": "number"
+            },
+            {
+              "id": "22e903f9-425a-4aca-88d5-426c57c1ff6d",
+              "name": "tipo_vinculo",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "cbc44cd6-f0e7-4c88-83a8-70b1ca6886cc",
+              "name": "instituidor",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "396fd9c2-88a7-4e45-aa0c-a19c4690d44b",
+              "name": "convenio_siape",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "29dbe09a-77cb-44f5-b21d-c8433fab90b2",
+              "name": "classificacao_siape",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "e00a715e-34c4-4cf1-8896-cb51486e7011",
+              "name": "tipo_margem",
+              "value": "={{ $json.tipoMargem }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2900,
+        20
+      ],
+      "id": "a705a1f3-2242-494e-8784-2ddf897e90ac",
+      "name": "Edit criar-cliente1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "68042c07-6f5b-41c0-b153-8cfbab9a4b22",
+              "name": "usuarioHappy",
+              "value": "38075290801",
+              "type": "string"
+            },
+            {
+              "id": "0a15880a-07de-4756-8133-25c6a07bfa9f",
+              "name": "SenhaHappy",
+              "value": "Mdg@1234",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -760,
+        680
+      ],
+      "id": "34bae243-b103-46b6-9736-5d568284b214",
+      "name": "AcessosHappy",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/consulta-margem-inss/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token1').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cpf_cliente",
+              "value": "={{ $json.cpf_cliente }}"
+            },
+            {
+              "name": "averbadora",
+              "value": "={{ $json.averbadora }}"
+            },
+            {
+              "name": "convenio",
+              "value": "={{ $json.convenio }}"
+            },
+            {
+              "name": "numero_matricula",
+              "value": "={{ $json.numero_matricula }}"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2020,
+        580
+      ],
+      "id": "f4bdc047-92eb-4c18-bde8-3ef13032be63",
+      "name": "HTTP Consulta Margem",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6cc265ed-7773-4c36-86a0-a7e3ca06030c",
+              "name": "cpf_cliente",
+              "value": "={{ $('Merge').item.json.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+              "type": "string"
+            },
+            {
+              "id": "1aac03d1-968e-4b18-b8a3-d51c09793086",
+              "name": "averbadora",
+              "value": "={{ $json.averbadora }}",
+              "type": "number"
+            },
+            {
+              "id": "2e26c3d8-ec6a-4f09-9235-3664cb7cf190",
+              "name": "numero_matricula",
+              "value": "={{ $('Merge').item.json[\"NÚMERO BENEFÍCIO | ESTADO\"].split('|').first().trim()  }}",
+              "type": "string"
+            },
+            {
+              "id": "32eb5683-7d69-4d00-b8b1-d8328a116886",
+              "name": "convenio",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        520
+      ],
+      "id": "3e020714-e17b-49ca-8b03-f7886dadf0d2",
+      "name": "Edit criar-margem"
+    },
+    {
+      "parameters": {
+        "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/consulta-convenios/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        520
+      ],
+      "id": "db0a133d-7ab2-4ce8-9b6e-f7a18a1d79ba",
+      "name": "HTTP consulta-convenios",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "363e5d74-646c-4ca5-bdfe-c1dcf33f8a2b",
+              "leftValue": "={{ $json.nome }}",
+              "rightValue": "=INSS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1640,
+        520
+      ],
+      "id": "41abf28a-939e-4031-988d-7b4c539440c0",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "058d3470-54bd-4c79-bbcc-46b3be96db8a",
+              "name": "error.message",
+              "value": "={{ $json.error.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2200,
+        720
+      ],
+      "id": "0e478678-6185-47e3-b5f5-89bec6c5da45",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "058d3470-54bd-4c79-bbcc-46b3be96db8a",
+              "name": "error.message",
+              "value": "={{ $json.error.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3880,
+        -160
+      ],
+      "id": "f966528f-1602-4eb0-ba1f-11fb12d586bd",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca21b85a-3d66-4de2-83c9-34887b1b7ca5",
+              "name": "vencimento_primeira_parcela",
+              "value": "={{ $json.data[1].simulacao_saque_parcelado.vencimento_primeira_parcela }}",
+              "type": "string"
+            },
+            {
+              "id": "553d221b-69b0-4672-9cfd-c47e5b11e65c",
+              "name": "qtd_parcela",
+              "value": "={{ $json.data[1].simulacao_saque_parcelado.qtd_parcela }}",
+              "type": "string"
+            },
+            {
+              "id": "130c90e8-31fa-412e-9551-11bebde0e77f",
+              "name": "valor_parcela",
+              "value": "={{ $json.data[1].simulacao_saque_parcelado.valor_parcela }}",
+              "type": "string"
+            },
+            {
+              "id": "42dd238f-da1e-4504-a2c4-7de249a28544",
+              "name": "valor_solicitado_saque_parcelado",
+              "value": "={{ $json.data[1].simulacao_saque_parcelado.valor_solicitado_saque_parcelado }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4500,
+        -100
+      ],
+      "id": "aa41625e-1a8c-4190-a7bc-d16b609dce0c",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4280,
+        -100
+      ],
+      "id": "920fa648-2a6d-4228-911b-f1b2317cddc4",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        4720,
+        -100
+      ],
+      "id": "4b2e00e9-7a7f-4ca8-8ddd-351e4f1d9ad8",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1080,
+        920
+      ],
+      "id": "5524e53d-1fa7-4539-a272-ac3dd8072aca",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        2680,
+        740
+      ],
+      "id": "83359dee-1067-413c-ad1d-728c6ac414be",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3601d332-e0fd-491b-9bf1-d81c0567d593",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "401",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2420,
+        720
+      ],
+      "id": "d1730e76-32c4-49e8-abe3-ab3a23552fad",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3601d332-e0fd-491b-9bf1-d81c0567d593",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "401",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3280,
+        720
+      ],
+      "id": "9a721921-8841-4a99-8c8f-3f9902d64496",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        3480,
+        740
+      ],
+      "id": "91db2425-36b8-4500-a6a5-5ba4656ebcb4",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4940,
+        -100
+      ],
+      "id": "f0502e15-5f97-4d5a-ad35-039b2e33d24d",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3700,
+        740
+      ],
+      "id": "dee63644-8198-43b2-ad05-7519e385889b",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        740
+      ],
+      "id": "a9e5bede-9d87-4ded-840d-931b93f3d013",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7f84343-a74e-4bfc-9431-15df2c3a9f46",
+              "name": "data.document.status_document.message",
+              "value": "={{ $json.data.document.status_document.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        720
+      ],
+      "id": "b40ebcbd-251b-4eba-8f7b-eed9a93467e4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        720
+      ],
+      "id": "a0a84c9f-290a-492f-9aed-56d6fd1703f2",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        860,
+        720
+      ],
+      "id": "a5fcd3c4-b39b-499a-9b71-ced39b5a1886",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').first().json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').first().json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2660,
+        40
+      ],
+      "id": "304a609f-860f-4f36-a280-11253bbfd78c",
+      "name": "token",
+      "retryOnFail": true,
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "AcessosHappy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Iniciar RPA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iniciar RPA": {
+      "main": [
+        [
+          {
+            "node": "step é Final?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "step é Final?": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aguardar 10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar 10s": {
+      "main": [
+        [
+          {
+            "node": "Iniciar RPA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Consulta credilus",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit simulacao-limite": {
+      "main": [
+        [
+          {
+            "node": "HTTP simulacao-limite2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit simulacao-saque": {
+      "main": [
+        [
+          {
+            "node": "HTTP simulacao-saque",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP criar-cliente2": {
+      "main": [
+        [
+          {
+            "node": "Edit simulacao-limite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP simulacao-limite2": {
+      "main": [
+        [
+          {
+            "node": "Edit simulacao-saque",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta credilus": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "token1": {
+      "main": [
+        [
+          {
+            "node": "HTTP consulta-convenios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit criar-cliente1": {
+      "main": [
+        [
+          {
+            "node": "HTTP criar-cliente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AcessosHappy": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit criar-margem": {
+      "main": [
+        [
+          {
+            "node": "token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP consulta-convenios": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Edit criar-margem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Consulta Margem": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP simulacao-saque": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AcessosHappy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "token1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "token1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook3": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token": {
+      "main": [
+        [
+          {
+            "node": "Edit criar-cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "078.004.658-70"
+        }
+      }
+    ]
+  },
+  "versionId": "df05a200-af0b-41c0-8f9b-d812175fa6c7",
+  "activeVersionId": "df05a200-af0b-41c0-8f9b-d812175fa6c7",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-05-16T18:04:48.361Z",
+      "createdAt": "2025-05-16T18:04:48.361Z",
+      "role": "workflow:owner",
+      "workflowId": "ubzMbO2YI1QatLEH",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-18T13:23:43.197Z",
+    "createdAt": "2025-12-18T13:23:43.197Z",
+    "versionId": "df05a200-af0b-41c0-8f9b-d812175fa6c7",
+    "workflowId": "ubzMbO2YI1QatLEH",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1040,
+          540
+        ],
+        "id": "a7da75e5-afae-4132-a981-25a5537be56a",
+        "name": "When clicking ‘Test workflow’",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ba3f2894-b0dc-40e8-b236-b47c36c9e351",
+                "name": "data",
+                "value": "={{ $('When Executed by Another Workflow').item.json.query.replaceAll('.','').replaceAll('-','').padStart(11, 0) }}",
+                "type": "string"
+              },
+              {
+                "id": "4ec2ef88-701c-48f8-adea-1a4f883e228c",
+                "name": "type",
+                "value": "cpf",
+                "type": "string"
+              },
+              {
+                "id": "1ed2c516-6124-4af5-9261-a960f4394f79",
+                "name": "Authorization",
+                "value": "SvykkclF002Y2GPgAkANSEDmpxdiQcoIt1XOeUPw1a0603e5",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -560,
+          680
+        ],
+        "id": "76fb24af-379b-48cc-9222-5928ffa58af9",
+        "name": "Dados"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://10.3.60.14:9001/api/v1/in100/authorizations/authorizer",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$('Dados').first().json.Authorization}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "type",
+                "value": "={{ $('Dados').first().json.type }}"
+              },
+              {
+                "name": "data",
+                "value": "={{ $('Dados').first().json.data }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "585c60c9-9c71-4b5e-b75c-6168f224de30",
+        "name": "Iniciar RPA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          -260,
+          680
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 10,
+          "unit": "seconds"
+        },
+        "id": "d967ae90-224b-4b7c-858a-e7bd923a55b5",
+        "name": "Aguardar 10s",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1,
+        "position": [
+          160,
+          760
+        ],
+        "webhookId": "e53f7680-0c08-49a5-a19c-19b8b6088550"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "={{ $json.data.document.status_document.step }}",
+                "value2": "Concluído"
+              },
+              {
+                "value1": "={{ $json.data.document.status_document.step }}",
+                "value2": "Erro"
+              }
+            ]
+          },
+          "combineOperation": "any"
+        },
+        "id": "b0e5f5c3-9236-43d9-bbdb-f779509a0347",
+        "name": "step é Final?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          -60,
+          680
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "8fa82d28-6754-4368-b3ad-a0136859ac89",
+                "leftValue": "={{ $json.data.document.status_document.step }}",
+                "rightValue": "Concluído",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          160,
+          580
+        ],
+        "id": "ba8418bd-b280-4ea5-8a89-20af86f5a2db",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const payloads = items[0].json.data.document.historical_documents.payload;\n\nconst benefícios = payloads.map((beneficioArray, index) => {\n  const beneficioObj = {};\n\n  beneficioArray.forEach(campo => {\n    beneficioObj[campo.title] = campo.value;\n  });\n\n  return {\n    json: {\n      beneficio_index: index + 1,\n      ...beneficioObj\n    }\n  };\n});\n\nreturn benefícios;\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          460,
+          400
+        ],
+        "id": "a754513c-bd14-488e-9aec-51ba3e9eba29",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/simulacao-saque/",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $('token1').item.json.access }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "numero_cpf",
+                "value": "={{ $json.numero_cpf }}"
+              },
+              {
+                "name": "convenio",
+                "value": "={{ $json.convenio }}"
+              },
+              {
+                "name": "margem",
+                "value": "={{ $json.margem }}"
+              },
+              {
+                "name": "tipo_produto",
+                "value": "={{ $json.tipo_produto }}"
+              },
+              {
+                "name": "data_nascimento",
+                "value": "={{ $json.data_nascimento }}"
+              },
+              {
+                "name": "=id_cliente_cartao",
+                "value": "={{ $json.id_cliente_cartao }}"
+              },
+              {
+                "name": "tipo_margem",
+                "value": "={{ $json.tipo_margem }}"
+              },
+              {
+                "name": "qtd_parcelas",
+                "value": "={{ $json.qtd_parcelas }}"
+              },
+              {
+                "name": "valor",
+                "value": "={{ $json.valor }}"
+              },
+              {
+                "name": "limite_pre_aprovado",
+                "value": "={{ $json.limite_pre_aprovado }}"
+              }
+            ]
+          },
+          "options": {
+            "pagination": {}
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4060,
+          0
+        ],
+        "id": "7b4c0d3d-b884-4a99-be3d-8b2341bd8ea0",
+        "name": "HTTP simulacao-saque",
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "46857448-9683-422c-b277-744bf3926233",
+                "name": "cpf_cliente",
+                "value": "={{ $json.nu_cpf }}",
+                "type": "string"
+              },
+              {
+                "id": "95e4f663-4e62-4878-a931-08ea808559e7",
+                "name": "convenio",
+                "value": "={{ $('Filter').item.json.id }}",
+                "type": "number"
+              },
+              {
+                "id": "a0c849ee-b0fd-49ee-a9d4-eab9ef913146",
+                "name": "margem",
+                "value": "={{ \n  parseFloat(\n    $('Merge').item.json[\"CRÉDIO CONSIGNADO VALOR\"]\n      .split('$')\n      .pop()                // ou .last(), dependendo da versão do n8n\n      .replace('.', '')     // remove o ponto dos milhares\n      .replace(',', '.')    // troca a vírgula por ponto decimal\n  )\n}}",
+                "type": "number"
+              },
+              {
+                "id": "8cca16d8-05d9-48ce-a3b4-76a15eb93abf",
+                "name": "tipo_produto",
+                "value": "={{ $('Filter').item.json.produtos[1].codigo_produto }}",
+                "type": "number"
+              },
+              {
+                "id": "ff2ef2ef-a131-45b2-960a-19bf39afedb3",
+                "name": "data_nascimento",
+                "value": "={{ $json.dt_nascimento }}",
+                "type": "string"
+              },
+              {
+                "id": "e3f99f33-38dc-437b-ab60-0142973959ab",
+                "name": "id_cliente_cartao",
+                "value": "={{ $json.id }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3460,
+          -320
+        ],
+        "id": "ef53e3fa-cace-490a-bb19-6fe84a3ccc3a",
+        "name": "Edit simulacao-limite"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "46857448-9683-422c-b277-744bf3926233",
+                "name": "numero_cpf",
+                "value": "={{ $('Edit simulacao-limite').item.json.nu_cpf }}",
+                "type": "string"
+              },
+              {
+                "id": "95e4f663-4e62-4878-a931-08ea808559e7",
+                "name": "convenio",
+                "value": "={{ $('Filter').item.json.id }}",
+                "type": "number"
+              },
+              {
+                "id": "a0c849ee-b0fd-49ee-a9d4-eab9ef913146",
+                "name": "margem",
+                "value": "={{ \n  parseFloat(\n    $('Merge').item.json[\"CRÉDIO CONSIGNADO VALOR\"]\n      .split('$')\n      .pop()                // ou .last(), dependendo da versão do n8n\n      .replace('.', '')     // remove o ponto dos milhares\n      .replace(',', '.')    // troca a vírgula por ponto decimal\n  )\n}}",
+                "type": "number"
+              },
+              {
+                "id": "8cca16d8-05d9-48ce-a3b4-76a15eb93abf",
+                "name": "tipo_produto",
+                "value": "={{ $('Filter').item.json.produtos[1].codigo_produto }}",
+                "type": "number"
+              },
+              {
+                "id": "ff2ef2ef-a131-45b2-960a-19bf39afedb3",
+                "name": "data_nascimento",
+                "value": "={{ $('Edit simulacao-limite').item.json.dt_nascimento }}",
+                "type": "string"
+              },
+              {
+                "id": "e3f99f33-38dc-437b-ab60-0142973959ab",
+                "name": "id_cliente_cartao",
+                "value": "={{ $('Edit simulacao-limite').item.json.cliente_cartao_beneficio_id }}",
+                "type": "number"
+              },
+              {
+                "id": "3e046903-c304-457d-8ced-4987c5a5be62",
+                "name": "tipo_margem",
+                "value": "=3",
+                "type": "number"
+              },
+              {
+                "id": "d2a26af0-08b7-47dc-9d88-7c121d58fa4f",
+                "name": "qtd_parcelas",
+                "value": "=84",
+                "type": "number"
+              },
+              {
+                "id": "303baf94-ba90-42ae-bd5f-a7c4a7b0001a",
+                "name": "valor",
+                "value": "={{ $json.simulacao.valor_saque }}",
+                "type": "number"
+              },
+              {
+                "id": "2b53e475-cf81-4d51-9d2a-b0034917aaad",
+                "name": "limite_pre_aprovado",
+                "value": "={{ $json.simulacao_data.limite_pre_aprovado }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3920,
+          -340
+        ],
+        "id": "ca9df47e-e7a9-4abb-bd80-ccf32fff7096",
+        "name": "Edit simulacao-saque",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://backoffice.amigozconsig.com.br/api/criar-cliente/",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $('token').item.json.access }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "nome_cliente",
+                "value": "={{ $json.nome_cliente }}"
+              },
+              {
+                "name": "nu_cpf",
+                "value": "={{ $json.nu_cpf }}"
+              },
+              {
+                "name": "numero_telefone",
+                "value": "={{ $json.numero_telefone }}"
+              },
+              {
+                "name": "escolaridade",
+                "value": "={{ $json.escolaridade }}"
+              },
+              {
+                "name": "margem",
+                "value": "={{ $json.margem }}"
+              },
+              {
+                "name": "margem_compra",
+                "value": "={{ $json.margem_compra }}"
+              },
+              {
+                "name": "margem_saque",
+                "value": "={{ $json.margem_saque }}"
+              },
+              {
+                "name": "dt_nascimento",
+                "value": "={{ $json.dt_nascimento }}"
+              },
+              {
+                "name": "numero_matricula",
+                "value": "={{ $json.numero_matricula }}"
+              },
+              {
+                "name": "convenio_id",
+                "value": "={{ $json.convenio_id }}"
+              },
+              {
+                "name": "ocupacao",
+                "value": "={{ $json.ocupacao }}"
+              },
+              {
+                "name": "tipo_produto",
+                "value": "={{ $json.tipo_produto }}"
+              },
+              {
+                "name": "folha",
+                "value": "={{ $json.folha }}"
+              },
+              {
+                "name": "tipo_vinculo",
+                "value": "={{ $json.tipo_vinculo }}"
+              },
+              {
+                "name": "instituidor",
+                "value": "={{ $json.instituidor }}"
+              },
+              {
+                "name": "convenio_siape",
+                "value": "={{ $json.convenio_siape }}"
+              },
+              {
+                "name": "classificacao_siape",
+                "value": "={{ $json.classificacao_siape }}"
+              },
+              {
+                "name": "tipo_margem",
+                "value": "={{ $json.tipo_margem }}"
+              }
+            ]
+          },
+          "options": {
+            "pagination": {}
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3100,
+          40
+        ],
+        "id": "e266302a-b07c-4a17-8935-ef88247f7dd4",
+        "name": "HTTP criar-cliente2",
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/simulacao-limite/",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $('token').item.json.access }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "cpf_cliente",
+                "value": "={{ $json.cpf_cliente }}"
+              },
+              {
+                "name": "convenio",
+                "value": "={{ $json.convenio }}"
+              },
+              {
+                "name": "margem",
+                "value": "={{ $json.margem }}"
+              },
+              {
+                "name": "tipo_produto",
+                "value": "={{ $json.tipo_produto }}"
+              },
+              {
+                "name": "data_nascimento",
+                "value": "={{ $json.data_nascimento }}"
+              },
+              {
+                "name": "=id_cliente_cartao",
+                "value": "={{ $json.id_cliente_cartao }}"
+              }
+            ]
+          },
+          "options": {
+            "pagination": {}
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3680,
+          -320
+        ],
+        "id": "710c44c1-5252-41c2-a426-53f4a3e2ca4b",
+        "name": "HTTP simulacao-limite2",
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "content": "## CONSULTA IN100 CREDILUS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 700,
+          "width": 1320
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -320,
+          340
+        ],
+        "typeVersion": 1,
+        "id": "cd61d715-4f88-4a87-8950-704575f5ac8a",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "url": "http://10.3.60.14:9001/api/v1/credilink/search/wsdl/cpf",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "cpf",
+                "value": "={{ $json.data.document.info }}"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer ***REDACTED***"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true,
+            "timeout": 100000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          460,
+          560
+        ],
+        "id": "955d96f4-667b-4025-b79e-e3a529f4437c",
+        "name": "Consulta credilus",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1,
+        "position": [
+          1040,
+          520
+        ],
+        "id": "61ed945a-e502-43f5-b1f8-387c41d4743d",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "identifier",
+                "value": "={{ $('AcessosHappy').first().json.usuarioHappy }}"
+              },
+              {
+                "name": "password",
+                "value": "={{ $('AcessosHappy').first().json.SenhaHappy }}"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true,
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1240,
+          520
+        ],
+        "id": "5bac1deb-b2be-4c05-b37f-9aab12255831",
+        "name": "token1",
+        "retryOnFail": true,
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c5da54f6-133a-4efe-a52b-893bf15f7ad7",
+                "name": "nome_cliente",
+                "value": "={{ $('Merge').item.json.NOME }}",
+                "type": "string"
+              },
+              {
+                "id": "2c4b5af8-ef69-4f52-b569-654c92d9ff78",
+                "name": "nu_cpf",
+                "value": "={{ $('Merge').item.json.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+                "type": "string"
+              },
+              {
+                "id": "1aac03d1-968e-4b18-b8a3-d51c09793086",
+                "name": "numero_telefone",
+                "value": "={{ \n  (() => {\n    const tel = $('Consulta credilus').first().json.data[0].TELEFONE.replace(/\\D/g, '');\n    return tel.length === 11 \n      ? tel.replace(/^(\\d{2})(\\d{5})(\\d{4})$/, '($1) $2-$3') \n      : tel.replace(/^(\\d{2})(\\d{4})(\\d{4})$/, '($1) $2-$3');\n  })()\n}}\n",
+                "type": "string"
+              },
+              {
+                "id": "8cbc18e3-9fa3-4d1d-ab11-2610dfe20fc7",
+                "name": "escolaridade",
+                "value": "=2",
+                "type": "number"
+              },
+              {
+                "id": "441b2dc4-f312-4512-b5e7-b04064adb7e2",
+                "name": "margem",
+                "value": "={{ \n  parseFloat(\n    $('Merge').item.json[\"CRÉDIO CONSIGNADO VALOR\"]\n      .split('$')\n      .pop()                // ou .last(), dependendo da versão do n8n\n      .replace('.', '')     // remove o ponto dos milhares\n      .replace(',', '.')    // troca a vírgula por ponto decimal\n  )\n}}",
+                "type": "number"
+              },
+              {
+                "id": "59e9d5c4-ebd8-42a8-94a8-25656496a7d0",
+                "name": "margem_compra",
+                "value": 0,
+                "type": "number"
+              },
+              {
+                "id": "a35ef8f4-b4f5-4b84-8318-7bbc68c5c0f4",
+                "name": "margem_saque",
+                "value": 0,
+                "type": "number"
+              },
+              {
+                "id": "8d1c00db-2033-424c-84c6-a025de180b2e",
+                "name": "dt_nascimento",
+                "value": "={{ $('Consulta credilus').first().json.data[0].NASC }}",
+                "type": "string"
+              },
+              {
+                "id": "2e26c3d8-ec6a-4f09-9235-3664cb7cf190",
+                "name": "numero_matricula",
+                "value": "={{ $('Merge').item.json[\"NÚMERO BENEFÍCIO | ESTADO\"].split('|').first().trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "32eb5683-7d69-4d00-b8b1-d8328a116886",
+                "name": "convenio_id",
+                "value": "={{ $('Filter').item.json.id }}",
+                "type": "number"
+              },
+              {
+                "id": "50bf2843-7613-46d7-aa7e-6b64b1a87d3c",
+                "name": "ocupacao",
+                "value": "",
+                "type": "string"
+              },
+              {
+                "id": "3037df5d-d14e-4e83-a544-70c7d194560c",
+                "name": "tipo_produto",
+                "value": "=7",
+                "type": "number"
+              },
+              {
+                "id": "a69c1597-52a9-4810-bd81-27532319fa48",
+                "name": "folha",
+                "value": "=41",
+                "type": "number"
+              },
+              {
+                "id": "22e903f9-425a-4aca-88d5-426c57c1ff6d",
+                "name": "tipo_vinculo",
+                "value": 0,
+                "type": "number"
+              },
+              {
+                "id": "cbc44cd6-f0e7-4c88-83a8-70b1ca6886cc",
+                "name": "instituidor",
+                "value": "",
+                "type": "string"
+              },
+              {
+                "id": "396fd9c2-88a7-4e45-aa0c-a19c4690d44b",
+                "name": "convenio_siape",
+                "value": "",
+                "type": "string"
+              },
+              {
+                "id": "29dbe09a-77cb-44f5-b21d-c8433fab90b2",
+                "name": "classificacao_siape",
+                "value": "",
+                "type": "string"
+              },
+              {
+                "id": "e00a715e-34c4-4cf1-8896-cb51486e7011",
+                "name": "tipo_margem",
+                "value": "={{ $json.tipoMargem }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2900,
+          20
+        ],
+        "id": "a705a1f3-2242-494e-8784-2ddf897e90ac",
+        "name": "Edit criar-cliente1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "68042c07-6f5b-41c0-b153-8cfbab9a4b22",
+                "name": "usuarioHappy",
+                "value": "38075290801",
+                "type": "string"
+              },
+              {
+                "id": "0a15880a-07de-4756-8133-25c6a07bfa9f",
+                "name": "SenhaHappy",
+                "value": "Mdg@1234",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -760,
+          680
+        ],
+        "id": "34bae243-b103-46b6-9736-5d568284b214",
+        "name": "AcessosHappy",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/consulta-margem-inss/",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $('token1').item.json.access }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "cpf_cliente",
+                "value": "={{ $json.cpf_cliente }}"
+              },
+              {
+                "name": "averbadora",
+                "value": "={{ $json.averbadora }}"
+              },
+              {
+                "name": "convenio",
+                "value": "={{ $json.convenio }}"
+              },
+              {
+                "name": "numero_matricula",
+                "value": "={{ $json.numero_matricula }}"
+              }
+            ]
+          },
+          "options": {
+            "pagination": {}
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2020,
+          580
+        ],
+        "id": "f4bdc047-92eb-4c18-bde8-3ef13032be63",
+        "name": "HTTP Consulta Margem",
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6cc265ed-7773-4c36-86a0-a7e3ca06030c",
+                "name": "cpf_cliente",
+                "value": "={{ $('Merge').item.json.CPF.replace(/^(\\d{3})(\\d{3})(\\d{3})(\\d{2})$/, '$1.$2.$3-$4') }}",
+                "type": "string"
+              },
+              {
+                "id": "1aac03d1-968e-4b18-b8a3-d51c09793086",
+                "name": "averbadora",
+                "value": "={{ $json.averbadora }}",
+                "type": "number"
+              },
+              {
+                "id": "2e26c3d8-ec6a-4f09-9235-3664cb7cf190",
+                "name": "numero_matricula",
+                "value": "={{ $('Merge').item.json[\"NÚMERO BENEFÍCIO | ESTADO\"].split('|').first().trim()  }}",
+                "type": "string"
+              },
+              {
+                "id": "32eb5683-7d69-4d00-b8b1-d8328a116886",
+                "name": "convenio",
+                "value": "={{ $json.id }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1840,
+          520
+        ],
+        "id": "3e020714-e17b-49ca-8b03-f7886dadf0d2",
+        "name": "Edit criar-margem"
+      },
+      {
+        "parameters": {
+          "url": "https://backoffice.amigozconsig.com.br/api/cartao-beneficio/consulta-convenios/",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $json.access }}"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1440,
+          520
+        ],
+        "id": "db0a133d-7ab2-4ce8-9b6e-f7a18a1d79ba",
+        "name": "HTTP consulta-convenios",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "363e5d74-646c-4ca5-bdfe-c1dcf33f8a2b",
+                "leftValue": "={{ $json.nome }}",
+                "rightValue": "=INSS",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          1640,
+          520
+        ],
+        "id": "41abf28a-939e-4031-988d-7b4c539440c0",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "058d3470-54bd-4c79-bbcc-46b3be96db8a",
+                "name": "error.message",
+                "value": "={{ $json.error.message }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2200,
+          720
+        ],
+        "id": "0e478678-6185-47e3-b5f5-89bec6c5da45",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "058d3470-54bd-4c79-bbcc-46b3be96db8a",
+                "name": "error.message",
+                "value": "={{ $json.error.message }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3880,
+          -160
+        ],
+        "id": "f966528f-1602-4eb0-ba1f-11fb12d586bd",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ca21b85a-3d66-4de2-83c9-34887b1b7ca5",
+                "name": "vencimento_primeira_parcela",
+                "value": "={{ $json.data[1].simulacao_saque_parcelado.vencimento_primeira_parcela }}",
+                "type": "string"
+              },
+              {
+                "id": "553d221b-69b0-4672-9cfd-c47e5b11e65c",
+                "name": "qtd_parcela",
+                "value": "={{ $json.data[1].simulacao_saque_parcelado.qtd_parcela }}",
+                "type": "string"
+              },
+              {
+                "id": "130c90e8-31fa-412e-9551-11bebde0e77f",
+                "name": "valor_parcela",
+                "value": "={{ $json.data[1].simulacao_saque_parcelado.valor_parcela }}",
+                "type": "string"
+              },
+              {
+                "id": "42dd238f-da1e-4504-a2c4-7de249a28544",
+                "name": "valor_solicitado_saque_parcelado",
+                "value": "={{ $json.data[1].simulacao_saque_parcelado.valor_solicitado_saque_parcelado }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          4500,
+          -100
+        ],
+        "id": "aa41625e-1a8c-4190-a7bc-d16b609dce0c",
+        "name": "Edit Fields3"
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          4280,
+          -100
+        ],
+        "id": "920fa648-2a6d-4228-911b-f1b2317cddc4",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          4720,
+          -100
+        ],
+        "id": "4b2e00e9-7a7f-4ca8-8ddd-351e4f1d9ad8",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -1080,
+          920
+        ],
+        "id": "5524e53d-1fa7-4539-a272-ac3dd8072aca",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          2680,
+          740
+        ],
+        "id": "83359dee-1067-413c-ad1d-728c6ac414be",
+        "name": "Respond to Webhook1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "3601d332-e0fd-491b-9bf1-d81c0567d593",
+                "leftValue": "={{ $json.error.message }}",
+                "rightValue": "401",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          2420,
+          720
+        ],
+        "id": "d1730e76-32c4-49e8-abe3-ab3a23552fad",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "3601d332-e0fd-491b-9bf1-d81c0567d593",
+                "leftValue": "={{ $json.error.message }}",
+                "rightValue": "401",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          3280,
+          720
+        ],
+        "id": "9a721921-8841-4a99-8c8f-3f9902d64496",
+        "name": "If2"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          3480,
+          740
+        ],
+        "id": "91db2425-36b8-4500-a6a5-5ba4656ebcb4",
+        "name": "Respond to Webhook2"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          4940,
+          -100
+        ],
+        "id": "f0502e15-5f97-4d5a-ad35-039b2e33d24d",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          3700,
+          740
+        ],
+        "id": "dee63644-8198-43b2-ad05-7519e385889b",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2900,
+          740
+        ],
+        "id": "a9e5bede-9d87-4ded-840d-931b93f3d013",
+        "name": "No Operation, do nothing2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b7f84343-a74e-4bfc-9431-15df2c3a9f46",
+                "name": "data.document.status_document.message",
+                "value": "={{ $json.data.document.status_document.message }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          460,
+          720
+        ],
+        "id": "b40ebcbd-251b-4eba-8f7b-eed9a93467e4",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          660,
+          720
+        ],
+        "id": "a0a84c9f-290a-492f-9aed-56d6fd1703f2",
+        "name": "Respond to Webhook3"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          860,
+          720
+        ],
+        "id": "a5fcd3c4-b39b-499a-9b71-ced39b5a1886",
+        "name": "No Operation, do nothing3"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "identifier",
+                "value": "={{ $('AcessosHappy').first().json.usuarioHappy }}"
+              },
+              {
+                "name": "password",
+                "value": "={{ $('AcessosHappy').first().json.SenhaHappy }}"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true,
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2660,
+          40
+        ],
+        "id": "304a609f-860f-4f36-a280-11253bbfd78c",
+        "name": "token",
+        "retryOnFail": true,
+        "executeOnce": true
+      }
+    ],
+    "connections": {
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "AcessosHappy",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dados": {
+        "main": [
+          [
+            {
+              "node": "Iniciar RPA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Iniciar RPA": {
+        "main": [
+          [
+            {
+              "node": "step é Final?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "step é Final?": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Aguardar 10s",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aguardar 10s": {
+        "main": [
+          [
+            {
+              "node": "Iniciar RPA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Consulta credilus",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit simulacao-limite": {
+        "main": [
+          [
+            {
+              "node": "HTTP simulacao-limite2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit simulacao-saque": {
+        "main": [
+          [
+            {
+              "node": "HTTP simulacao-saque",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP criar-cliente2": {
+        "main": [
+          [
+            {
+              "node": "Edit simulacao-limite",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP simulacao-limite2": {
+        "main": [
+          [
+            {
+              "node": "Edit simulacao-saque",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "token1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consulta credilus": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "token1": {
+        "main": [
+          [
+            {
+              "node": "HTTP consulta-convenios",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit criar-cliente1": {
+        "main": [
+          [
+            {
+              "node": "HTTP criar-cliente2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AcessosHappy": {
+        "main": [
+          [
+            {
+              "node": "Dados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit criar-margem": {
+        "main": [
+          [
+            {
+              "node": "token",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP consulta-convenios": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Edit criar-margem",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Consulta Margem": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP simulacao-saque": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "AcessosHappy",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "token1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "token1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook2": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook3": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "token": {
+        "main": [
+          [
+            {
+              "node": "Edit criar-cliente1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}

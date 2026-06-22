@@ -1,0 +1,143 @@
+{
+  "updatedAt": "2026-05-18T17:19:38.447Z",
+  "createdAt": "2026-05-18T16:39:30.172Z",
+  "id": "1f73c871-4188-4451-b5fa-9b95d2994cd6",
+  "name": "Dograh → WhatsApp Link",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "send-whatsapp-link",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "4500628f-431e-4d10-9f4a-89c46bed1395",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        400
+      ],
+      "webhookId": "send-whatsapp-link"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "lead_phone",
+              "value": "={{ $json.body.lead_phone }}",
+              "type": "string"
+            },
+            {
+              "name": "payment_link",
+              "value": "={{ $json.body.payment_link }}",
+              "type": "string"
+            },
+            {
+              "name": "lead_name",
+              "value": "={{ $json.body.lead_name }}",
+              "type": "string"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.body.message || 'Sua proposta foi criada! Clique no link para ativar: ' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "63a853cd-be48-49c9-bb3d-10f02bcacfdc",
+      "name": "dados",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/CL193B/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "=+{{ $('dados').item.json.lead_phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('dados').item.json.message }}\n\n{{ $('dados').item.json.payment_link }}"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "B6D711FCDE4D4FD5936544120E713976"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc173d5b-0261-4e36-8af2-d79cb387053a",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "u7nL5NaclniYBklz",
+          "name": "EvolutionAPI- AGENT_L1093L8W - cl121a"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "102cca39-1cca-4814-bac2-3d36377db244",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [],
+  "activeVersion": null,
+  "tags": []
+}

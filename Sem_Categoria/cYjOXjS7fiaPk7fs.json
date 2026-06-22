@@ -1,0 +1,1494 @@
+{
+  "updatedAt": "2026-03-24T21:48:30.177Z",
+  "createdAt": "2026-03-13T18:10:30.970Z",
+  "id": "cYjOXjS7fiaPk7fs",
+  "name": "MarginZetra",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "banks/senff/margin/zetra",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        944
+      ],
+      "id": "26186276-976b-4e59-bb44-9bf23be571b9",
+      "name": "Webhook",
+      "webhookId": "28250f42-0c4f-498e-9cf6-0aa91cb9199f"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"The fields 'name', 'cpf', 'employee_id' and 'product_id' are required.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        384,
+        848
+      ],
+      "id": "f7ab7f5a-0cb4-48f6-bffc-6bbec36d4a5f",
+      "name": "RespondNoParameters"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bebde9e0-d9ce-4592-b828-113679672e23",
+              "leftValue": "={{ $json.body.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b8539ea6-4752-434e-a584-35540ef561ac",
+              "leftValue": "={{ $json.body.cpf }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "2684ceac-0887-4b3f-9a3a-4239e4fed799",
+              "leftValue": "={{ $json.body.employee_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "8dd800f3-90ac-44ad-8874-740480588b89",
+              "leftValue": "={{ $json.body.product_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        944
+      ],
+      "id": "00af483c-e191-4386-b99a-6e00c3b29b45",
+      "name": "IfHasParameters"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"source\": \"senffconsigzetra\",\n  \"retentionDays\": 90,\n  \"loopSize\": 100,\n  \"timeToWait\": 1,\n  \"startTime\": 0,\n  \"finishTime\": 24\n  \n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        1040
+      ],
+      "id": "63b2a297-bf26-4d4e-ae4a-6f74092556d6",
+      "name": "Configs"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error Database\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1056,
+        1136
+      ],
+      "id": "de1e9eaf-ac16-4def-8be3-6cd0f6a05194",
+      "name": "RespondErrorDatabase"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM retentions.holds\nWHERE\n  source = $1\n  AND search->>'name' = $2\n  AND search->>'cpf' = $3\n  AND search->>'employee_id' = $4\n  AND search->>'product_id' = $5\n  AND updated_at > NOW() - ($6::int * INTERVAL '1 day')\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json.name }}, {{ $('Search').item.json.cpf }}, {{ $('Search').item.json.employee_id }}, {{ $('Search').item.json.product_id }}, {{ $('Configs').item.json.retentionDays }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        832,
+        1040
+      ],
+      "id": "647a6477-472e-4e54-a61e-adab215ff446",
+      "name": "SeekByRetention",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "PUYASYaNLZYwlx66",
+          "name": "PostgresPatroni"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Webhook').item.json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        1040
+      ],
+      "id": "68603323-294a-48c3-aedf-1c768772d9fa",
+      "name": "Search"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6ab5d3de-8572-4975-aca6-6be82d3215ab",
+              "leftValue": "={{ $('SeekByRetention').item.json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1056,
+        944
+      ],
+      "id": "96a241cd-3846-42a1-805c-5789849275c3",
+      "name": "IfHasRetention"
+    },
+    {
+      "parameters": {
+        "jsCode": "const startTime = $('Configs').first().json.startTime;\nconst finishTime = $('Configs').first().json.finishTime;\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && nowDay !== 0) {\n      return {sheduler: true}\n    }\n\n return {sheduler: false}"
+      },
+      "id": "1c89385a-6caf-4a41-b0b3-69e9d24696ec",
+      "name": "Scheduler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.sheduler }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "2f0cb7f6-1006-487a-9023-e548f0690134",
+      "name": "IsInTime",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Temporarily unavailable\"\n}",
+        "options": {
+          "responseCode": 423
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1728,
+        752
+      ],
+      "id": "9af52b03-0f6d-465b-acc3-965394cf8b8b",
+      "name": "RespondTemporarilyUnavailable"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $('SeekByRetention').item.json.payload }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1280,
+        1040
+      ],
+      "id": "15faa1fc-bf7b-458e-af00-0d0be240f492",
+      "name": "FoundedOnRetention"
+    },
+    {
+      "parameters": {
+        "content": "## Exemplo\n**Method: POST**\n**Auth: Bearer**\nBody:\n{\n  \"name\":\"ADEMIR GERVASIO DE SOUZA JUNIOR\",\n  \"cpf\":\"06428854945\",\n  \"employee_id\":\"102334\",\n  \"product_id\": 1\n}",
+        "height": 256,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        672
+      ],
+      "typeVersion": 1,
+      "id": "ad6d8c64-ad01-4364-a53f-1ac59d354581",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/banks/senff/token",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1728,
+        944
+      ],
+      "id": "3b549453-4f03-45a3-9324-79c6cb66acc8",
+      "name": "GetTokenSenff",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO retentions.holds (source, search, payload)\nVALUES ($1, $2::jsonb, $3::jsonb)\nON CONFLICT (search)\nDO UPDATE SET\n  payload = EXCLUDED.payload,\n  updated_at = CURRENT_TIMESTAMP\nRETURNING *;",
+        "options": {
+          "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json }}, {{ $('ConsultMarginZetra').item.json }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2400,
+        656
+      ],
+      "id": "2ecdd292-212c-4b85-82c8-c72efce5de98",
+      "name": "SaveOnRetention",
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "PUYASYaNLZYwlx66",
+          "name": "PostgresPatroni"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "067e7802-2cc0-4f29-b078-163fd722557a",
+              "leftValue": "={{ $('ConsultMarginZetra').item.json }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2176,
+        752
+      ],
+      "id": "b30f26a0-e958-4a33-8892-ba4f1b2f0dde",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://senffconsig.senff.com.br/api/v1/admin/zetra/consult-margin",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json, text/plain, */*"
+            },
+            {
+              "name": "accept-language",
+              "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+            },
+            {
+              "name": "account",
+              "value": "senff-web"
+            },
+            {
+              "name": "authorization",
+              "value": "=Bearer {{ $json.token }}"
+            },
+            {
+              "name": "origin",
+              "value": "https://senffconsig.senff.com.br"
+            },
+            {
+              "name": "referer",
+              "value": "https://senffconsig.senff.com.br/app/proposals/add"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "cors"
+            },
+            {
+              "name": "tenant-id",
+              "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+            },
+            {
+              "name": "user-agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "x-correlation-id",
+              "value": "585c641d-20e4-4163-8753-5b6c54a0f607"
+            },
+            {
+              "name": "x-store-code",
+              "value": "84"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agreement\": {\n    \"id\": 11\n  },\n  \"benefit_number\": \"{{ $('Search').item.json.employee_id }}\",\n  \"document\": \"{{ $('Search').item.json.cpf }}\",\n  \"valueOfInstallment\": 0.1,\n  \"client_name\": \"{{ $('Search').item.json.name }}\",\n  \"servantPassword\": \"\",\n  \"product\": {\n    \"id\": {{ $('Search').item.json.product_id }}\n  },\n  \"original_ccb_code\": null\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1952,
+        848
+      ],
+      "id": "17683d8c-c151-456e-bd0b-8c7cee7a82de",
+      "name": "ConsultMarginZetra",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error on get Token\"\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1952,
+        1040
+      ],
+      "id": "d47b3124-d164-4e27-8405-861357e1260e",
+      "name": "ErrorGetToken"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"No data found\"\n}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2400,
+        848
+      ],
+      "id": "62408246-df48-4c74-9326-3bc8ab0869a1",
+      "name": "NoDataFound"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.payload }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2624,
+        656
+      ],
+      "id": "3a588fa9-f267-4ed5-bfad-7db42bebef4c",
+      "name": "Success"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error save on retention database.\"\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2656,
+        800
+      ],
+      "id": "238a24ba-1df2-4232-b9da-f6d010796028",
+      "name": "SendRetentionError"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"message\": {{ JSON.stringify($json.error) }}\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2176,
+        944
+      ],
+      "id": "d0587142-0dfa-4cb5-a94f-936ebc0c1b4f",
+      "name": "ErrorGetDataClient"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IfHasParameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondNoParameters": {
+      "main": [
+        []
+      ]
+    },
+    "IfHasParameters": {
+      "main": [
+        [
+          {
+            "node": "Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondNoParameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configs": {
+      "main": [
+        [
+          {
+            "node": "SeekByRetention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondErrorDatabase": {
+      "main": [
+        []
+      ]
+    },
+    "SeekByRetention": {
+      "main": [
+        [
+          {
+            "node": "IfHasRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondErrorDatabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search": {
+      "main": [
+        [
+          {
+            "node": "Configs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfHasRetention": {
+      "main": [
+        [
+          {
+            "node": "FoundedOnRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduler": {
+      "main": [
+        [
+          {
+            "node": "IsInTime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IsInTime": {
+      "main": [
+        [
+          {
+            "node": "GetTokenSenff",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondTemporarilyUnavailable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondTemporarilyUnavailable": {
+      "main": [
+        []
+      ]
+    },
+    "FoundedOnRetention": {
+      "main": [
+        []
+      ]
+    },
+    "GetTokenSenff": {
+      "main": [
+        [
+          {
+            "node": "ConsultMarginZetra",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ErrorGetToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveOnRetention": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendRetentionError",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "SaveOnRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NoDataFound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultMarginZetra": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ErrorGetDataClient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 600,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "948bcadc-8493-4986-9ae9-ce096064c7d5",
+  "activeVersionId": "948bcadc-8493-4986-9ae9-ce096064c7d5",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-13T18:10:30.970Z",
+      "createdAt": "2026-03-13T18:10:30.970Z",
+      "role": "workflow:owner",
+      "workflowId": "cYjOXjS7fiaPk7fs",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-24T21:48:33.402Z",
+    "createdAt": "2026-03-24T21:48:30.179Z",
+    "versionId": "948bcadc-8493-4986-9ae9-ce096064c7d5",
+    "workflowId": "cYjOXjS7fiaPk7fs",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "banks/senff/margin/zetra",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -64,
+          944
+        ],
+        "id": "26186276-976b-4e59-bb44-9bf23be571b9",
+        "name": "Webhook",
+        "webhookId": "28250f42-0c4f-498e-9cf6-0aa91cb9199f"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"The fields 'name', 'cpf', 'employee_id' and 'product_id' are required.\"\n}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          384,
+          848
+        ],
+        "id": "f7ab7f5a-0cb4-48f6-bffc-6bbec36d4a5f",
+        "name": "RespondNoParameters"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "bebde9e0-d9ce-4592-b828-113679672e23",
+                "leftValue": "={{ $json.body.name }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "b8539ea6-4752-434e-a584-35540ef561ac",
+                "leftValue": "={{ $json.body.cpf }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "2684ceac-0887-4b3f-9a3a-4239e4fed799",
+                "leftValue": "={{ $json.body.employee_id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "8dd800f3-90ac-44ad-8874-740480588b89",
+                "leftValue": "={{ $json.body.product_id }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          160,
+          944
+        ],
+        "id": "00af483c-e191-4386-b99a-6e00c3b29b45",
+        "name": "IfHasParameters"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "{\n  \"source\": \"senffconsigzetra\",\n  \"retentionDays\": 90,\n  \"loopSize\": 100,\n  \"timeToWait\": 1,\n  \"startTime\": 0,\n  \"finishTime\": 24\n  \n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          608,
+          1040
+        ],
+        "id": "63b2a297-bf26-4d4e-ae4a-6f74092556d6",
+        "name": "Configs"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error Database\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1056,
+          1136
+        ],
+        "id": "de1e9eaf-ac16-4def-8be3-6cd0f6a05194",
+        "name": "RespondErrorDatabase"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT *\nFROM retentions.holds\nWHERE\n  source = $1\n  AND search->>'name' = $2\n  AND search->>'cpf' = $3\n  AND search->>'employee_id' = $4\n  AND search->>'product_id' = $5\n  AND updated_at > NOW() - ($6::int * INTERVAL '1 day')\nLIMIT 1;",
+          "options": {
+            "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json.name }}, {{ $('Search').item.json.cpf }}, {{ $('Search').item.json.employee_id }}, {{ $('Search').item.json.product_id }}, {{ $('Configs').item.json.retentionDays }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          832,
+          1040
+        ],
+        "id": "647a6477-472e-4e54-a61e-adab215ff446",
+        "name": "SeekByRetention",
+        "alwaysOutputData": true,
+        "executeOnce": true,
+        "credentials": {
+          "postgres": {
+            "id": "PUYASYaNLZYwlx66",
+            "name": "PostgresPatroni"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={{ $('Webhook').item.json.body }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          384,
+          1040
+        ],
+        "id": "68603323-294a-48c3-aedf-1c768772d9fa",
+        "name": "Search"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6ab5d3de-8572-4975-aca6-6be82d3215ab",
+                "leftValue": "={{ $('SeekByRetention').item.json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1056,
+          944
+        ],
+        "id": "96a241cd-3846-42a1-805c-5789849275c3",
+        "name": "IfHasRetention"
+      },
+      {
+        "parameters": {
+          "jsCode": "const startTime = $('Configs').first().json.startTime;\nconst finishTime = $('Configs').first().json.finishTime;\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && nowDay !== 0) {\n      return {sheduler: true}\n    }\n\n return {sheduler: false}"
+        },
+        "id": "1c89385a-6caf-4a41-b0b3-69e9d24696ec",
+        "name": "Scheduler",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1280,
+          848
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.sheduler }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "2f0cb7f6-1006-487a-9023-e548f0690134",
+        "name": "IsInTime",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1504,
+          848
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Temporarily unavailable\"\n}",
+          "options": {
+            "responseCode": 423
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1728,
+          752
+        ],
+        "id": "9af52b03-0f6d-465b-acc3-965394cf8b8b",
+        "name": "RespondTemporarilyUnavailable"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $('SeekByRetention').item.json.payload }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1280,
+          1040
+        ],
+        "id": "15faa1fc-bf7b-458e-af00-0d0be240f492",
+        "name": "FoundedOnRetention"
+      },
+      {
+        "parameters": {
+          "content": "## Exemplo\n**Method: POST**\n**Auth: Bearer**\nBody:\n{\n  \"name\":\"ADEMIR GERVASIO DE SOUZA JUNIOR\",\n  \"cpf\":\"06428854945\",\n  \"employee_id\":\"102334\",\n  \"product_id\": 1\n}",
+          "height": 256,
+          "width": 368
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -96,
+          672
+        ],
+        "typeVersion": 1,
+        "id": "ad6d8c64-ad01-4364-a53f-1ac59d354581",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/banks/senff/token",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1728,
+          944
+        ],
+        "id": "3b549453-4f03-45a3-9324-79c6cb66acc8",
+        "name": "GetTokenSenff",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "INSERT INTO retentions.holds (source, search, payload)\nVALUES ($1, $2::jsonb, $3::jsonb)\nON CONFLICT (search)\nDO UPDATE SET\n  payload = EXCLUDED.payload,\n  updated_at = CURRENT_TIMESTAMP\nRETURNING *;",
+          "options": {
+            "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json }}, {{ $('ConsultMarginZetra').item.json }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2400,
+          656
+        ],
+        "id": "2ecdd292-212c-4b85-82c8-c72efce5de98",
+        "name": "SaveOnRetention",
+        "executeOnce": true,
+        "credentials": {
+          "postgres": {
+            "id": "PUYASYaNLZYwlx66",
+            "name": "PostgresPatroni"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "067e7802-2cc0-4f29-b078-163fd722557a",
+                "leftValue": "={{ $('ConsultMarginZetra').item.json }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "object",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2176,
+          752
+        ],
+        "id": "b30f26a0-e958-4a33-8892-ba4f1b2f0dde",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://senffconsig.senff.com.br/api/v1/admin/zetra/consult-margin",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "name": "accept-language",
+                "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+              },
+              {
+                "name": "account",
+                "value": "senff-web"
+              },
+              {
+                "name": "authorization",
+                "value": "=Bearer {{ $json.token }}"
+              },
+              {
+                "name": "origin",
+                "value": "https://senffconsig.senff.com.br"
+              },
+              {
+                "name": "referer",
+                "value": "https://senffconsig.senff.com.br/app/proposals/add"
+              },
+              {
+                "name": "sec-fetch-mode",
+                "value": "cors"
+              },
+              {
+                "name": "tenant-id",
+                "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+              },
+              {
+                "name": "user-agent",
+                "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+              },
+              {
+                "name": "x-correlation-id",
+                "value": "585c641d-20e4-4163-8753-5b6c54a0f607"
+              },
+              {
+                "name": "x-store-code",
+                "value": "84"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"agreement\": {\n    \"id\": 11\n  },\n  \"benefit_number\": \"{{ $('Search').item.json.employee_id }}\",\n  \"document\": \"{{ $('Search').item.json.cpf }}\",\n  \"valueOfInstallment\": 0.1,\n  \"client_name\": \"{{ $('Search').item.json.name }}\",\n  \"servantPassword\": \"\",\n  \"product\": {\n    \"id\": {{ $('Search').item.json.product_id }}\n  },\n  \"original_ccb_code\": null\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1952,
+          848
+        ],
+        "id": "17683d8c-c151-456e-bd0b-8c7cee7a82de",
+        "name": "ConsultMarginZetra",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error on get Token\"\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1952,
+          1040
+        ],
+        "id": "d47b3124-d164-4e27-8405-861357e1260e",
+        "name": "ErrorGetToken"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"No data found\"\n}",
+          "options": {
+            "responseCode": 404
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2400,
+          848
+        ],
+        "id": "62408246-df48-4c74-9326-3bc8ab0869a1",
+        "name": "NoDataFound"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json.payload }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2624,
+          656
+        ],
+        "id": "3a588fa9-f267-4ed5-bfad-7db42bebef4c",
+        "name": "Success"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error save on retention database.\"\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2656,
+          800
+        ],
+        "id": "238a24ba-1df2-4232-b9da-f6d010796028",
+        "name": "SendRetentionError"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"message\": {{ JSON.stringify($json.error) }}\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2176,
+          944
+        ],
+        "id": "d0587142-0dfa-4cb5-a94f-936ebc0c1b4f",
+        "name": "ErrorGetDataClient"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "IfHasParameters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondNoParameters": {
+        "main": [
+          []
+        ]
+      },
+      "IfHasParameters": {
+        "main": [
+          [
+            {
+              "node": "Search",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondNoParameters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Configs": {
+        "main": [
+          [
+            {
+              "node": "SeekByRetention",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondErrorDatabase": {
+        "main": [
+          []
+        ]
+      },
+      "SeekByRetention": {
+        "main": [
+          [
+            {
+              "node": "IfHasRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondErrorDatabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search": {
+        "main": [
+          [
+            {
+              "node": "Configs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IfHasRetention": {
+        "main": [
+          [
+            {
+              "node": "FoundedOnRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Scheduler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scheduler": {
+        "main": [
+          [
+            {
+              "node": "IsInTime",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IsInTime": {
+        "main": [
+          [
+            {
+              "node": "GetTokenSenff",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondTemporarilyUnavailable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondTemporarilyUnavailable": {
+        "main": [
+          []
+        ]
+      },
+      "FoundedOnRetention": {
+        "main": [
+          []
+        ]
+      },
+      "GetTokenSenff": {
+        "main": [
+          [
+            {
+              "node": "ConsultMarginZetra",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "ErrorGetToken",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SaveOnRetention": {
+        "main": [
+          [
+            {
+              "node": "Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "SendRetentionError",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "SaveOnRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "NoDataFound",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ConsultMarginZetra": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "ErrorGetDataClient",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 948bcadc",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

@@ -1,0 +1,5463 @@
+{
+  "updatedAt": "2025-06-09T12:31:22.856Z",
+  "createdAt": "2025-04-30T15:46:11.134Z",
+  "id": "zi3DmbL0m6T7p729",
+  "name": "BKO - Acompanhamento Amigoz V2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').item.json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').item.json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1240,
+        -640
+      ],
+      "id": "6becf1e5-4818-4a24-9b69-eaefe333cd11",
+      "name": "token",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "68042c07-6f5b-41c0-b153-8cfbab9a4b22",
+              "name": "usuarioHappy",
+              "value": "38075290801",
+              "type": "string"
+            },
+            {
+              "id": "0a15880a-07de-4756-8133-25c6a07bfa9f",
+              "name": "SenhaHappy",
+              "value": "Mdg@1234",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "3a86aefd-6792-474e-b6f4-8c1c776c42f8",
+      "name": "AcessosHappy",
+      "alwaysOutputData": false,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "831e1cd5-99e1-4d62-be2b-7bee706e8b6e",
+              "name": "nome",
+              "value": "={{ $('Split Out Status').last().json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "f9f251d6-ff4f-443a-a7fe-230bf1e67c87",
+              "name": "descricao_mesa",
+              "value": "={{ $('Split Out Status').last().json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "fb4e8e85-2d03-47f3-a659-e6aa51b9b932",
+              "name": "descricao_front",
+              "value": "={{ $('Split Out Status').last().json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "f6f1896d-950c-448a-a8f7-d54edd376586",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "109d0c6f-fbce-47d5-9272-480fe32d21e1",
+              "name": "url_mesa_video",
+              "value": "={{ $('Detalhe do Contrato').item.json.url_mesa_video }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2380,
+        -520
+      ],
+      "id": "663b9542-ede9-487c-9b98-cdd0baec0e52",
+      "name": "Last Status",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1960,
+        -640
+      ],
+      "id": "a2cfb110-096f-49d4-875c-e9fbdca3448f",
+      "name": "Split Out Status"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/detalhe-contrato/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "token_contrato",
+              "value": "={{ $json.token_contrato }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1780,
+        -640
+      ],
+      "id": "71c8f690-4c07-43a9-8296-b48b8b74f8d3",
+      "name": "Detalhe do Contrato"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e429755d-9bc7-4bf4-b2d6-4a97c68b9a8c",
+              "name": "status",
+              "value": "={{ $json.contracts[0].status }}",
+              "type": "string"
+            },
+            {
+              "id": "763565cc-12e5-426f-8be4-62bacf411e15",
+              "name": "contracts",
+              "value": "={{ $json.contracts[0].id }}",
+              "type": "number"
+            },
+            {
+              "id": "e7926e9c-638b-4937-8bf4-a49f2a9fc3e2",
+              "name": "token_contrato",
+              "value": "={{ $json.contracts[0].token_contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        -640
+      ],
+      "id": "a097b1a2-3cba-4d9c-aba1-bb932ddec3a2",
+      "name": "Token Contrato"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT  \n    af.af_codigo AS 'af_codigo',\n    af.Af_codigo_contrato_banco AS 'contrato',\n    af.Bcolib_codigo AS 'codigo_banco',\n    ban.bcolib_descricao AS 'nome_banco',\n    af.faf_codigo AS 'codigo_fase',\n    fase.faf_descricao AS 'descricao_fase'\nFROM dbo.af af\nLEFT JOIN dbo.bancolib ban ON af.Bcolib_codigo = ban.Bcolib_codigo  -- Join para trazer o nome do banco\nLEFT JOIN dbo.fase_af fase ON af.faf_codigo = fase.faf_codigo  -- Join correto para trazer a descrição da fase\nWHERE \n    af.faf_codigo IN (2, 10, 60)  -- Filtra apenas as fases 10 e 60\n    AND af.Bcolib_codigo = 10002  -- Filtra apenas Banco Amigoz (10002)\nORDER BY af.af_codigo;\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        0
+      ],
+      "id": "375c31a0-17bd-43c0-bc06-8f29319c8eb3",
+      "name": "Consulta AF",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "97acfa10-f6bc-4412-8269-154d09b82291",
+                    "leftValue": "={{ $('Consulta AF').item.json.codigo_fase }}",
+                    "rightValue": 10,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aguardando Formalizacao"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "663e67f4-99e0-4058-a7a9-126aaef25a6e",
+                    "leftValue": "={{ $('Consulta AF').item.json.codigo_fase }}",
+                    "rightValue": 60,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aguardando Averbacao"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1dda0a38-2435-437f-8690-7f7569b652bc",
+                    "leftValue": "={{ $('Consulta AF').item.json.codigo_fase }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Averbado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        620,
+        0
+      ],
+      "id": "0148864d-7f44-4427-8d6e-00750a23ff2b",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "contrato",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1280,
+        -900
+      ],
+      "id": "b4c4cda1-bf56-4897-b740-328ecabad74b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 21,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "1c4a0612-fbad-425b-866e-09a5a751cd4a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Formalização (cliente)"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e4b5268b-b3a1-4141-b358-0c0599354a68",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 25,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Checagem - Mesa Corban"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3fa872a1-2589-477a-af92-14223de0324b",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 7,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reprovada - Finalizada"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3520,
+        -900
+      ],
+      "id": "2e9e1e47-1a47-470d-93c3-642c132b015f",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').item.json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').item.json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1240,
+        140
+      ],
+      "id": "4c0ec3da-3ca1-4d77-bd48-5045cf3b6a56",
+      "name": "token1",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1960,
+        140
+      ],
+      "id": "4aa1bd33-3f6a-416c-b7d6-45c662e4a9a8",
+      "name": "Split Out Status1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/detalhe-contrato/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token1').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "token_contrato",
+              "value": "={{ $json.token_contrato }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1780,
+        140
+      ],
+      "id": "6a9e607f-5337-460a-a06b-6015d3936b23",
+      "name": "Detalhe do Contrato1",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e429755d-9bc7-4bf4-b2d6-4a97c68b9a8c",
+              "name": "status",
+              "value": "={{ $json.contracts[0].status }}",
+              "type": "string"
+            },
+            {
+              "id": "763565cc-12e5-426f-8be4-62bacf411e15",
+              "name": "contracts",
+              "value": "={{ $json.contracts[0].id }}",
+              "type": "number"
+            },
+            {
+              "id": "e7926e9c-638b-4937-8bf4-a49f2a9fc3e2",
+              "name": "token_contrato",
+              "value": "={{ $json.contracts[0].token_contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        140
+      ],
+      "id": "f499362b-5e2b-4a3c-9f92-5513136ca9e4",
+      "name": "Token Contrato1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "contrato",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1240,
+        -120
+      ],
+      "id": "fe3e9e13-252c-4519-a14a-272985572acf",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 65,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "1c4a0612-fbad-425b-866e-09a5a751cd4a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Validações Automáticas"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e4b5268b-b3a1-4141-b358-0c0599354a68",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 11,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pendente Documentação"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0e7fb70c-cd0c-4a89-ae5a-42466b07d83b",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 8,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Checagem - Mesa Formalização"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "100cd4ed-b694-4bc4-8ef9-91d14f5e6d32",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 73,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aguardando vídeo chamada do cliente"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "541469eb-81fb-436f-8181-ac2cca0d1bb3",
+                    "leftValue": "={{ Boolean([12, 13, 15, 16].includes(Number($json.nome))) }}",
+                    "rightValue": 12,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Processo de averbação"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ccfa8abc-51ed-497d-ba9f-44f56803cae5",
+                    "leftValue": "={{ [17, 18, 19, 50].includes(Number($json.nome)) ? true : false }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Proposta paga"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b98ef2e0-86db-4b77-98c2-8d85d1a20174",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 7,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reprovada - Finalizada"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bab39a09-1c8d-4f89-8993-07ed0ade4d71",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": "74",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Teimosinha Dataprev - Averbação"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3540,
+        -300
+      ],
+      "id": "2365d839-47a8-4c3f-912b-2b5d6faf32d6",
+      "name": "Switch3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').item.json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').item.json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        960
+      ],
+      "id": "ab5adab9-d5f5-47f5-8c97-0a55c2e4cb26",
+      "name": "token2",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "831e1cd5-99e1-4d62-be2b-7bee706e8b6e",
+              "name": "nome",
+              "value": "={{ $('Split Out Status2').last().json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "f9f251d6-ff4f-443a-a7fe-230bf1e67c87",
+              "name": "descricao_mesa",
+              "value": "={{ $('Split Out Status2').last().json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "fb4e8e85-2d03-47f3-a659-e6aa51b9b932",
+              "name": "descricao_front",
+              "value": "={{ $('Split Out Status2').last().json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "84fa1e4e-3b48-474c-b32d-05eb9c756d74",
+              "name": "data_fase_inicial",
+              "value": "={{ $json.data_fase_inicial }}",
+              "type": "string"
+            },
+            {
+              "id": "25bbe9c2-0009-4ca9-a7d2-0eaed88d9393",
+              "name": "data_fase_final",
+              "value": "={{ $json.data_fase_final }}",
+              "type": "string"
+            },
+            {
+              "id": "f6f1896d-950c-448a-a8f7-d54edd376586",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "109d0c6f-fbce-47d5-9272-480fe32d21e1",
+              "name": "url_mesa_video",
+              "value": "={{ $('Detalhe do Contrato2').item.json.url_mesa_video }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2300,
+        1100
+      ],
+      "id": "0617388e-6820-4a5b-8cfd-8e2396974296",
+      "name": "Last Status2",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1900,
+        960
+      ],
+      "id": "53f2e291-846a-4177-a195-2ccf646e2f43",
+      "name": "Split Out Status2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/detalhe-contrato/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token2').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "token_contrato",
+              "value": "={{ $json.token_contrato }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        960
+      ],
+      "id": "8712fa6c-0944-4c89-8328-fdc3029857bd",
+      "name": "Detalhe do Contrato2",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e429755d-9bc7-4bf4-b2d6-4a97c68b9a8c",
+              "name": "status",
+              "value": "={{ $json.contracts[0].status }}",
+              "type": "string"
+            },
+            {
+              "id": "763565cc-12e5-426f-8be4-62bacf411e15",
+              "name": "contracts",
+              "value": "={{ $json.contracts[0].id }}",
+              "type": "number"
+            },
+            {
+              "id": "e7926e9c-638b-4937-8bf4-a49f2a9fc3e2",
+              "name": "token_contrato",
+              "value": "={{ $json.contracts[0].token_contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1540,
+        960
+      ],
+      "id": "03bbe2e6-4fcb-47d5-a469-7ee622df80f6",
+      "name": "Token Contrato2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "contrato",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1140,
+        740
+      ],
+      "id": "cd3ecd6d-4eb8-4ead-a12c-520c48408199",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 103,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "1c4a0612-fbad-425b-866e-09a5a751cd4a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Analise Tecnica"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "541469eb-81fb-436f-8181-ac2cca0d1bb3",
+                    "leftValue": "={{ [17, 18, 19, 50].includes(Number($json.nome)) ? true : false }}",
+                    "rightValue": 12,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Proposta paga"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "516d857f-958f-43d0-97ce-1d82ba850d3f",
+                    "leftValue": "={{ $json.nome }}",
+                    "rightValue": 7,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reprovada - Finalizada"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3560,
+        660
+      ],
+      "id": "ae5a1dd0-7c32-41ed-bb3b-db5374d6ae29",
+      "name": "Switch4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        940,
+        820
+      ],
+      "id": "85467e55-179b-4c19-b032-ef35737edc5b",
+      "name": "Loop Over Averbado "
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1000,
+        40
+      ],
+      "id": "070bab5c-a63e-47ae-89e1-cc5463f34a62",
+      "name": "Loop Over Aguardando Averbacao"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1040,
+        -740
+      ],
+      "id": "923d84c8-287a-4b16-a41c-9f7c32c02fb0",
+      "name": "Loop Over Aguardando Formalzacao"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/listar-contratos/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "contrato",
+              "value": "={{ $('Loop Over Averbado ').item.json.contrato }}"
+            },
+            {
+              "name": "items_per_page",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        960
+      ],
+      "id": "4cd580d4-c937-41d3-96f3-f97ce8dc31a5",
+      "name": "Consulta Contratos Averbados",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/listar-contratos/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "contrato",
+              "value": "={{ $('Loop Over Aguardando Averbacao').item.json.contrato }}"
+            },
+            {
+              "name": "items_per_page",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        140
+      ],
+      "id": "439e62c1-a3a0-49e0-8322-4b54befd83b0",
+      "name": "Consulta Contratos Aguardando Averbacao",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/listar-contratos/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "contrato",
+              "value": "={{ $('Loop Over Aguardando Formalzacao').item.json.contrato }}"
+            },
+            {
+              "name": "items_per_page",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        -640
+      ],
+      "id": "71537589-7a24-484d-b603-b11e6f6301ba",
+      "name": "Consulta Contratos Aguardando Formalizacao"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA API AMIGOZ\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 2460,
+        "width": 3000,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        860,
+        -1060
+      ],
+      "typeVersion": 1,
+      "id": "40ce5fa8-03c2-4723-b79d-fb43029f7365",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2e61eed-d82c-4a57-96bf-4099fde1b9f0",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "900aa2f1-929e-4632-a530-fea5741c256c",
+              "name": "codigo_fase",
+              "value": "={{ $json.codigo_fase }}",
+              "type": "number"
+            },
+            {
+              "id": "3eba2faa-81d1-43b1-ba17-ccff8906db96",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "573bdbff-32a6-4908-9aa1-f6bb292c136c",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "11d5bf2c-6909-4ea7-a224-80568b1c20c9",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "bf188dc1-1004-42c5-9e28-a8eba10486a8",
+              "name": "nome",
+              "value": "={{ $json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "36e74406-a38e-4640-a817-0dab00c42ebf",
+              "name": "descricao_mesa",
+              "value": "={{ $json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "a6db27e2-93b9-4c65-8667-afda2f20cfeb",
+              "name": "descricao_front",
+              "value": "={{ $json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "fc569980-0c7f-4fe8-92d0-947a37aa74a7",
+              "name": "url_mesa_video",
+              "value": "={{ $json.url_mesa_video }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        740
+      ],
+      "id": "6cb43226-c1ba-4f7a-a32f-c111b8825449",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2e61eed-d82c-4a57-96bf-4099fde1b9f0",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "900aa2f1-929e-4632-a530-fea5741c256c",
+              "name": "codigo_fase",
+              "value": "={{ $json.codigo_fase }}",
+              "type": "number"
+            },
+            {
+              "id": "ee50f1f4-421f-4b4b-a3cb-6be47c4e23bd",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "573bdbff-32a6-4908-9aa1-f6bb292c136c",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "11d5bf2c-6909-4ea7-a224-80568b1c20c9",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "bf188dc1-1004-42c5-9e28-a8eba10486a8",
+              "name": "nome",
+              "value": "={{ $json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "36e74406-a38e-4640-a817-0dab00c42ebf",
+              "name": "descricao_mesa",
+              "value": "={{ $json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "a6db27e2-93b9-4c65-8667-afda2f20cfeb",
+              "name": "descricao_front",
+              "value": "={{ $json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "fc569980-0c7f-4fe8-92d0-947a37aa74a7",
+              "name": "url_mesa_video",
+              "value": "={{ $json.url_mesa_video }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1420,
+        -120
+      ],
+      "id": "118e3fd0-8514-47d2-873f-6a08d842920f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2e61eed-d82c-4a57-96bf-4099fde1b9f0",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "900aa2f1-929e-4632-a530-fea5741c256c",
+              "name": "codigo_fase",
+              "value": "={{ $json.codigo_fase }}",
+              "type": "number"
+            },
+            {
+              "id": "3eba2faa-81d1-43b1-ba17-ccff8906db96",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "573bdbff-32a6-4908-9aa1-f6bb292c136c",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "11d5bf2c-6909-4ea7-a224-80568b1c20c9",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "bf188dc1-1004-42c5-9e28-a8eba10486a8",
+              "name": "nome",
+              "value": "={{ $json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "36e74406-a38e-4640-a817-0dab00c42ebf",
+              "name": "descricao_mesa",
+              "value": "={{ $json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "a6db27e2-93b9-4c65-8667-afda2f20cfeb",
+              "name": "descricao_front",
+              "value": "={{ $json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "fc569980-0c7f-4fe8-92d0-947a37aa74a7",
+              "name": "url_mesa_video",
+              "value": "={{ $json.url_mesa_video }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1480,
+        -900
+      ],
+      "id": "30589511-61c4-4dcb-b762-f671166aa3d7",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                5,
+                3,
+                4,
+                6
+              ],
+              "triggerAtHour": 8
+            },
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "6a8d4000-5208-4834-b8fd-1d192a0a5883",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const startTime = 8;\nconst finishTime = 18;\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && nowDay !== 0) {\n      return {sheduler: true}\n    }\n\n return {sheduler: false}"
+      },
+      "id": "c1ae1fc2-8478-4ffb-b66f-510147de0c3b",
+      "name": "Scheduler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "16f454d5-963a-4cb2-9ee5-cf4fbaf576d4",
+              "leftValue": "={{ $json.sheduler }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        20,
+        0
+      ],
+      "id": "9ce834c6-8dfb-4221-84fe-aaf720a9dfcb",
+      "name": "Filter tempo"
+    },
+    {
+      "parameters": {
+        "content": "## HORARIO DE TRABALHO \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 300,
+        "width": 540
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -360,
+        -100
+      ],
+      "typeVersion": 1,
+      "id": "d1008d6a-6a3c-43f6-852f-8baf8d3c4623",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC dbo.pr_atualiza_contrato_af\n    @id = {{ $('Edit Fields Checagem - Mesa Corban').item.json.af_codigo }}, \n    @faseDestino = 60,\n    @CodContrato = '{{ $('Edit Fields Checagem - Mesa Corban').item.json.contrato }}',\n    @texto = 'PROPOSTA ASSINADA.',\n    @nomeUsuario = 'BACKOFFICE'\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5320,
+        -1420
+      ],
+      "id": "4147b66b-ee95-430e-b435-bfd466ee0bd6",
+      "name": "Fase Aguardando Averbacao",
+      "executeOnce": true,
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a387a894-b7de-435d-b065-dd9d4c301156",
+              "name": "Af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4920,
+        -780
+      ],
+      "id": "75698132-f47e-4084-952b-c3165fbf60b1",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4520,
+        -620
+      ],
+      "id": "16ed20a0-7e6a-4143-885b-c174cff2ba21",
+      "name": "Loop Over Pendente Documentação"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC dbo.pr_atualiza_contrato_af\n    @id ={{ $json.af_codigo }} ,               -- Código da AF\n    @faseDestino = 9,          -- Fase de destino (diferente da fase de fechamento)\n    @CodContrato = '{{ $json.contrato }}',\n    @texto = '{{ $json.descricao_front }}.',\n    @nomeUsuario = 'BACKOFFICE'\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        4920,
+        -580
+      ],
+      "id": "8122b349-c726-4b76-bb6a-376230e8add4",
+      "name": "Fase Pendente Documentação",
+      "executeOnce": true,
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "exec pr_ordena_acompanhamento {{ $json.Af_codigo }}, 'AGUARDANDO FORMALIZAÇÃO DIGITAL.', 'BACKOFFICE'"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5200,
+        -1660
+      ],
+      "id": "fa89d3d7-2ad8-48b4-8259-503560931000",
+      "name": "Insert Acompanhamento  AGUARDANDO FORMALIZAÇÃO DIGITAL",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ATUALIZA AGILUS E NOTIFICA BKO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 4120,
+        "width": 1620,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4440,
+        -1880
+      ],
+      "typeVersion": 1,
+      "id": "f7d9b4c2-7042-426e-adae-fbcdfd385764",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4560,
+        -1720
+      ],
+      "id": "67dad1e4-cd32-4fd7-ae8e-366c7db36a82",
+      "name": "Loop Over Pendente Documentação1"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4740,
+        -1660
+      ],
+      "id": "4295bbda-204c-4ed7-b427-9202b0b13211",
+      "name": "Wait",
+      "webhookId": "883befdc-3494-43b6-9e70-fcd7b5355bac"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a387a894-b7de-435d-b065-dd9d4c301156",
+              "name": "Af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4980,
+        -1660
+      ],
+      "id": "797b656c-1349-4986-b129-9c4b2f597587",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4720,
+        -780
+      ],
+      "id": "59c383ab-7e93-4930-9ab6-57171dfdfdd9",
+      "name": "Wait1",
+      "webhookId": "a5eccdc8-befa-4935-a9a6-b0fa052ed7be"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4720,
+        -300
+      ],
+      "id": "1b715bc6-9706-4268-8969-bf073d9a7f9e",
+      "name": "Wait2",
+      "webhookId": "d4071a99-73d3-4ec6-8d99-9eead217513a"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "exec pr_ordena_acompanhamento {{ $json.Af_codigo }}, 'Checagem - Mesa Formalização (Analise documental)', 'BACKOFFICE'"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5120,
+        -300
+      ],
+      "id": "7e0bb2b4-9c36-4e9e-8251-c21ac4d1e2c3",
+      "name": "Atualiza Acompanhamento Checagem - Mesa Formalização",
+      "executeOnce": true,
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4720,
+        -20
+      ],
+      "id": "849b55b7-8a64-4018-861d-e1aa51604c91",
+      "name": "Wait3",
+      "webhookId": "8cfe08e0-4c9f-47bf-b25c-59c44639fca7"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=exec pr_ordena_acompanhamento {{ $json.Af_codigo }}, 'Análise Técnica - Fase de atuação interna do banco, tem um prazo de até 24h para conclusão da proposta.', 'BACKOFFICE'"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5100,
+        1400
+      ],
+      "id": "223a2bf6-8aa5-4578-bb39-fe7a2d6e7a27",
+      "name": "Atualiza Acompanhamento Analise Tecnica",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"dbAgilus\".\"dbo\".\"af\" SET \"af_sinalizado\"='0' WHERE  \"Af_codigo\"={{ $('Loop Checagem - Mesa Corban').item.json.af_codigo }};"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5900,
+        -1420
+      ],
+      "id": "b51299e3-6e00-4667-8eaf-e00cfb880e94",
+      "name": "Microsoft SQL",
+      "executeOnce": true,
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4720,
+        -580
+      ],
+      "id": "433f41e0-d851-452e-841c-8b366227b623",
+      "name": "Wait5",
+      "webhookId": "d743c6ba-54e4-4c61-9a36-9d32cd0335f5"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4500,
+        940
+      ],
+      "id": "8ad9549b-2769-49c8-ae5d-93814486acd1",
+      "name": "Loop Over Teimosinha Dataprev - Averbação"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC dbo.pr_atualiza_contrato_af\n    @id = {{ $('Loop Over Teimosinha Dataprev - Averbação').item.json.af_codigo }},               -- Código da AF\n    @faseDestino = 93,          -- Fase de destino (diferente da fase de fechamento)\n    @CodContrato = '{{ $('Loop Over Teimosinha Dataprev - Averbação').item.json.contrato }}',\n    @texto = '{{ $('Loop Over Teimosinha Dataprev - Averbação').item.json.descricao_mesa }}',\n    @nomeUsuario = 'BACKOFFICE'\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        4940,
+        1020
+      ],
+      "id": "0500d408-8d9d-4d4b-94f3-69721980ea2d",
+      "name": "Teimosinha Dataprev - Averbação",
+      "executeOnce": true,
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4520,
+        700
+      ],
+      "id": "45a984b1-98a0-4b6f-8801-59840144db93",
+      "name": "Loop Over Reprovada - Finalizada1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4520,
+        460
+      ],
+      "id": "3be63b48-1a15-4c23-b1ff-424caf600e2a",
+      "name": "Loop Over Proposta paga"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4520,
+        180
+      ],
+      "id": "cf4e75f9-6b79-49a2-b8cc-a89b18020818",
+      "name": "Loop Processo de averbação"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "EXEC dbo.pr_atualiza_contrato_af\n    @id = {{ $('Edit Fields  Processo de averbação').item.json.af_codigo }},               -- Código da AF\n    @faseDestino = 2,          -- Fase de destino (diferente da fase de fechamento)\n    @CodContrato = '{{ $('Edit Fields  Processo de averbação').item.json.contrato }}',\n    @texto = 'Proposta Averbada.',\n    @nomeUsuario = 'BACKOFFICE'\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5260,
+        260
+      ],
+      "id": "c936d0f4-3269-4e8e-9b23-72a550b05e14",
+      "name": "Fase Averbado - Processo de averbação",
+      "executeOnce": true,
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4520,
+        -80
+      ],
+      "id": "5796e024-2ebf-4289-8e9d-69a3fb285b00",
+      "name": "Loop Over Items Aguardando vídeo chamada do cliente"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a387a894-b7de-435d-b065-dd9d4c301156",
+              "name": "Af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "8ad2afad-dd42-4165-989f-835d2bfad41c",
+              "name": "url_mesa_video",
+              "value": "={{ $json.url_mesa_video }}",
+              "type": "string"
+            },
+            {
+              "id": "40def3ad-54a1-4780-88e6-d9a2e871f674",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4920,
+        -20
+      ],
+      "id": "4c4b8049-c98f-48e7-86ff-075647489a74",
+      "name": "Edit Fields Aguardando vídeo chamada do cliente"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4520,
+        -360
+      ],
+      "id": "2cf6b42e-49f2-470a-9f90-1dbdc115c601",
+      "name": "Loop Checagem - Mesa Formalização"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a387a894-b7de-435d-b065-dd9d4c301156",
+              "name": "Af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4920,
+        -300
+      ],
+      "id": "f390a33b-de47-4c1f-bdff-155ce1cc7666",
+      "name": "Edit Fields Checagem - Mesa Formalização"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4520,
+        -840
+      ],
+      "id": "d7173bc4-655a-44b6-ba15-1a0016e4e99d",
+      "name": "Loop Validações Automáticas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "exec pr_ordena_acompanhamento {{ $json.Af_codigo }}, 'ANALISE DOCUMENTAL.', 'BACKOFFICE'"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5120,
+        -780
+      ],
+      "id": "07e26d54-483b-460d-8983-58254e82f2b7",
+      "name": "Atualiza Acompanhamento Validações Automáticas",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4560,
+        -1460
+      ],
+      "id": "87804f09-15cb-42f4-b2be-37e9d39865fa",
+      "name": "Loop Checagem - Mesa Corban"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4540,
+        -1220
+      ],
+      "id": "ae02f141-7bc6-4cec-bdcf-c83fa5772e37",
+      "name": "Loop Reprovada - Finalizada"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4500,
+        1320
+      ],
+      "id": "d158460b-f66d-429a-b914-6b5d4a63c27a",
+      "name": "Loop Analise Tecnica"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4700,
+        1400
+      ],
+      "id": "6847135f-afd8-4d20-892f-fcf59bbea018",
+      "name": "Wait Analise Tecnica",
+      "webhookId": "1d6df727-9584-48ea-ac6a-90ff14c170a8"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a387a894-b7de-435d-b065-dd9d4c301156",
+              "name": "Af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4920,
+        1400
+      ],
+      "id": "892a28d9-1313-4989-8a8c-c65dd14d12ae",
+      "name": "Edit Fields Analise Tecnica"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4500,
+        1600
+      ],
+      "id": "0df0ec3b-01bd-4564-8b20-d7c8d436dd96",
+      "name": "Loop Proposta paga"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4500,
+        1860
+      ],
+      "id": "5f5d5c78-2805-44f8-865c-a56e0a551ed6",
+      "name": "Loop Reprovada - Finalizada1"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA AF AGILUS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 300,
+        "width": 540,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        220,
+        -100
+      ],
+      "typeVersion": 1,
+      "id": "52722a88-96b2-4ed3-be83-5aeaa870e769",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5540,
+        -1420
+      ],
+      "id": "d80a4c0b-2d09-4063-8a2e-7dd87befefe8",
+      "name": "Limit"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5460,
+        260
+      ],
+      "id": "00caff72-be20-480e-b12c-9f8ad2d39146",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5160,
+        1020
+      ],
+      "id": "470041aa-4356-4e43-a5cb-79be7d48775f",
+      "name": "Limit2"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4740,
+        260
+      ],
+      "id": "704248c8-c223-4382-a33a-d900ea1e2209",
+      "name": "Wait4",
+      "webhookId": "d405258f-fa7a-4bee-a455-5eb661c6e2af"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4720,
+        1020
+      ],
+      "id": "315d6029-059e-492e-b3d5-82c417fdac7f",
+      "name": "Wait6",
+      "webhookId": "f070d8da-f39b-4832-b4f3-0723374c0220"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4740,
+        500
+      ],
+      "id": "c576b53f-dd12-4c26-a841-e67b19bc5e82",
+      "name": "Wait7",
+      "webhookId": "78894873-9b6c-4e23-ad1b-e8b99794cf1e"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5320,
+        1400
+      ],
+      "id": "b94de26e-83a5-428e-aeea-c1507c43a6ad",
+      "name": "Limit3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e4287fd-cbd6-48b3-9f47-e7681e3dcb6a",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "8123a588-e804-44ba-af94-8cebd46271b6",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "b0aaab4b-4d4a-4901-9a60-53a797349023",
+              "name": "Status",
+              "value": "PROPOSTA RECUSADA",
+              "type": "string"
+            },
+            {
+              "id": "a34a5a73-7e2b-417e-a3a1-4709b98b6e91",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "ede16ce4-f5ba-490e-8811-d6d6018b08f8",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4700,
+        1900
+      ],
+      "id": "c68e4cd4-4c91-4f7c-87fd-85cdb683bd63",
+      "name": "Edit Fields Reprovada - Finalizada"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAQAnZgImOA"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        4920,
+        1900
+      ],
+      "id": "2b6aa50d-95e5-44ca-af6b-d134b152750b",
+      "name": "RabbitMQ Reprovada - Finalizada",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e4287fd-cbd6-48b3-9f47-e7681e3dcb6a",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "8123a588-e804-44ba-af94-8cebd46271b6",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "b0aaab4b-4d4a-4901-9a60-53a797349023",
+              "name": "Status",
+              "value": "PAGO",
+              "type": "string"
+            },
+            {
+              "id": "a34a5a73-7e2b-417e-a3a1-4709b98b6e91",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "ede16ce4-f5ba-490e-8811-d6d6018b08f8",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4700,
+        1640
+      ],
+      "id": "1bdb4b59-cf68-4151-aaeb-9f0e08020176",
+      "name": "Edit Fields PROPOSTA PAGA"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAQAnZgImOA"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        4900,
+        1640
+      ],
+      "id": "f57b453d-a137-4405-b552-da5029112ab9",
+      "name": "RabbitMQ PROPOSTA PAGA",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e4287fd-cbd6-48b3-9f47-e7681e3dcb6a",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "8123a588-e804-44ba-af94-8cebd46271b6",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "b0aaab4b-4d4a-4901-9a60-53a797349023",
+              "name": "Status",
+              "value": "PROPOSTA RECUSADA",
+              "type": "string"
+            },
+            {
+              "id": "a34a5a73-7e2b-417e-a3a1-4709b98b6e91",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "ede16ce4-f5ba-490e-8811-d6d6018b08f8",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4740,
+        760
+      ],
+      "id": "c552f4ac-360b-4e6a-8966-19ab2c4ebb53",
+      "name": "Edit Fields Reprovada - Finalizada1"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        4940,
+        760
+      ],
+      "id": "2c62e180-cbe4-4652-bd6b-28f4d58c76c2",
+      "name": "RabbitMQ PROPOSTA RECUSADA",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e4287fd-cbd6-48b3-9f47-e7681e3dcb6a",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "8123a588-e804-44ba-af94-8cebd46271b6",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "b0aaab4b-4d4a-4901-9a60-53a797349023",
+              "name": "Status",
+              "value": "PROPOSTA ASSINADA",
+              "type": "string"
+            },
+            {
+              "id": "a34a5a73-7e2b-417e-a3a1-4709b98b6e91",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "ede16ce4-f5ba-490e-8811-d6d6018b08f8",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4940,
+        500
+      ],
+      "id": "7759fa2f-97ef-4ba2-b8eb-c5ab50023ab1",
+      "name": "Edit Fields  Proposta paga"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAQAnZgImOA"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        5160,
+        500
+      ],
+      "id": "936730c9-e423-48a7-b1fc-a895bcc7242b",
+      "name": "RabbitMQ  Proposta paga",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e4287fd-cbd6-48b3-9f47-e7681e3dcb6a",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "8123a588-e804-44ba-af94-8cebd46271b6",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "b0aaab4b-4d4a-4901-9a60-53a797349023",
+              "name": "Status",
+              "value": "Proposta Averbada.",
+              "type": "string"
+            },
+            {
+              "id": "a34a5a73-7e2b-417e-a3a1-4709b98b6e91",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "ede16ce4-f5ba-490e-8811-d6d6018b08f8",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4900,
+        260
+      ],
+      "id": "f822d5d1-6619-4cbe-b88a-0a81222b0e8f",
+      "name": "Edit Fields  Processo de averbação"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAQAnZgImOA"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        5080,
+        260
+      ],
+      "id": "4a872d4f-aa02-41c5-97c5-31be4e5de348",
+      "name": "RabbitMQ  Processo de averbação",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e4287fd-cbd6-48b3-9f47-e7681e3dcb6a",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "8123a588-e804-44ba-af94-8cebd46271b6",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "b0aaab4b-4d4a-4901-9a60-53a797349023",
+              "name": "Status",
+              "value": "PROPOSTA RECUSADA",
+              "type": "string"
+            },
+            {
+              "id": "a34a5a73-7e2b-417e-a3a1-4709b98b6e91",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "ede16ce4-f5ba-490e-8811-d6d6018b08f8",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4780,
+        -1180
+      ],
+      "id": "94a22e6a-8ab1-451e-b7fd-99967227d9f1",
+      "name": "Edit Fields Reprovada - Finalizada2"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAQAnZgImOA"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        4960,
+        -1180
+      ],
+      "id": "cad927de-9543-4655-91eb-7476fa3d2cb3",
+      "name": "RabbitMQ Reprovada - Finalizada1",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e4287fd-cbd6-48b3-9f47-e7681e3dcb6a",
+              "name": "nome_banco",
+              "value": "={{ $json.nome_banco }}",
+              "type": "string"
+            },
+            {
+              "id": "8123a588-e804-44ba-af94-8cebd46271b6",
+              "name": "descricao_fase",
+              "value": "={{ $json.descricao_fase }}",
+              "type": "string"
+            },
+            {
+              "id": "b0aaab4b-4d4a-4901-9a60-53a797349023",
+              "name": "Status",
+              "value": "PROPOSTA ASSINADA.",
+              "type": "string"
+            },
+            {
+              "id": "a34a5a73-7e2b-417e-a3a1-4709b98b6e91",
+              "name": "af_codigo",
+              "value": "={{ $json.af_codigo }}",
+              "type": "number"
+            },
+            {
+              "id": "ede16ce4-f5ba-490e-8811-d6d6018b08f8",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4740,
+        -1420
+      ],
+      "id": "da91b888-0fa4-46c1-8afc-ef2152c154f3",
+      "name": "Edit Fields Checagem - Mesa Corban"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAQAnZgImOA"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        4940,
+        -1420
+      ],
+      "id": "b65672bf-6deb-4b0e-a29e-81e9baace442",
+      "name": "RabbitMQ Checagem - Mesa Corban",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=EXEC dbo.pr_atualiza_contrato_af\n    @id = {{ $json.Af_codigo }},               -- Código da AF\n    @faseDestino = 9,          -- Fase de destino (diferente da fase de fechamento)\n    @CodContrato = '{{ $json.contrato }}',\n    @texto = 'CHAMADA DE VIDEO link: {{ $json.url_mesa_video }}',\n    @nomeUsuario = 'BACKOFFICE'\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        5100,
+        -20
+      ],
+      "id": "5d21f3f7-6f10-4882-9c46-a66dafed2785",
+      "name": "Atualiza Fase Aguardando vídeo chamada do cliente",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5320,
+        -20
+      ],
+      "id": "8349be49-fb02-43e9-b017-cb48734f342e",
+      "name": "Limit4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f4a1bb69-3f92-467c-b70a-8a52aab9d1f0",
+              "leftValue": "={{ $json.descricao_mesa }}",
+              "rightValue": "Contrato principal",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2160,
+        -640
+      ],
+      "id": "ad821d49-f785-4083-9917-946746197161",
+      "name": "If",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "831e1cd5-99e1-4d62-be2b-7bee706e8b6e",
+              "name": "nome",
+              "value": "={{ $('Split_Out_Status_Formalizacao').last().json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "f9f251d6-ff4f-443a-a7fe-230bf1e67c87",
+              "name": "descricao_mesa",
+              "value": "={{ $('Split_Out_Status_Formalizacao').last().json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "fb4e8e85-2d03-47f3-a659-e6aa51b9b932",
+              "name": "descricao_front",
+              "value": "={{ $('Split_Out_Status_Formalizacao').last().json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "f6f1896d-950c-448a-a8f7-d54edd376586",
+              "name": "contrato",
+              "value": "={{ $('Loop Over Aguardando Formalzacao').item.json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "109d0c6f-fbce-47d5-9272-480fe32d21e1",
+              "name": "url_mesa_video",
+              "value": "={{ $('Detalhe do Contrato5').item.json.url_mesa_video }}",
+              "type": "string"
+            },
+            {
+              "id": "919ede76-db2f-41a1-90db-f38f5d51a109",
+              "name": "Contrato_principal",
+              "value": "={{ $('Contrato_principal_formalizacao').item.json[\"Contrato principal\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3560,
+        -720
+      ],
+      "id": "bda1bd17-d626-465b-9a11-1062fbbf5665",
+      "name": "Last Status4",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').item.json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').item.json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2560,
+        -720
+      ],
+      "id": "188f15c9-c931-4d60-bbe9-194b45fc9c3d",
+      "name": "token5",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e429755d-9bc7-4bf4-b2d6-4a97c68b9a8c",
+              "name": "status",
+              "value": "={{ $json.contracts[0].status }}",
+              "type": "string"
+            },
+            {
+              "id": "763565cc-12e5-426f-8be4-62bacf411e15",
+              "name": "contracts",
+              "value": "={{ $json.contracts[0].id }}",
+              "type": "number"
+            },
+            {
+              "id": "e7926e9c-638b-4937-8bf4-a49f2a9fc3e2",
+              "name": "token_contrato",
+              "value": "={{ $json.contracts[0].token_contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2980,
+        -720
+      ],
+      "id": "44df17d1-41c2-4a93-9111-e2d9afe17bb2",
+      "name": "Token Contrato5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/detalhe-contrato/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token5').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "token_contrato",
+              "value": "={{ $json.token_contrato }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3160,
+        -720
+      ],
+      "id": "3a20b9b1-7497-4ed7-9553-37110d86de46",
+      "name": "Detalhe do Contrato5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/listar-contratos/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "contrato",
+              "value": "={{ $('Contrato_principal_formalizacao').item.json[\"Contrato principal\"] }}"
+            },
+            {
+              "name": "items_per_page",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2760,
+        -720
+      ],
+      "id": "70c5cb14-acd3-48a0-bddc-34d93159f400",
+      "name": "Consulta Contratos Aguardando Formalizacao3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2580,
+        -540
+      ],
+      "id": "b2d18ec0-1016-4de5-89d4-845f52d8ef09",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25a9face-5544-4a24-8ca7-f60c0a202d8d",
+              "name": "Contrato principal",
+              "value": "={{ $json.descricao_mesa.split(' ').last() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2380,
+        -720
+      ],
+      "id": "fce68dec-137c-4a9c-a300-b10877615799",
+      "name": "Contrato_principal_formalizacao"
+    },
+    {
+      "parameters": {
+        "jsCode": "const comPrincipal = items.filter(item => item.json.Contrato_principal !== undefined);\n\nif (comPrincipal.length > 0) { return comPrincipal; } else { return items; }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        -540
+      ],
+      "id": "4b619d22-8052-4933-ac23-a02ff4cb35eb",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "831e1cd5-99e1-4d62-be2b-7bee706e8b6e",
+              "name": "nome",
+              "value": "={{ $('Split Out Status1').last().json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "f9f251d6-ff4f-443a-a7fe-230bf1e67c87",
+              "name": "descricao_mesa",
+              "value": "={{ $('Split Out Status1').last().json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "fb4e8e85-2d03-47f3-a659-e6aa51b9b932",
+              "name": "descricao_front",
+              "value": "={{ $('Split Out Status1').last().json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "84fa1e4e-3b48-474c-b32d-05eb9c756d74",
+              "name": "data_fase_inicial",
+              "value": "={{ $json.data_fase_inicial }}",
+              "type": "string"
+            },
+            {
+              "id": "25bbe9c2-0009-4ca9-a7d2-0eaed88d9393",
+              "name": "data_fase_final",
+              "value": "={{ $json.data_fase_final }}",
+              "type": "string"
+            },
+            {
+              "id": "f6f1896d-950c-448a-a8f7-d54edd376586",
+              "name": "contrato",
+              "value": "={{ $json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "109d0c6f-fbce-47d5-9272-480fe32d21e1",
+              "name": "url_mesa_video",
+              "value": "={{ $('Detalhe do Contrato1').item.json.url_mesa_video }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2360,
+        260
+      ],
+      "id": "fde93b2c-e8ca-4a53-848b-d2a0788f025a",
+      "name": "Last Status Averbacao",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f4a1bb69-3f92-467c-b70a-8a52aab9d1f0",
+              "leftValue": "={{ $json.descricao_mesa }}",
+              "rightValue": "Contrato principal",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2160,
+        140
+      ],
+      "id": "01bb42f7-0f59-47e4-8aa9-b6953fe420ea",
+      "name": "If1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "831e1cd5-99e1-4d62-be2b-7bee706e8b6e",
+              "name": "nome",
+              "value": "={{ $('Split_Out_status_averbacao').last().json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "f9f251d6-ff4f-443a-a7fe-230bf1e67c87",
+              "name": "descricao_mesa",
+              "value": "={{ $('Split_Out_status_averbacao').last().json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "fb4e8e85-2d03-47f3-a659-e6aa51b9b932",
+              "name": "descricao_front",
+              "value": "={{ $('Split_Out_status_averbacao').last().json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "f6f1896d-950c-448a-a8f7-d54edd376586",
+              "name": "contrato",
+              "value": "={{ $('Loop Over Aguardando Averbacao').item.json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "109d0c6f-fbce-47d5-9272-480fe32d21e1",
+              "name": "url_mesa_video",
+              "value": "={{ $('Detalhe do Contrato6').item.json.url_mesa_video }}",
+              "type": "string"
+            },
+            {
+              "id": "919ede76-db2f-41a1-90db-f38f5d51a109",
+              "name": "Contrato_principal",
+              "value": "={{ $('Contrato_principal_averbacao').item.json[\"Contrato principal\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3560,
+        60
+      ],
+      "id": "176dea49-2c63-41bf-9adb-bd1b94def100",
+      "name": "Last Status5",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').item.json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').item.json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2560,
+        60
+      ],
+      "id": "3abd985e-2eef-4ddc-bebc-bd9ce7660ca2",
+      "name": "token6",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e429755d-9bc7-4bf4-b2d6-4a97c68b9a8c",
+              "name": "status",
+              "value": "={{ $json.contracts[0].status }}",
+              "type": "string"
+            },
+            {
+              "id": "763565cc-12e5-426f-8be4-62bacf411e15",
+              "name": "contracts",
+              "value": "={{ $json.contracts[0].id }}",
+              "type": "number"
+            },
+            {
+              "id": "e7926e9c-638b-4937-8bf4-a49f2a9fc3e2",
+              "name": "token_contrato",
+              "value": "={{ $json.contracts[0].token_contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2980,
+        60
+      ],
+      "id": "998eab17-c3a1-4c87-8ce2-add84b3f5471",
+      "name": "Token Contrato6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/detalhe-contrato/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token6').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "token_contrato",
+              "value": "={{ $json.token_contrato }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3160,
+        60
+      ],
+      "id": "101eedd2-535e-48cc-9798-66e277bf98e3",
+      "name": "Detalhe do Contrato6"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2580,
+        260
+      ],
+      "id": "f97a2b2c-7a20-4e5b-822c-f2d94efb572d",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const comPrincipal = items.filter(item => item.json.Contrato_principal !== undefined);\n\nif (comPrincipal.length > 0) { return comPrincipal; } else { return items; }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        260
+      ],
+      "id": "970ede91-4d50-4a23-ba6e-11a18ffc49a5",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25a9face-5544-4a24-8ca7-f60c0a202d8d",
+              "name": "Contrato principal",
+              "value": "={{ $json.descricao_mesa.split(' ').last() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2380,
+        60
+      ],
+      "id": "58075994-b5cd-48a9-bafb-9340a69f7aef",
+      "name": "Contrato_principal_averbacao"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/listar-contratos/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "contrato",
+              "value": "={{ $('Contrato_principal_averbacao').item.json[\"Contrato principal\"] }}"
+            },
+            {
+              "name": "items_per_page",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2760,
+        60
+      ],
+      "id": "ba7dc600-3de8-408f-b0c2-2c81d20bfc2b",
+      "name": "Consulta Contratos Aguardando Averbacao1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3380,
+        -720
+      ],
+      "id": "08caa77f-85a1-42da-b887-76316e903a2d",
+      "name": "Split_Out_Status_Formalizacao"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3380,
+        60
+      ],
+      "id": "2eb9bf72-e5fd-44e8-9b4d-31d450b561f1",
+      "name": "Split_Out_status_averbacao"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f4a1bb69-3f92-467c-b70a-8a52aab9d1f0",
+              "leftValue": "={{ $json.descricao_mesa }}",
+              "rightValue": "Contrato principal",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2080,
+        960
+      ],
+      "id": "e6217f32-4854-421e-909a-3af9992dfaf8",
+      "name": "If2",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "831e1cd5-99e1-4d62-be2b-7bee706e8b6e",
+              "name": "nome",
+              "value": "={{ $('Split_Out_status_averbado').last().json.nome }}",
+              "type": "number"
+            },
+            {
+              "id": "f9f251d6-ff4f-443a-a7fe-230bf1e67c87",
+              "name": "descricao_mesa",
+              "value": "={{ $('Split_Out_status_averbado').last().json.descricao_mesa }}",
+              "type": "string"
+            },
+            {
+              "id": "fb4e8e85-2d03-47f3-a659-e6aa51b9b932",
+              "name": "descricao_front",
+              "value": "={{ $('Split_Out_status_averbado').last().json.descricao_front }}",
+              "type": "string"
+            },
+            {
+              "id": "f6f1896d-950c-448a-a8f7-d54edd376586",
+              "name": "contrato",
+              "value": "={{ $('Loop Over Averbado ').item.json.contrato }}",
+              "type": "string"
+            },
+            {
+              "id": "109d0c6f-fbce-47d5-9272-480fe32d21e1",
+              "name": "url_mesa_video",
+              "value": "={{ $('Detalhe do Contrato7').item.json.url_mesa_video }}",
+              "type": "string"
+            },
+            {
+              "id": "919ede76-db2f-41a1-90db-f38f5d51a109",
+              "name": "Contrato_principal",
+              "value": "={{ $('Contrato_principal_averbado').item.json[\"Contrato principal\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3540,
+        880
+      ],
+      "id": "4322ef49-c1de-4be3-9f8b-336d03a2d32c",
+      "name": "Last Status6",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/auth/token/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "={{ $('AcessosHappy').item.json.usuarioHappy }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('AcessosHappy').item.json.SenhaHappy }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2500,
+        880
+      ],
+      "id": "f7d848cb-4cf3-46ca-92ab-0347bac678e8",
+      "name": "token7",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e429755d-9bc7-4bf4-b2d6-4a97c68b9a8c",
+              "name": "status",
+              "value": "={{ $json.contracts[0].status }}",
+              "type": "string"
+            },
+            {
+              "id": "763565cc-12e5-426f-8be4-62bacf411e15",
+              "name": "contracts",
+              "value": "={{ $json.contracts[0].id }}",
+              "type": "number"
+            },
+            {
+              "id": "e7926e9c-638b-4937-8bf4-a49f2a9fc3e2",
+              "name": "token_contrato",
+              "value": "={{ $json.contracts[0].token_contrato }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2900,
+        880
+      ],
+      "id": "6658da91-0c33-4ca1-9f55-fe4049ece926",
+      "name": "Token Contrato7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/detalhe-contrato/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('token7').item.json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "token_contrato",
+              "value": "={{ $json.token_contrato }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3140,
+        880
+      ],
+      "id": "765cedcf-7835-4e4e-96ad-104ba5a924eb",
+      "name": "Detalhe do Contrato7"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2500,
+        1080
+      ],
+      "id": "b24a60f9-c3d9-42e4-883f-68a90453cd43",
+      "name": "Merge5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const comPrincipal = items.filter(item => item.json.Contrato_principal !== undefined);\n\nif (comPrincipal.length > 0) { return comPrincipal; } else { return items; }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        1080
+      ],
+      "id": "5c705f00-082d-47f7-9513-749e85ab6e6c",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backoffice.amigozconsig.com.br/api/listar-contratos/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "contrato",
+              "value": "={{ $('Contrato_principal_averbado').item.json[\"Contrato principal\"] }}"
+            },
+            {
+              "name": "items_per_page",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2700,
+        880
+      ],
+      "id": "805ab057-72ec-48c7-b240-c2594c09aab7",
+      "name": "Consulta Contratos Aguardando Averbacao2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3340,
+        880
+      ],
+      "id": "b56c3dd9-0304-4e46-a5fe-1ec10e6388a9",
+      "name": "Split_Out_status_averbado"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25a9face-5544-4a24-8ca7-f60c0a202d8d",
+              "name": "Contrato principal",
+              "value": "={{ $json.descricao_mesa.split(' ').last() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2300,
+        880
+      ],
+      "id": "0b9e7469-0a99-4286-9e48-6171bd2f3c06",
+      "name": "Contrato_principal_averbado"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5140,
+        -1420
+      ],
+      "id": "9c279170-e467-4570-bcfa-51ff6f3e672b",
+      "name": "Wait8",
+      "webhookId": "fc534dd2-3619-46f9-bc81-cef9ddfd3ba3"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5740,
+        -1420
+      ],
+      "id": "80b0b16c-b9f9-4323-9a89-0391284305f6",
+      "name": "Wait9",
+      "webhookId": "92af7951-6659-4e45-9f3f-d5cd55261ab3"
+    }
+  ],
+  "connections": {
+    "AcessosHappy": {
+      "main": [
+        [
+          {
+            "node": "Consulta AF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contratos Aguardando Formalizacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalhe do Contrato": {
+      "main": [
+        [
+          {
+            "node": "Split Out Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Contrato": {
+      "main": [
+        [
+          {
+            "node": "Detalhe do Contrato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta AF": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Aguardando Formalzacao",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Aguardando Averbacao",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Averbado ",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Status": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token1": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contratos Aguardando Averbacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Status1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalhe do Contrato1": {
+      "main": [
+        [
+          {
+            "node": "Split Out Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Contrato1": {
+      "main": [
+        [
+          {
+            "node": "Detalhe do Contrato1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token2": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contratos Averbados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Status2": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Out Status2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalhe do Contrato2": {
+      "main": [
+        [
+          {
+            "node": "Split Out Status2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Contrato2": {
+      "main": [
+        [
+          {
+            "node": "Detalhe do Contrato2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch4": {
+      "main": [
+        [
+          {
+            "node": "Loop Analise Tecnica",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Proposta paga",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Reprovada - Finalizada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Averbado ": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "token2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Aguardando Averbacao": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Aguardando Formalzacao": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Contratos Averbados": {
+      "main": [
+        [
+          {
+            "node": "Token Contrato2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Contratos Aguardando Averbacao": {
+      "main": [
+        [
+          {
+            "node": "Token Contrato1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Contratos Aguardando Formalizacao": {
+      "main": [
+        [
+          {
+            "node": "Token Contrato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch3": {
+      "main": [
+        [
+          {
+            "node": "Loop Validações Automáticas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Pendente Documentação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Checagem - Mesa Formalização",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items Aguardando vídeo chamada do cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Processo de averbação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Proposta paga",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Reprovada - Finalizada1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Teimosinha Dataprev - Averbação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Switch4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduler": {
+      "main": [
+        [
+          {
+            "node": "Filter tempo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter tempo": {
+      "main": [
+        [
+          {
+            "node": "AcessosHappy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Pendente Documentação1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Checagem - Mesa Corban",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Reprovada - Finalizada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fase Aguardando Averbacao": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Acompanhamento Validações Automáticas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Pendente Documentação": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fase Pendente Documentação": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Pendente Documentação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Pendente Documentação1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Acompanhamento  AGUARDANDO FORMALIZAÇÃO DIGITAL": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Pendente Documentação1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Insert Acompanhamento  AGUARDANDO FORMALIZAÇÃO DIGITAL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields Checagem - Mesa Formalização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Acompanhamento Checagem - Mesa Formalização": {
+      "main": [
+        [
+          {
+            "node": "Loop Checagem - Mesa Formalização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields Aguardando vídeo chamada do cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Acompanhamento Analise Tecnica": {
+      "main": [
+        [
+          {
+            "node": "Limit3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SQL": {
+      "main": [
+        [
+          {
+            "node": "Loop Checagem - Mesa Corban",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "Fase Pendente Documentação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Teimosinha Dataprev - Averbação": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teimosinha Dataprev - Averbação": {
+      "main": [
+        [
+          {
+            "node": "Limit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Reprovada - Finalizada1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields Reprovada - Finalizada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Proposta paga": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Processo de averbação": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fase Averbado - Processo de averbação": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items Aguardando vídeo chamada do cliente": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Aguardando vídeo chamada do cliente": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Fase Aguardando vídeo chamada do cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Checagem - Mesa Formalização": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Checagem - Mesa Formalização": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Acompanhamento Checagem - Mesa Formalização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Validações Automáticas": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Acompanhamento Validações Automáticas": {
+      "main": [
+        [
+          {
+            "node": "Loop Validações Automáticas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Checagem - Mesa Corban": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields Checagem - Mesa Corban",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Reprovada - Finalizada": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields Reprovada - Finalizada2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Analise Tecnica": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait Analise Tecnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Analise Tecnica": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields Analise Tecnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Analise Tecnica": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Acompanhamento Analise Tecnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Proposta paga": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields PROPOSTA PAGA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Reprovada - Finalizada1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields Reprovada - Finalizada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Wait9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Loop Processo de averbação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Teimosinha Dataprev - Averbação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields  Processo de averbação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait6": {
+      "main": [
+        [
+          {
+            "node": "Teimosinha Dataprev - Averbação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait7": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields  Proposta paga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit3": {
+      "main": [
+        [
+          {
+            "node": "Loop Analise Tecnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Reprovada - Finalizada": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ Reprovada - Finalizada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ Reprovada - Finalizada": {
+      "main": [
+        [
+          {
+            "node": "Loop Reprovada - Finalizada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields PROPOSTA PAGA": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ PROPOSTA PAGA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ PROPOSTA PAGA": {
+      "main": [
+        [
+          {
+            "node": "Loop Proposta paga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Reprovada - Finalizada1": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ PROPOSTA RECUSADA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ PROPOSTA RECUSADA": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Reprovada - Finalizada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields  Proposta paga": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ  Proposta paga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ  Proposta paga": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Proposta paga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields  Processo de averbação": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ  Processo de averbação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ  Processo de averbação": {
+      "main": [
+        [
+          {
+            "node": "Fase Averbado - Processo de averbação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Reprovada - Finalizada2": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ Reprovada - Finalizada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ Reprovada - Finalizada1": {
+      "main": [
+        [
+          {
+            "node": "Loop Reprovada - Finalizada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Checagem - Mesa Corban": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ Checagem - Mesa Corban",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ Checagem - Mesa Corban": {
+      "main": [
+        [
+          {
+            "node": "Wait8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Fase Aguardando vídeo chamada do cliente": {
+      "main": [
+        [
+          {
+            "node": "Limit4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit4": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items Aguardando vídeo chamada do cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Contrato_principal_formalizacao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Last Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token5": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contratos Aguardando Formalizacao3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Contrato5": {
+      "main": [
+        [
+          {
+            "node": "Detalhe do Contrato5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalhe do Contrato5": {
+      "main": [
+        [
+          {
+            "node": "Split_Out_Status_Formalizacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Contratos Aguardando Formalizacao3": {
+      "main": [
+        [
+          {
+            "node": "Token Contrato5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Status4": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contrato_principal_formalizacao": {
+      "main": [
+        [
+          {
+            "node": "token5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Aguardando Formalzacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Status Averbacao": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Contrato_principal_averbacao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Last Status Averbacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Status5": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token6": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contratos Aguardando Averbacao1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Contrato6": {
+      "main": [
+        [
+          {
+            "node": "Detalhe do Contrato6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalhe do Contrato6": {
+      "main": [
+        [
+          {
+            "node": "Split_Out_status_averbacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Aguardando Averbacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contrato_principal_averbacao": {
+      "main": [
+        [
+          {
+            "node": "token6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Contratos Aguardando Averbacao1": {
+      "main": [
+        [
+          {
+            "node": "Token Contrato6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split_Out_Status_Formalizacao": {
+      "main": [
+        [
+          {
+            "node": "Last Status4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split_Out_status_averbacao": {
+      "main": [
+        [
+          {
+            "node": "Last Status5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Contrato_principal_averbado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Last Status2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Status6": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "token7": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contratos Aguardando Averbacao2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Contrato7": {
+      "main": [
+        [
+          {
+            "node": "Detalhe do Contrato7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalhe do Contrato7": {
+      "main": [
+        [
+          {
+            "node": "Split_Out_status_averbado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Contratos Aguardando Averbacao2": {
+      "main": [
+        [
+          {
+            "node": "Token Contrato7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split_Out_status_averbado": {
+      "main": [
+        [
+          {
+            "node": "Last Status6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contrato_principal_averbado": {
+      "main": [
+        [
+          {
+            "node": "token7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Averbado ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait8": {
+      "main": [
+        [
+          {
+            "node": "Fase Aguardando Averbacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait9": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 300
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-04-24T15:57:24.005-03:00",
+          "Readable date": "April 24th 2025, 3:57:24 pm",
+          "Readable time": "3:57:24 pm",
+          "Day of week": "Thursday",
+          "Year": "2025",
+          "Month": "April",
+          "Day of month": "24",
+          "Hour": "15",
+          "Minute": "57",
+          "Second": "24",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ]
+  },
+  "versionId": "6ecf2e73-4c9e-4696-bb43-8aab48e169cf",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-04-30T15:46:11.134Z",
+      "createdAt": "2025-04-30T15:46:11.134Z",
+      "role": "workflow:owner",
+      "workflowId": "zi3DmbL0m6T7p729",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2025-02-20T16:29:31.422Z",
+      "createdAt": "2025-02-20T16:29:31.422Z",
+      "id": "XZLWvH2vm1NnuOvm",
+      "name": "Comercial"
+    }
+  ]
+}

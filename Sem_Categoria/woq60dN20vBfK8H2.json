@@ -1,0 +1,1074 @@
+{
+  "updatedAt": "2026-03-17T16:13:13.723Z",
+  "createdAt": "2026-02-22T02:32:33.122Z",
+  "id": "woq60dN20vBfK8H2",
+  "name": "Consultar CNPJ e Sócio",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -48
+      ],
+      "id": "108a1509-588e-42c3-87c2-c4205d326857",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/a398ceb2-913f-4e74-adac-e23815f3cacf",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "51.186.770/0001-01"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        272,
+        -144
+      ],
+      "id": "b274f0fc-d243-42a7-a8c9-8a9ccae85abe",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "path": "897a36fc-597e-4d26-a7bc-3bac5861d88d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -192,
+        208
+      ],
+      "id": "9cf893cd-3526-49ae-9572-3a0932d4833c",
+      "name": "Webhook",
+      "webhookId": "897a36fc-597e-4d26-a7bc-3bac5861d88d"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/897a36fc-597e-4d26-a7bc-3bac5861d88d",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "51.186.770/0001-01"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -48,
+        -48
+      ],
+      "id": "b4e9cbfd-0454-40ae-98c8-f84a49e5cce0",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2080,
+        208
+      ],
+      "id": "8dd630ee-76cd-410c-b08d-879a491ac485",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.SOCIEDADESCNPJ }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer 8263|5OZbB011nEgzR8lSMfz1PLTvevCwHXEAbh50HJHp95c21822"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        880,
+        208
+      ],
+      "id": "e97eb491-3093-4431-b733-5d4278d42500",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3237e841-81db-4805-a80f-691c203bf594",
+              "name": "SOCIEDADESCNPJ",
+              "value": "={{ $json['data[0].SOCIEDADES.SOCIEDADESCNPJ'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        208
+      ],
+      "id": "19afc5c7-0060-4a55-9f6a-e3d527b064ad",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fd1646d2-076a-417d-8c97-a1d28f8481ea",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "858c698e-5802-4eee-a5c5-a39d02c79418",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "d81b7e30-4416-4bed-b24a-807dd729df73",
+              "name": "CPFCNPJ",
+              "value": "={{ $json.CPFCNPJ }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        208
+      ],
+      "id": "0a218076-61b4-4a8a-a5a2-2b8bc068d92d",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        208
+      ],
+      "id": "a7cc6363-f08f-4ca7-84eb-5f8feb9988da",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "TELEFONE",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        208
+      ],
+      "id": "ca4decb5-29df-4df6-8a01-5cf6b8e500f7",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst resultado = {};\n\nfor (const item of items) {\n  const nome = item.json.NOME;\n  const cpf = item.json.CPFCNPJ;\n  const telefone = item.json.TELEFONE;\n\n  if (!resultado[cpf]) {\n    resultado[cpf] = {\n      NOME: nome,\n      CPFCNPJ: cpf,\n      TELEFONES: []\n    };\n  }\n\n  // Evita telefone duplicado\n  if (!resultado[cpf].TELEFONES.includes(telefone)) {\n    resultado[cpf].TELEFONES.push(telefone);\n  }\n}\n\n// Converter para formato de saída do n8n\nreturn Object.values(resultado).map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        208
+      ],
+      "id": "500fe1cb-07c9-4216-85b3-8bfb8fc93fb7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2288,
+        208
+      ],
+      "id": "7e0c5218-1c44-4ab9-bb1e-7b406c0aa52f",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "474cec72-49bd-4cd4-ba74-312a3c41e124",
+              "name": "cpf",
+              "value": "={{ $json.body.cpf }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        208
+      ],
+      "id": "a938799a-f4ff-4f31-999c-c7f1787f0bd9",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.cpf }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer 8263|5OZbB011nEgzR8lSMfz1PLTvevCwHXEAbh50HJHp95c21822"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        208
+      ],
+      "id": "cad4a39b-f2a3-4779-85c5-df2963078f25",
+      "name": "Consulta CNPJ"
+    },
+    {
+      "parameters": {
+        "content": "##",
+        "height": 288,
+        "width": 176,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "a651268e-ca88-49ce-9793-9940fcccdcd4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data[0].SOCIEDADES.SOCIEDADESCNPJ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        432,
+        208
+      ],
+      "id": "afb03430-15c7-4043-95cf-3085bd7224c6",
+      "name": "Split Out1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Consulta CNPJ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta CNPJ": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "query-parameters": "cpf=38652040000190",
+            "user-agent": "curl/8.13.0",
+            "accept": "*/*"
+          },
+          "params": {},
+          "query": {
+            "cpf": "38652040000190"
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/897a36fc-597e-4d26-a7bc-3bac5861d88d",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Dados": [
+      {
+        "json": {
+          "cpf": "38652040000190"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Consulta CNPJ": [
+      {
+        "json": {
+          "statusCode": 200,
+          "data": [
+            {
+              "UF": "ES",
+              "CEP": "29700110",
+              "MAE": null,
+              "IPTU": "(NÃO TEM)",
+              "NASC": "31/12/1969",
+              "NOME": "LOLLA COLATINA LTDA",
+              "SEXO": null,
+              "OBITO": "(NÃO CONSTA ÓBITO)",
+              "BAIRRO": "CENTRO",
+              "CIDADE": "COLATINA",
+              "EMAILS": "sa_contabilidade@hotmail.com",
+              "NUMERO": "60",
+              "PROCON": "(NAO TEM)",
+              "CPFCNPJ": "38652040000190",
+              "VEICULO": "(NÃO TEM)",
+              "CONTADOR": "1",
+              "ENDERECO": "TRAVESSA TULIO MARGOTTO",
+              "TELEFONE": "27998551059",
+              "WHATSAPP": "NAO",
+              "COMERCIAL": null,
+              "OPERADORA": "VIVO ",
+              "SOCIEDADES": {
+                "SOCIEDADESCNPJ": [
+                  "01522174796",
+                  "10395519713",
+                  "18856718731"
+                ],
+                "SOCIEDADESNOMEEMPRESA": [
+                  "EDSON WANDER BRONZONI",
+                  "SIDINEIA DOS REIS COUTO BRONZONI",
+                  "MARIA AURORA VIEIRA TATAGIBA"
+                ],
+                "SOCIEDADESNOMEFANTASIA": [
+                  "NULL",
+                  "NULL",
+                  "NULL"
+                ]
+              },
+              "ATUALIZACAO": "SAT",
+              "COMPLEMENTO": null,
+              "DATAABERTURA": "22/09/2020",
+              "DTINSTALACAO": null,
+              "EMPRESASOCIO": "EDSON WANDER BRONZONI",
+              "STATUSTELEFONE": "5",
+              "TELEMPRESASOCIO": "27999879496",
+              "CNPJEMPRESASOCIO": "01522174796",
+              "ENDEREMPRESASOCIO": "AV DAS ROSEIRAS",
+              "SITUACAOCADASTRAL": "ATIVA",
+              "ENDERUFEMPRESASOCIO": "ES",
+              "ENDERNUMEMPRESASOCIO": "910",
+              "ENDERCOMPEMPRESASOCIO": null,
+              "ENDERBAIRROEMPRESASOCIO": "JD PLANALTO",
+              "ENDERCIDADEEMPRESASOCIO": "COLATINA"
+            }
+          ]
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "f70d4922-905c-4fd0-aa89-5f92fc8d9bbd",
+  "activeVersionId": "f70d4922-905c-4fd0-aa89-5f92fc8d9bbd",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-22T02:32:33.122Z",
+      "createdAt": "2026-02-22T02:32:33.122Z",
+      "role": "workflow:owner",
+      "workflowId": "woq60dN20vBfK8H2",
+      "projectId": "gFw9T73PG6yNA59g"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-17T16:13:28.766Z",
+    "createdAt": "2026-03-17T16:13:13.725Z",
+    "versionId": "f70d4922-905c-4fd0-aa89-5f92fc8d9bbd",
+    "workflowId": "woq60dN20vBfK8H2",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -224,
+          -48
+        ],
+        "id": "108a1509-588e-42c3-87c2-c4205d326857",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/a398ceb2-913f-4e74-adac-e23815f3cacf",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "cpf",
+                "value": "51.186.770/0001-01"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          272,
+          -144
+        ],
+        "id": "b274f0fc-d243-42a7-a8c9-8a9ccae85abe",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "path": "897a36fc-597e-4d26-a7bc-3bac5861d88d",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -192,
+          208
+        ],
+        "id": "9cf893cd-3526-49ae-9572-3a0932d4833c",
+        "name": "Webhook",
+        "webhookId": "897a36fc-597e-4d26-a7bc-3bac5861d88d"
+      },
+      {
+        "parameters": {
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/897a36fc-597e-4d26-a7bc-3bac5861d88d",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "cpf",
+                "value": "51.186.770/0001-01"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -48,
+          -48
+        ],
+        "id": "b4e9cbfd-0454-40ae-98c8-f84a49e5cce0",
+        "name": "HTTP Request2"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2080,
+          208
+        ],
+        "id": "8dd630ee-76cd-410c-b08d-879a491ac485",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "cpf",
+                "value": "={{ $json.SOCIEDADESCNPJ }}"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer 8263|5OZbB011nEgzR8lSMfz1PLTvevCwHXEAbh50HJHp95c21822"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          880,
+          208
+        ],
+        "id": "e97eb491-3093-4431-b733-5d4278d42500",
+        "name": "HTTP Request3"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3237e841-81db-4805-a80f-691c203bf594",
+                "name": "SOCIEDADESCNPJ",
+                "value": "={{ $json['data[0].SOCIEDADES.SOCIEDADESCNPJ'] }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          640,
+          208
+        ],
+        "id": "19afc5c7-0060-4a55-9f6a-e3d527b064ad",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "fd1646d2-076a-417d-8c97-a1d28f8481ea",
+                "name": "NOME",
+                "value": "={{ $json.NOME }}",
+                "type": "string"
+              },
+              {
+                "id": "858c698e-5802-4eee-a5c5-a39d02c79418",
+                "name": "TELEFONE",
+                "value": "={{ $json.TELEFONE }}",
+                "type": "string"
+              },
+              {
+                "id": "d81b7e30-4416-4bed-b24a-807dd729df73",
+                "name": "CPFCNPJ",
+                "value": "={{ $json.CPFCNPJ }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1680,
+          208
+        ],
+        "id": "0a218076-61b4-4a8a-a5a2-2b8bc068d92d",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          208
+        ],
+        "id": "a7cc6363-f08f-4ca7-84eb-5f8feb9988da",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "compare": "selectedFields",
+          "fieldsToCompare": "TELEFONE",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.removeDuplicates",
+        "typeVersion": 2,
+        "position": [
+          1376,
+          208
+        ],
+        "id": "ca4decb5-29df-4df6-8a01-5cf6b8e500f7",
+        "name": "Remove Duplicates"
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\nconst resultado = {};\n\nfor (const item of items) {\n  const nome = item.json.NOME;\n  const cpf = item.json.CPFCNPJ;\n  const telefone = item.json.TELEFONE;\n\n  if (!resultado[cpf]) {\n    resultado[cpf] = {\n      NOME: nome,\n      CPFCNPJ: cpf,\n      TELEFONES: []\n    };\n  }\n\n  // Evita telefone duplicado\n  if (!resultado[cpf].TELEFONES.includes(telefone)) {\n    resultado[cpf].TELEFONES.push(telefone);\n  }\n}\n\n// Converter para formato de saída do n8n\nreturn Object.values(resultado).map(item => ({ json: item }));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1888,
+          208
+        ],
+        "id": "500fe1cb-07c9-4216-85b3-8bfb8fc93fb7",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2288,
+          208
+        ],
+        "id": "7e0c5218-1c44-4ab9-bb1e-7b406c0aa52f",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "474cec72-49bd-4cd4-ba74-312a3c41e124",
+                "name": "cpf",
+                "value": "={{ $json.body.cpf }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          16,
+          208
+        ],
+        "id": "a938799a-f4ff-4f31-999c-c7f1787f0bd9",
+        "name": "Dados"
+      },
+      {
+        "parameters": {
+          "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "cpf",
+                "value": "={{ $json.cpf }}"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer 8263|5OZbB011nEgzR8lSMfz1PLTvevCwHXEAbh50HJHp95c21822"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          224,
+          208
+        ],
+        "id": "cad4a39b-f2a3-4779-85c5-df2963078f25",
+        "name": "Consulta CNPJ"
+      },
+      {
+        "parameters": {
+          "content": "##",
+          "height": 288,
+          "width": 176,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -16,
+          128
+        ],
+        "typeVersion": 1,
+        "id": "a651268e-ca88-49ce-9793-9940fcccdcd4",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data[0].SOCIEDADES.SOCIEDADESCNPJ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          432,
+          208
+        ],
+        "id": "afb03430-15c7-4043-95cf-3085bd7224c6",
+        "name": "Split Out1"
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          []
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Dados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request3": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dados": {
+        "main": [
+          [
+            {
+              "node": "Consulta CNPJ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consulta CNPJ": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version f70d4922",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

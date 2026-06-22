@@ -1,0 +1,72 @@
+{
+  "updatedAt": "2026-02-20T16:17:28.930Z",
+  "createdAt": "2026-01-29T12:14:50.047Z",
+  "id": "Lp7OlgmvH6ckuVZ_4VUBR",
+  "name": "My workflow 29",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "09ef212d-5049-4513-b165-ebc23e920fa1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filter": {}
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0f37c5c3-4f64-4b7a-8ebe-08e86b037deb",
+      "name": "Get many users"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "68980c20-3222-4f23-a475-7329392fbaac",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-29T12:14:50.047Z",
+      "createdAt": "2026-01-29T12:14:50.047Z",
+      "role": "workflow:owner",
+      "workflowId": "Lp7OlgmvH6ckuVZ_4VUBR",
+      "projectId": "gFw9T73PG6yNA59g"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

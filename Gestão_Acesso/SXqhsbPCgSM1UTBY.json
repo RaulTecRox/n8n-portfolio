@@ -1,0 +1,2268 @@
+{
+  "updatedAt": "2026-02-03T18:21:55.931Z",
+  "createdAt": "2026-02-02T19:30:39.274Z",
+  "id": "SXqhsbPCgSM1UTBY",
+  "name": "Acessos - Gera AD copy",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "98ac63a6-9cd3-4b3f-9c5a-aba20cbe2c23"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "=COORDENADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COORDENADOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "GERENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f223b4e-932d-4ac4-894a-4e0c9e631378",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "LIDER",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1008,
+        384
+      ],
+      "id": "1502598b-9af5-4582-8878-150f03b9ad80",
+      "name": "GASPAR1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyComercial', 'G_MDG_Comercial_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_USER'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        -80
+      ],
+      "id": "3f707b48-5bfd-4365-b15c-154a0b9cac3e",
+      "name": "adicionaGruposADAgente"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Gerentes_Comerciais,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        272
+      ],
+      "id": "87868bb7-c32e-4f97-9876-f9e360abad42",
+      "name": "Move Usuario AD Gerente",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Coordenadores,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        112
+      ],
+      "id": "9c9a8cad-60e1-45dc-a320-a04067bd8fa6",
+      "name": "Move Usuario AD Coordenador",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agente_de_Vendas,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -80
+      ],
+      "id": "cf75feba-7d0a-49e7-966d-77aa9ad72d83",
+      "name": "Move Usuario AD Agente",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Gerente,OU=Precatorio,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        912
+      ],
+      "id": "95ed484c-16f1-4144-a5d9-62b189655a34",
+      "name": "Move Usuario AD Gerente1",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agentes,OU=Precatorio,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        768
+      ],
+      "id": "17a3fb93-2e26-41a3-8e3b-6d7acdb34e11",
+      "name": "Move Usuario AD Agente1",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.CARGO.replaceSpecialChars() }}",
+                    "rightValue": "CONSULTOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "9b4c80ef-eaf8-4e84-9327-bde7457e33a3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CONSULTOR DE NEGOCIOS JUNIOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b557084a-1718-480d-b6c2-93a0cedbb4de",
+                    "leftValue": "={{ $json.CARGO.replaceSpecialChars() }}",
+                    "rightValue": "=ASSISTENTE DE ADMINISTRACAO COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO PRECATORIO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c82f008-db6e-4941-9603-dd2232f598ec",
+                    "leftValue": "={{ $json.CARGO.replaceSpecialChars() }}",
+                    "rightValue": "GERENTE PRECATORIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GERENTE PRECATORIO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "beb4e5f3-aed8-4d84-a2a6-382e0aa2f193",
+                    "leftValue": "={{ $json.CARGO.replaceSpecialChars() }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "913a4798-7b45-42e9-a9ce-fa8446a06de0",
+                    "leftValue": "={{ $json.CARGO.replaceSpecialChars() }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f1e7515-677c-4433-a266-97342dea0aca",
+                    "leftValue": "={{ $json.CARGO.replaceSpecialChars() }}",
+                    "rightValue": "LIDER COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0d9f492a-8768-43ec-bb78-0220184c1f43",
+                    "leftValue": "={{ $json.CARGO.replaceSpecialChars() }}",
+                    "rightValue": "COORDENADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COORDENADOR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1040,
+        1152
+      ],
+      "id": "54efc294-ce72-4bf3-9443-faec3995384d",
+      "name": "ACG1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_PRECILUS_USER', 'G_MDG_Impressora_TI', 'G_MDG_Impressora_Precatorio', 'G_PLA_AdmLocal_Comercial', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyPrecatorio', 'PLA_AdmLocal_Administrativo', 'G_MDG_Precatorio'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        768
+      ],
+      "id": "59b7d909-9cff-46ba-a5b7-c7ca8317776d",
+      "name": "ConsultorGruposAdd"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_BaseBKO_W', 'G_MDG_Docs_Adm_Precatorio_W', 'G_MDG_PRECILUS_COORD', 'G_MDG_FERIAS_W', 'G_MDG_AutenticacaoGLPI', 'G_MDG_PbiPrecatorio_W', 'G_MDG_PrintScreen_Gerencial', 'G_MDG_Impressora_TI', 'G_MDG_Impressora_Precatorio', 'G_MDG_AUTENTICACAO_VPN', 'G_MDG_Marketing_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyPrecatorio', 'G_MDG_Impressora_RH', 'PLA_AdmLocal_Administrativo', 'G_MDG_Coord_Precatorio', 'G_MDG_Precatorio'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        912
+      ],
+      "id": "8b1f163d-d80a-4ba5-82a7-bf15fa8bed45",
+      "name": "GerentePrecaGruposAdd"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_FERIAS_W', 'G_MDG_FERIAS_R', 'G_MDG_GLPI_Lideres', 'G_MDG_AutenticacaoGLPI', 'G_CATELI_ImpressoraComercial', 'G_MDG_ProxyCoord', 'G_MDG_Impressora_Financeiro', 'G_MDG_Monitoria_R', 'G_MDG_PrintScreen_Coordenadores', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Coordenador_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Impressoras_BKO', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_Coordenador_W', 'G_MDG_Comercial_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_COORD'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        112
+      ],
+      "id": "6705487f-0e21-4cac-8e79-e83cf3736559",
+      "name": "CoodernadorGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AcompanhamentoGastosFinanceiro', 'G_MDG_AcompanhamentoFinanceiroGaspar_R', 'G_MDG_TABUARGULUS_USER', 'G_MDG_FERIAS_W', 'G_LMP_ImpressoraComercial', 'G_MDG_AutenticacaoGLPI', 'G_MDG_BaseMacica_W', 'G_MDG_BaseMacica_R', 'G_MDG_ProxyGerentes', 'G_MDG_Mailing_W', 'G_CATELI_Diretoria_W', 'G_CATELI_FechamentoCosmopolis_W', 'G_CATELI_ImpressoraComercial', 'G_CATELI_Mailing', 'G_MDG_PermiteRemoviveis', 'G_MDG_Fechamento_W', 'G_MDG_PrintScreen_Gerentes', 'G_MDG_Evidencias_Operadores', 'G_MDG_BD_BKO', 'G_MDG_Impressora_Financeiro', 'G_MDG_TELEVISAO_W', 'G_MDG_AUTENTICACAO_VPN', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Impressoras_BKO', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_Remoto', 'G_MDG_Gerente', 'G_MDG_BKO_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_GERENTES'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        272
+      ],
+      "id": "5f7c2c49-e686-43d5-83c3-23bed198783c",
+      "name": "GerenteGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('GASPAR1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Lideres_de_Vendas,OU=Usuarios,OU=Comercial,OU=05_GASPAR_COS,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        400
+      ],
+      "id": "fbc3872f-0d64-4ece-9878-2f1723cd883a",
+      "name": "Move Usuario AD Agente2",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_FERIAS_W', 'G_MDG_FERIAS_R', 'G_MDG_AutenticacaoGLPI', 'G_CATELI_ImpressoraComercial', 'G_MDG_ProxyCoord', 'G_MDG_PrintScreen_Coordenadores', 'G_MDG_Lideres_W', 'G_MDG_Lideres_R', 'G_PLA_AdmLocal_Comercial', 'G_MDG_AUTENTICACAO_VPN', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_COORD'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        400
+      ],
+      "id": "daef9e11-1728-4d17-952a-c7835aacc305",
+      "name": "LiderGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyBKO', 'G_MDG_Impressora_BKO_Comercial', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_BKO_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_COORD'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        1072
+      ],
+      "id": "addb6941-563e-4c69-b542-4448377a2e7f",
+      "name": "BKOcomercialGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Usuarios,OU=Backoffice,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1072
+      ],
+      "id": "6fa8d56e-4e02-4978-a906-394d5152d82b",
+      "name": "Move Usuario AD",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agentes_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1232
+      ],
+      "id": "dfd062d8-1684-4628-95fe-0efc24cacc92",
+      "name": "Move Usuario AD Agente3",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyComercial', 'G_MDG_Comercial_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_USER'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        1232
+      ],
+      "id": "b4e3cd24-c696-47f6-b542-05dcff26a606",
+      "name": "AgenteComercialGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Lideres_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1392
+      ],
+      "id": "15bd3c5b-8d59-4be1-8ca9-d54203b6d7e4",
+      "name": "Move Usuario AD Agente4",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_Proxy_Lideres', 'G_MDG_AutenticacaoGLPI', 'G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Comercial_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_COORD'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        1392
+      ],
+      "id": "b7af3221-15dc-4675-abec-3b88881eabe0",
+      "name": "LiderGruposAD1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('ACG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Coordenadores,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1552
+      ],
+      "id": "f36a84ab-9e39-4c63-8abf-cb9aed987683",
+      "name": "Move Usuario AD Agente5",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AutenticacaoGLPI', 'G_MDG_ProxyCoord', 'G_MDG_Impressora_Financeiro', 'G_MDG_PrintScreen_Coordenadores', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Coordenador_R', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Coordenador_W', 'G_MDG_Comercial_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_COORD'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        1552
+      ],
+      "id": "8e316753-cab5-4d6e-9601-c36c5ee39a45",
+      "name": "CoordenadorComercialGruposAD2"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Agentes_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        2080
+      ],
+      "id": "1bc189d0-504c-461c-bedb-f1f20c1fece8",
+      "name": "Move Usuario AD Agente7",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyComercial', 'G_MDG_Comercial_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_USER'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        2080
+      ],
+      "id": "dc39692c-2dc3-4aa1-ba7a-a2d40b0ba4eb",
+      "name": "AgenteComercialGruposAD1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Coordenadores,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        2432
+      ],
+      "id": "1dc2c2c0-a16e-482b-b208-de13446daf3d",
+      "name": "Move Usuario AD Agente9",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AutenticacaoGLPI', 'G_MDG_ProxyCoord', 'G_MDG_Impressora_Financeiro', 'G_MDG_PrintScreen_Coordenadores', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Coordenador_R', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Coordenador_W', 'G_MDG_Comercial_W', 'G_MDG_CREDILUS_COORD', 'G_MDG_SoftwaresComercial'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        2432
+      ],
+      "id": "441f90d2-06a1-437a-bec5-cd45c6a0c9ca",
+      "name": "CoordenadorComercialGruposAD"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyBKO', 'G_MDG_Impressora_BKO_Comercial', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_BKO_W', 'G_MDG_SoftwaresComercial','G_MDG_CREDILUS_COORD'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        1920
+      ],
+      "id": "b655407e-63d8-4636-943c-29939022eb8c",
+      "name": "BKOcomercialGruposAD1"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Usuarios,OU=Backoffice,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1920
+      ],
+      "id": "3a260ff5-7e72-4083-8df4-a66233b79ebf",
+      "name": "Move Usuario AD1",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Lideres_de_Vendas,OU=Usuarios,OU=Comercial,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\" "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        2272
+      ],
+      "id": "1265d7cb-7635-4319-bfa5-61e4e580be55",
+      "name": "Move Usuario AD Agente6",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_Proxy_Lideres', 'G_MDG_AutenticacaoGLPI', 'G_MDG_PrintScreen_Operacao', 'G_PLA_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_Comercial_W', 'G_MDG_SoftwaresComercial', 'G_MDG_CREDILUS_COORD'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        2272
+      ],
+      "id": "53dec4e8-791a-45e5-bc34-752d9ab668ff",
+      "name": "LiderGruposAD3"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\"Get-ADUser -Identity '{{ $('MDG1').item.json.USUARIO }}' | Move-ADObject -TargetPath 'OU=Usuarios,OU=Backoffice,OU=01_MDG_PLN,DC=colaborador,DC=local'\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        2608
+      ],
+      "id": "4fb0c1c4-9177-4bcb-bb2e-595c3b29e6bf",
+      "name": "Move Usuario AD2",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "content": "## USUARIO AD GRUPOS OU\nCRIA , ADICIONA GRUPOS E MOVE PARA OU",
+        "height": 3120,
+        "width": 1880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "eca6b026-cbc8-41b9-9a90-940df981f9e7",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "beb4e5f3-aed8-4d84-a2a6-382e0aa2f193",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "BKO COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "913a4798-7b45-42e9-a9ce-fa8446a06de0",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f1e7515-677c-4433-a266-97342dea0aca",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "LIDER COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0d9f492a-8768-43ec-bb78-0220184c1f43",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "COORDENADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COORDENADOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "33c71223-1ce8-4dc7-9d72-7b6042eb9cfd",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1120,
+        2144
+      ],
+      "id": "739f8b42-19e3-4336-89ca-5755e8402ef5",
+      "name": "MDG1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        2912
+      ],
+      "id": "cd8ec0a5-d512-4524-8724-42ae6ec84519",
+      "name": "MergeFiim"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d05a74bd-33db-484e-a005-c1af571558f4",
+              "name": "USUARIO",
+              "value": "={{ $json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "06f64543-d150-4ee1-95ba-5a8978202d27",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "29f2ebc2-ef50-4c86-8533-bfb206475a38",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "58870c40-53dc-41d0-a7fc-dd7eb444e813",
+              "name": "SenhaPadrao",
+              "value": "={{ $json.senhaPadrao }}",
+              "type": "string"
+            },
+            {
+              "id": "8c784ac2-761c-4c0c-9dbf-a233d4a3cbef",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "9c802617-5232-4ae6-8e5b-408dcc25d44d",
+              "name": "TITULO",
+              "value": "={{ $json.TITULO }}",
+              "type": "string"
+            },
+            {
+              "id": "6852983a-58df-48c0-90ab-7650e04a6d54",
+              "name": "URL",
+              "value": "={{ $json.URL }}",
+              "type": "string"
+            },
+            {
+              "id": "1f3b2ef3-e817-45f0-96ca-0347a5fd7437",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        2912
+      ],
+      "id": "fa8c30a9-d8ca-4096-946f-8e8bc6b01d20",
+      "name": "DadosFim"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Função para obter uma saudação aleatória\nfunction obterSaudacao() {\n    const saudacoes = [\n        \"Fala, time de TI! 💻 Vamos codar com estilo hoje!\",\n        \"E aí, equipe incrível! 🚀 Mais um dia para fazer acontecer!\",\n        \"Oi, time! 🌟 Vocês são a força que move a tecnologia!\",\n        \"Bora lá, pessoal! 🔧 Resolvendo problemas e criando soluções!\",\n        \"Vamos com tudo, equipe! 💪 A TI não para, e vocês são demais!\",\n        \"Saudações, mestres do código! 🧙‍♂️ Que a força esteja com vocês!\",\n        \"Salve, equipe de TI! 🎉 Mais um dia para brilhar nos projetos!\",\n        \"Fala, feras da tecnologia! 🌐 Juntos, dominamos o mundo digital!\",\n        \"Oi, time espetacular! 🌟 O show da TI não pode parar!\",\n        \"Bora lá, campeões da TI! 🏆 Hoje é mais um dia de conquistas!\"\n    ];\n    // Retorna uma saudação aleatória da lista\n    return saudacoes[Math.floor(Math.random() * saudacoes.length)];\n}\n\n// Função para obter a data atual formatada no padrão dd/mm/yyyy\nfunction obterDataAtual() {\n    const hoje = new Date();\n    const dia = String(hoje.getDate()).padStart(2, '0');\n    const mes = String(hoje.getMonth() + 1).padStart(2, '0');\n    const ano = hoje.getFullYear();\n    return `${dia}/${mes}/${ano}`;\n}\n\n// Inicializa a variável para armazenar todas as mensagens unificadas\nlet mensagemUnificada = \"\";\n\n// Cria um objeto para armazenar os dados agrupados por ID e TÍTULO\nlet chamadosAgrupados = {};\n\n// Itera sobre todos os dados do input\nfor (const item of $input.all()) {\n    // Obtém as informações principais do chamado\n    const id = item.json.ID || 'ID não informado';\n    const titulo = item.json.TITULO || 'Título não informado';\n    const nomeCompleto = item.json.NOME || 'Nome não informado';\n    const usuarioAd = item.json.USUARIO || 'Usuário não informado';\n    const email = item.json.Email || 'Email não informado';\n    const senhaPadrao = item.json.SenhaPadrao || 'Senha não informada';\n    const url = item.json.URL || 'URL não informada';\n\n    // Se o chamado ainda não foi adicionado ao agrupamento, inicializa a estrutura\n    if (!chamadosAgrupados[id]) {\n        chamadosAgrupados[id] = {\n            titulo: titulo,\n            url: url,\n            usuarios: []\n        };\n    }\n\n    // Adiciona os dados do usuário à lista de usuários para este chamado\n    chamadosAgrupados[id].usuarios.push({\n        nomeCompleto: nomeCompleto,\n        usuarioAd: usuarioAd,\n        email: email,\n        senhaPadrao: senhaPadrao\n    });\n}\n\n// Obtém a saudação aleatória\nconst saudacao = obterSaudacao();\n\n// Obtém a data atual\nconst dataAtual = obterDataAtual();\n\n// Agora cria a mensagem unificada\nfor (const id in chamadosAgrupados) {\n    const chamado = chamadosAgrupados[id];\n\n    // Adiciona a saudação e a introdução\n    mensagemUnificada += `${saudacao}\\n\\nAcessos criados!\\n\\n`;\n\n    // Adiciona a informação de ID, TÍTULO e Data de Criação no início\n    mensagemUnificada += `ID: ${id} - TITULO: ${chamado.titulo}\\n`;\n    mensagemUnificada += `Data de criação: ${dataAtual}\\n\\n`;\n\n    // Adiciona as informações de cada usuário relacionado a este chamado\n    for (const usuario of chamado.usuarios) {\n        mensagemUnificada += `*${usuario.nomeCompleto}*\\n`;\n        mensagemUnificada += `- USUARIO AD: ${usuario.usuarioAd}\\n`;\n        mensagemUnificada += `- SENHA: ${usuario.senhaPadrao}\\n`;\n        mensagemUnificada += `- EMAIL: ${usuario.email}\\n\\n`;\n    }\n\n    // Adiciona o link para conferir o chamado\n    mensagemUnificada += `Link do Chamado: ${chamado.url}\\n\\n`;\n}\n\n// Retorna a mensagem final no formato JSON contendo apenas uma string\nreturn [\n    {\n        json: {\n            textMessage: JSON.stringify(mensagemUnificada.trim())\n        }\n    }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        2912
+      ],
+      "id": "07127787-73e6-4961-a4b1-2d7aea7d2bb8",
+      "name": "Code"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        2912
+      ],
+      "id": "1c18d284-f5f9-4b9f-855c-184067e6a278",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2784,
+        1184
+      ],
+      "id": "8ff8b0db-4801-4f27-aaad-44c0ac204079",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a1e0911c-c357-4af5-805f-3a36c8008a55",
+                    "leftValue": "={{ $json.EMPRESA }}",
+                    "rightValue": "GASPAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GASPAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ad9b11c9-6a0b-4952-8fe3-97928ad294e2",
+                    "leftValue": "={{ $json.EMPRESA }}",
+                    "rightValue": "ACG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ACG"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.EMPRESA }}",
+                    "rightValue": "MDG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MDG"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        80,
+        1232
+      ],
+      "id": "2e09b270-dd68-48e0-8595-0cde11a5251c",
+      "name": "Separa Empresa"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -592,
+        1232
+      ],
+      "id": "22e0b1f6-265c-45e8-879e-6cde4adaa5c1",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "comandosSSH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        1664
+      ],
+      "id": "554f9860-1b81-4dc8-86de-429c4fa6b3a2",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b01cdf0-0c06-46e2-873e-d8d931ce3c13",
+              "name": "USUARIO",
+              "value": "={{ $json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "e359c01b-9003-42e7-8949-892230ad0d17",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "5f34780e-43a8-4728-9a1b-6919d5188a04",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "01875bee-ba27-4b7f-a63f-111ad758aae6",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "26ca6250-33f0-4b88-8201-0f1df0387c12",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "08ebe54f-9835-4a7c-af43-5ef90986238a",
+              "name": "First Name",
+              "value": "={{ $json.NOME.toUpperCase().split(\" \").slice(0,3).join(\" \" + \" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "c8dcb954-f5d8-42f4-865a-ced2132f0ffe",
+              "name": "Last Name",
+              "value": "={{ $json.NOME.split(\" \").last().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "f017c604-7930-490e-8937-aee0f311a308",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "c5b727e9-f63b-4a4d-abcf-7d6768279082",
+              "name": "CARGO",
+              "value": "={{ $json.CARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "42eab159-20bd-4159-9a6e-12de95bfcb22",
+              "name": "senhaPadrao",
+              "value": "={{ $json.senhaPadrao }}",
+              "type": "string"
+            },
+            {
+              "id": "f56cdc53-f444-47ca-b18c-90fed13387fc",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "d33eff32-af91-461c-8671-894208d726e4",
+              "name": "TITULO",
+              "value": "={{ $json.TITULO }}",
+              "type": "string"
+            },
+            {
+              "id": "051f531f-751e-4bc8-80d9-8382e88a8066",
+              "name": "URL",
+              "value": "={{ $json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2368,
+        1184
+      ],
+      "id": "6cde381a-6b1d-48ff-b8b1-e94fffbb3055",
+      "name": "Parametros"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "comando",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        1648
+      ],
+      "id": "bdb4e1dd-12a6-4034-b4f0-9b461999e8a0",
+      "name": "Split Out4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $('Parametros').all();\n\n// Verificar se os dados de entrada são válidos\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}\n\n// Processar cada usuário\nconst comandosSSH = usuarios.map(item => {\n  const usuario = item.json;\n\n  // Recuperar campos do usuário com validação\n  const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n  const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n  const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n  const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n  const telefone = usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n  const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n  const mail = usuario[\"Email\"]?.trim() || \"EMAIL NÃO DEFINIDO\";\n  const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n  const homeDirectory = `\\\\\\\\srv01\\\\users$\\\\${usuarioNome}`; // Diretório do usuário\n  const homeDrive = \"U\"; // Unidade atribuída ao diretório do usuário\n\n  // Validação mínima para evitar erros graves\n  if (!usuarioNome || !nomeCompleto) {\n    throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n  }\n\n  // Gerar o comando SSH para configurar as propriedades do usuário no AD\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADUser -Identity '${usuarioNome}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '${homeDirectory}' -HomeDrive '${homeDrive}'\\\\\"\"`\n});\n\n// Retornar os comandos SSH gerados como entradas separadas no array\nreturn comandosSSH.map(comando => ({ json: { comando } }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1648,
+        1472
+      ],
+      "id": "262728e8-b929-477f-9a9c-d22cc7a1bf7b",
+      "name": "ATUALIZA USUARIO"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comando }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -1488,
+        1648
+      ],
+      "id": "08310a20-5ca1-41a2-826a-1e7a6ab59fa2",
+      "name": "ATUALIZA USUARIO1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de usuários\nconst usuarios = $('Parametros').all(); // Vai pegar todos os itens no nó Edit Fields5\nconst senhaPadrao = $('Parametros').first().json.senhaPadrao; // A senha padrão, supondo que seja única\n\n// Verificar se há usuários\nif (!Array.isArray(usuarios) || usuarios.length === 0) {\n  throw new Error(\"Não há usuários válidos no nó Edit Fields5.\");\n}\n\n// Gerar comandos SSH para cada usuário\nconst comandosSSH = usuarios.map(usuario => {\n  const usuarioNome = usuario.json.USUARIO; // Acessando o usuário\n  if (!usuarioNome) {\n    throw new Error(\"Usuário não encontrado em um dos itens.\");\n  }\n\n  // Gerar o comando SSH com PowerShell\n  return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell -Command \\\\\"Set-ADAccountPassword -Identity '${usuarioNome}' -NewPassword (ConvertTo-SecureString '${senhaPadrao}' -AsPlainText -Force); Set-ADUser -Identity '${usuarioNome}' -ChangePasswordAtLogon \\$true; Enable-ADAccount -Identity '${usuarioNome}'\\\\\"\"`;\n});\n\n// Retornar os comandos gerados\nreturn {\n  json: {\n    comandosSSH\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        1488
+      ],
+      "id": "0030f51e-4838-4e07-8cff-f378e8d28e55",
+      "name": "ATIVA USURIO"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -1792,
+        1312
+      ],
+      "id": "16ede296-b0dd-41ff-b12d-d3b3f6b950e9",
+      "name": "Cria Usuário",
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$caminhoPasta='\\\\\\\\\\srv01\\\\\\\\users$\\\\{{ $json.USUARIO }}'; \\$usuario='colaborador\\\\josias.iglessias'; if (-Not (Test-Path -Path \\$caminhoPasta)) { New-Item -ItemType Directory -Path \\$caminhoPasta -Force }; icacls \\$caminhoPasta /grant 'colaborador\\\\{{ $json.USUARIO }}:(OI)(CI)M'; icacls \\$caminhoPasta /verify; Write-Output 'Permissões concedidas para \\$usuario na pasta \\$caminhoPasta'\\\"\"\n"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        1648
+      ],
+      "id": "f71e7c9f-da5e-4a9f-bb2c-5b0fbbfb318a",
+      "name": "CRIA PASTA PASSOAL"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "={{ $json.comandosSSH }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        1664
+      ],
+      "id": "0e91af88-db84-4c1b-b7db-a6417956c331",
+      "name": "ATIVA USURIO ssh"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recuperar todos os dados de entrada\nconst usuarios = $input.all(); \n\n// Definindo a OU do Active Directory\nconst caminhoOU = \"OU=Usuarios,OU=Homologacao,OU=01_MDG_PLN,DC=colaborador,DC=local\";\n\n// Recuperar a senha padrão do nó \"SenhaPadrao\"\nconst senha = $input.first().json.senhaPadrao;\n\n// Validar se a senha padrão foi recuperada corretamente\nif (!senha) {\n  throw new Error(\"A senha padrão não foi encontrada no nó 'SenhaPadrao'. Verifique o nó.\");\n}\n\n// Verificar se os dados de entrada são válidos\nif (Array.isArray(usuarios) && usuarios.length > 0) {\n  // Processar cada usuário\n  let comandosSSH = usuarios.map(item => {\n    const usuario = item.json;\n    const nomeCompleto = usuario[\"NOME\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const sobrenome = usuario[\"Last Name\"]?.trim() || \"SOBRENOME NÃO DEFINIDO\";\n    const nome = usuario[\"First Name\"]?.trim() || \"NOME NÃO DEFINIDO\";\n    const usuarioNome = usuario[\"USUARIO\"]?.trim() || \"usuario.nao.definido\";\n    const cpf = usuario[\"CPF\"]?.trim() || \"CPF NÃO DEFINIDO\";\n    const empresa = usuario[\"EMPRESA\"]?.trim() || \"EMPRESA NÃO DEFINIDA\";\n    const telefone = usuario[\"TELEFONE\"]?.trim() || usuario[\"TELEFONE\"]?.trim() || \"TELEFONE NÃO DEFINIDO\";\n    const cargo = usuario[\"CARGO\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n    const mail = usuario[\"Email\"]?.trim() || \"CARGO NÃO DEFINIDO\";\n\n    // Validação mínima para evitar erros graves\n    if (!usuarioNome || !nomeCompleto) {\n      throw new Error(`Usuário inválido: Nome completo ou nome de usuário ausente. Dados: ${JSON.stringify(usuario)}`);\n    }\n\n    // Gerar o comando SSH para criar o usuário no AD\n    return `sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\\\"New-ADUser -SamAccountName '${usuarioNome}' -UserPrincipalName '${usuarioNome}@colaborador.local' -Name '${nomeCompleto}' -GivenName '${nome.toUpperCase()}' -Surname '${sobrenome.toUpperCase()}' -DisplayName '${nomeCompleto}' -Description '${cpf}' -OfficePhone '${telefone}' -Mobile '${telefone}' -Title '${cargo}' -Company '${empresa}' -EmailAddress '${mail}' -HomeDirectory '\\\\\\\\\\\\\\\\srv01\\\\\\\\users$\\\\\\\\${usuarioNome}' -HomeDrive 'U' -PasswordNeverExpires:\\\\$false -ChangePasswordAtLogon \\\\$true -Enabled \\\\$true -Path '${caminhoOU}' -AccountPassword (ConvertTo-SecureString '${senha}' -AsPlainText -Force)\\\\\"\"`\n  }).join(\"\\n\");  // Aqui, usamos .join() para unir os comandos em uma única string, com cada comando em uma nova linha.\n\n  // Retornar os comandos SSH gerados como uma string\n  return {\n    json: {\n      comandosSSH\n    }\n  };\n} else {\n  throw new Error(\"A entrada não contém usuários válidos.\");\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2160,
+        1264
+      ],
+      "id": "63cbb1de-ea85-436d-a305-75a9a76d0f86",
+      "name": "Cria Usuário AD"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "USUARIO",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        1648
+      ],
+      "id": "bb5eba55-a702-459d-9a2b-2c9e93521c4d",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $('Parametros').all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $('Parametros').all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        1472
+      ],
+      "id": "980c913a-1f1e-4d9c-a9c6-1d05205e6fb0",
+      "name": "CRIA PASTA PASSOAL1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "USUARIO",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        1264
+      ],
+      "id": "1bfcb043-a576-40e4-b92a-b4b2f9835c14",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $('Parametros').all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $('Parametros').all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        1264
+      ],
+      "id": "c2486149-a9e4-4e2a-ac22-654bd5e025a1",
+      "name": "CRIA PASTA PASSOAL2"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$caminhoPasta='\\\\\\\\\\srv01\\\\\\\\users$\\\\{{ $json.USUARIO }}'; \\$usuario='colaborador\\\\josias.iglessias'; if (-Not (Test-Path -Path \\$caminhoPasta)) { New-Item -ItemType Directory -Path \\$caminhoPasta -Force }; icacls \\$caminhoPasta /grant 'colaborador\\\\{{ $json.USUARIO }}:(OI)(CI)M'; icacls \\$caminhoPasta /verify; Write-Output 'Permissões concedidas para \\$usuario na pasta \\$caminhoPasta'\\\"\"\n"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        1264
+      ],
+      "id": "0d047f0d-7cbe-4c95-8c4b-9cbc2614398d",
+      "name": "CRIA PASTA PASSOAL3"
+    },
+    {
+      "parameters": {
+        "content": "## CRIA ACESSOS AD \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 1100,
+        "width": 1992
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2368,
+        928
+      ],
+      "typeVersion": 1,
+      "id": "8d1a7a1e-43d3-43f6-a19b-545e6fd184d5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAAA-XXOyVI"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        2912
+      ],
+      "id": "6fef56fa-d4f4-4dba-8819-41d5989ae450",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=sshpass -p \"Zaq!@wsx\" ssh -o StrictHostKeyChecking=no suporte.pla@10.3.0.10 \"powershell.exe -Command \\\"\\$grupos = @('G_MDG_AdmLocal_Comercial', 'G_MDG_Comercial_R', 'G_MDG_RADIUS_AUTENTICACAO', 'G_MDG_ProxyBKO', 'G_MDG_Impressora_BKO_Comercial', 'G_PLA_AdmLocal_Administrativo', 'G_MDG_BKO_W', 'G_MDG_CREDILUS_GERENTES', 'G_MDG_SoftwaresComercial'); foreach (\\$grupo in \\$grupos) { Add-ADGroupMember -Identity \\$grupo -Members '{{ $json.USUARIO }}' }\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        2608
+      ],
+      "id": "96f6ab6b-6b1e-449e-a0b0-3ee2f032d860",
+      "name": "BKOASSISTENTE OPERACIONALGruposAD"
+    },
+    {
+      "parameters": {
+        "path": "fa2ac3fd-7d3c-4ef9-bde2-a912577a322e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2784,
+        1488
+      ],
+      "id": "5e7191b8-d013-4176-9ef8-1bfe75f8e305",
+      "name": "Webhook",
+      "webhookId": "fa2ac3fd-7d3c-4ef9-bde2-a912577a322e"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "qUDYUMi2ngG3duBx",
+          "mode": "list",
+          "cachedResultName": "Acessos - Cria Agilus"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        3440
+      ],
+      "id": "e1458e29-906c-49f2-ac5c-0d5c55da3d12",
+      "name": "Execute Workflow",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ldap",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        2736
+      ],
+      "id": "db07e886-c194-419f-85e4-5854a2d38a77",
+      "name": "LDAP",
+      "credentials": {
+        "ldap": {
+          "id": "dWYpjwWrkzM2VA3B",
+          "name": "LDAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "7f3154b7-e3e8-4b67-8b36-44ba7e5e2cbd",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -2192,
+        2224
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=Import-Module ActiveDirectory\n\nNew-ADUser `\n  -Name \"{{ $json.nome }}\" `\n  -SamAccountName \"{{ $json.login }}\" `\n  -UserPrincipalName \"{{ $json.login }}@empresa.local\" `\n  -AccountPassword (ConvertTo-SecureString \"{{ $json.senha }}\" -AsPlainText -Force) `\n  -Enabled $true `\n  -Path \"OU=Usuarios,DC=empresa,DC=local\"\n"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -1952,
+        1440
+      ],
+      "id": "62584f26-f323-4564-96e3-ee7fa8b6afc6",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "d4aIWdvKyKEit4GE",
+          "name": "SSH Password account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "GASPAR1": {
+      "main": [
+        [
+          {
+            "node": "adicionaGruposADAgente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CoodernadorGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GerenteGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LiderGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "adicionaGruposADAgente": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Gerente": {
+      "main": [
+        []
+      ]
+    },
+    "Move Usuario AD Coordenador": {
+      "main": [
+        []
+      ]
+    },
+    "Move Usuario AD Agente": {
+      "main": [
+        []
+      ]
+    },
+    "Move Usuario AD Gerente1": {
+      "main": [
+        []
+      ]
+    },
+    "Move Usuario AD Agente1": {
+      "main": [
+        []
+      ]
+    },
+    "ACG1": {
+      "main": [
+        [
+          {
+            "node": "ConsultorGruposAdd",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ConsultorGruposAdd",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GerentePrecaGruposAdd",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "BKOcomercialGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AgenteComercialGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LiderGruposAD1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CoordenadorComercialGruposAD2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultorGruposAdd": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GerentePrecaGruposAdd": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Gerente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoodernadorGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Coordenador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GerenteGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Gerente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente2": {
+      "main": [
+        []
+      ]
+    },
+    "LiderGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BKOcomercialGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD": {
+      "main": [
+        []
+      ]
+    },
+    "Move Usuario AD Agente3": {
+      "main": [
+        []
+      ]
+    },
+    "AgenteComercialGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente4": {
+      "main": [
+        []
+      ]
+    },
+    "LiderGruposAD1": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente5": {
+      "main": [
+        []
+      ]
+    },
+    "CoordenadorComercialGruposAD2": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente7": {
+      "main": [
+        []
+      ]
+    },
+    "AgenteComercialGruposAD1": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD Agente9": {
+      "main": [
+        []
+      ]
+    },
+    "CoordenadorComercialGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BKOcomercialGruposAD1": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD1": {
+      "main": [
+        []
+      ]
+    },
+    "Move Usuario AD Agente6": {
+      "main": [
+        []
+      ]
+    },
+    "LiderGruposAD3": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD Agente6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Usuario AD2": {
+      "main": [
+        []
+      ]
+    },
+    "MDG1": {
+      "main": [
+        [
+          {
+            "node": "BKOcomercialGruposAD1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AgenteComercialGruposAD1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LiderGruposAD3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CoordenadorComercialGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "BKOASSISTENTE OPERACIONALGruposAD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeFiim": {
+      "main": [
+        [
+          {
+            "node": "DadosFim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DadosFim": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parametros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separa Empresa": {
+      "main": [
+        [
+          {
+            "node": "GASPAR1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ACG1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "MDG1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeFiim",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "ATIVA USURIO ssh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parametros": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Cria Usuário AD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out4": {
+      "main": [
+        [
+          {
+            "node": "ATUALIZA USUARIO1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATUALIZA USUARIO": {
+      "main": [
+        [
+          {
+            "node": "Split Out4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATUALIZA USUARIO1": {
+      "main": [
+        [
+          {
+            "node": "CRIA PASTA PASSOAL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATIVA USURIO": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Usuário": {
+      "main": [
+        [
+          {
+            "node": "CRIA PASTA PASSOAL2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ATUALIZA USUARIO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Separa Empresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRIA PASTA PASSOAL": {
+      "main": [
+        [
+          {
+            "node": "ATIVA USURIO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATIVA USURIO ssh": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Cria Usuário AD": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "CRIA PASTA PASSOAL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRIA PASTA PASSOAL1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRIA PASTA PASSOAL2": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "CRIA PASTA PASSOAL3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRIA PASTA PASSOAL3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "RabbitMQ": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BKOASSISTENTE OPERACIONALGruposAD": {
+      "main": [
+        [
+          {
+            "node": "Move Usuario AD2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Workflow Input Trigger": [
+      {
+        "json": {
+          "USUARIO": "ariane.lima",
+          "Email": "ariane.lima@acgconsultoria.com.br",
+          "NOME": "ARIANE MORENO DE LIMA",
+          "EMPRESA": "ACG",
+          "CPF": "02420152204",
+          "CARGO": "CONSULTOR(A) DE NEGÓCIOS JÚNIOR",
+          "TELEFONE": "+55 19 99489-6060",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0008015",
+          "TITULO": "Nova Colaboradora ACG",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0008015"
+        },
+        "binary": {}
+      }
+    ]
+  },
+  "versionId": "dc17f1a6-0948-4d26-b2c6-66fa84d39e67",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-02T19:30:39.274Z",
+      "createdAt": "2026-02-02T19:30:39.274Z",
+      "role": "workflow:owner",
+      "workflowId": "SXqhsbPCgSM1UTBY",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2024-11-07T12:25:14.506Z",
+      "createdAt": "2024-11-07T12:25:14.506Z",
+      "id": "o0b1eCtfXeRfItda",
+      "name": "Gestão Acesso"
+    }
+  ]
+}

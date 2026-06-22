@@ -1,0 +1,2129 @@
+{
+  "updatedAt": "2026-06-08T19:40:42.997Z",
+  "createdAt": "2025-04-22T19:34:24.820Z",
+  "id": "qcyT7W8SAZdu0zZI",
+  "name": "Notificação - WhatsApp",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "queue": "whatsapp_queue",
+        "options": {
+          "binding": {
+            "bindings": [
+              {
+                "exchange": "notifications_exchange",
+                "routingKey": "whatsApp.suporte"
+              }
+            ]
+          },
+          "acknowledge": "executionFinishesSuccessfully",
+          "durable": true,
+          "parallelMessages": 1
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        -336
+      ],
+      "id": "6ab86c44-17ad-46c9-9615-c86fb405c0cc",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "6NVyHI8GsuRN8ROo",
+          "name": "RabbitMQ notifications"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/instance/fetchInstances",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "eaaea3c0-8e54-46bd-b1b6-dd94c32656f8",
+      "name": "Verifica Instancias",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        928,
+        -336
+      ],
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "F82teAW6Y016N8z4",
+          "name": "EVOLUTIONAPI"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1888,
+        -464
+      ],
+      "id": "5ba8a18c-28ae-4270-87a3-0f7514bb9dcc",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "21068754-66f5-4775-a5fb-a933a4198871",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "CL121A",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1408,
+        -480
+      ],
+      "id": "1852b50c-5926-4f6f-b122-172a8348e184",
+      "name": "FILTRA INSTACIAS"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.connectionStatus }}",
+                    "rightValue": "open",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4d936d03-f2cb-4c53-988f-0ebcf7e184b3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "open"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "039a2d21-c382-46da-bad1-8eac01b0da65",
+                    "leftValue": "={{ $json.connectionStatus }}",
+                    "rightValue": "connecting",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "connecting"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "37770b2c-8562-4360-8c90-00696fcc340a",
+                    "leftValue": "={{ $json.connectionStatus }}",
+                    "rightValue": "close",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "connecting"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "20bd30db-04c0-4ccb-b93a-1fe712fc97ad",
+      "name": "Switch Open",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1600,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8188a362-543f-4169-bdab-257e8863d899",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        -336
+      ],
+      "id": "5dc2eaf6-b30c-4d7a-9ae8-bbb00095709c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "327eccb0-9d8d-4fb3-a9f3-0cccd0aa2a0d",
+              "name": "textMessage",
+              "value": "={{ $json.content.parseJson().textMessage }}",
+              "type": "string"
+            },
+            {
+              "id": "53ca0ca5-8b33-4a17-9b46-6ba4974d1b2c",
+              "name": "Instancias",
+              "value": "={{ $json.content.parseJson().Instancias }}",
+              "type": "string"
+            },
+            {
+              "id": "48d7f6fa-f361-45ca-b925-5083a3c8ed53",
+              "name": "phone",
+              "value": "={{ $json.content.parseJson().phone}}",
+              "type": "string"
+            },
+            {
+              "id": "f3dc0bdf-a6ad-48b1-bbb3-49f4db373f71",
+              "name": "REQUERENTE",
+              "value": "={{ $json.content.parseJson().REQUERENTE}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        -336
+      ],
+      "id": "1983fe0d-28fd-428f-8e25-789bd26144be",
+      "name": "dados"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Instancias }}",
+                    "rightValue": "SUPORTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d255fa4a-f280-4851-b944-443de67a6f97"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUPORTE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        -336
+      ],
+      "id": "a60d7447-a931-4132-9037-a825df15b1c6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "errorMessage": "erro Api Evolution"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -224
+      ],
+      "id": "58834534-7b66-40f1-89a6-7c05ce321b5f",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente').first().json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('dadosRequerente').first().json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.number }}\",\n  \"text\": {{ $('dadosRequerente').item.json.textMessage }},\n  \"delay\": {{ $('dadosRequerente').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+        "options": {}
+      },
+      "id": "048c32d8-7d22-4189-9a4e-b12e9f3af76c",
+      "name": "SendText",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2688,
+        -1264
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/chat/whatsappNumbers/{{ $json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('FILTRA INSTACIAS').item.json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"numbers\": [\"{{ $json.phone }}\"]\n}",
+        "options": {}
+      },
+      "id": "3135285a-1eb8-427a-955a-726cf55e1a2b",
+      "name": "Verifica WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2112,
+        -1152
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3640dc24-99be-4aae-ab85-509e8606fb67",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2432,
+        -1152
+      ],
+      "id": "e887a421-9211-482b-84b4-e7a73fc8f7dd",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('MergePendente') e do nó $('If')\nconst dadosRequerente = $node[\"dadosRequerente\"].json;\nconst validacaoWhatsApp = $node[\"If1\"].json;\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados do requerente e da validação do WhatsApp\nif (dadosRequerente && validacaoWhatsApp) {\n  const requerente = dadosRequerente; // Dados do requerente\n  const whatsappValido = validacaoWhatsApp.exists;\n  const jid = validacaoWhatsApp.jid;\n  const numero = validacaoWhatsApp.number;\n\n  if (!whatsappValido) {\n    const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n    // Cria a mensagem informando que o número não possui WhatsApp, incluindo jid\n    const mensagem = `${saudacao}!\\n\\n` +\n      `O número telefônico ${numero} do requerente ${requerente.nomeRquerente} não possui WhatsApp.\\n\\n`;\n\n    // Retorna a mensagem formatada como string JSON\n    return {\n      textMessage: {\n        msg: JSON.stringify(mensagem.trim())\n      }\n    };\n  } else {\n    // Caso o número possua WhatsApp, retorna uma mensagem informativa\n    return {\n      textMessage: {\n        msg: JSON.stringify(\"O número telefônico possui WhatsApp.\")\n      }\n    };\n  }\n} else {\n  // Retorna uma mensagem padrão caso não haja dados suficientes\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados para validação do WhatsApp.\")\n    }\n  };\n}\n"
+      },
+      "id": "947643c4-0edb-4fff-ad8b-2b806751910a",
+      "name": "MontaMensagemSemWhatSappPendente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        -1008
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "810e1daa-e022-40f0-bd32-e0b9ec69bb7d",
+              "name": "instanceName",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "bf00bf08-62c9-42d7-bc1b-1631c1616232",
+              "name": "apikey",
+              "value": "={{ $json.token }}",
+              "type": "string"
+            },
+            {
+              "id": "4b5a48f1-de6a-4261-9013-2d52dc29d292",
+              "name": "textMessage",
+              "value": "={{ $('dados').item.json.textMessage }}",
+              "type": "string"
+            },
+            {
+              "id": "a33d2ff0-62d2-485d-9d41-243f5ea93e91",
+              "name": "phone",
+              "value": "={{ $('dados').item.json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "1e3d038e-bbff-4399-8bb8-6ff226a372a9",
+              "name": "nomeRquerente",
+              "value": "={{ $('dados').item.json.REQUERENTE }}",
+              "type": "string"
+            },
+            {
+              "id": "aa9e982a-0812-40f8-be70-5d56421916f7",
+              "name": "delay",
+              "value": "={{ Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1888,
+        -1152
+      ],
+      "id": "751f8bf2-e9e2-45f0-83b3-8f6614c1fe92",
+      "name": "dadosRequerente"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente').first().json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('dadosRequerente').first().json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"5519999522207-1626738024@g.us\",\n  \"text\": {{ $json.textMessage.msg.toJsonString() }},\n  \"delay\": {{ $('dadosRequerente').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+        "options": {}
+      },
+      "id": "e961c7c9-bcc3-4865-857b-b4ccb85a173a",
+      "name": "SendTextIT",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        -1008
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        -336
+      ],
+      "id": "3aa2df51-cde6-4745-8dfe-590a332f9aad",
+      "name": "Wait",
+      "webhookId": "26a0a8a5-899a-46e3-a29e-1d9c173ba303"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente1').first().json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('dadosRequerente1').first().json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('dadosRequerente1').first().json.phone }}\",\n  \"text\": {{ $('dadosRequerente1').first().json.textMessage.toJsonString() }},\n  \"delay\": {{ $('dadosRequerente1').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+        "options": {}
+      },
+      "id": "5dd47c4e-5fa4-4877-820f-637e6b91121d",
+      "name": "SendText1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2800,
+        -576
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/\nchat/whatsappNumbers/{{ $json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"numbers\": [\"{{ $json.phone }}\"]\n}",
+        "options": {}
+      },
+      "id": "09303a81-e885-4a68-a243-92bd14f23017",
+      "name": "Verifica WhatsApp1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2320,
+        -464
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3640dc24-99be-4aae-ab85-509e8606fb67",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        -464
+      ],
+      "id": "16214c9d-2055-44a3-8992-a920e72d4f04",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('MergePendente') e do nó $('If')\nconst dadosRequerente = $node[\"dadosRequerente1\"].json;\nconst validacaoWhatsApp = $node[\"If2\"].json;\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados do requerente e da validação do WhatsApp\nif (dadosRequerente && validacaoWhatsApp) {\n  const requerente = dadosRequerente; // Dados do requerente\n  const whatsappValido = validacaoWhatsApp.exists;\n  const jid = validacaoWhatsApp.jid;\n  const numero = validacaoWhatsApp.number;\n\n  if (!whatsappValido) {\n    const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n    // Cria a mensagem informando que o número não possui WhatsApp, incluindo jid\n    const mensagem = `${saudacao}!\\n\\n` +\n      `O número telefônico ${numero} do requerente ${requerente.nomeRquerente} não possui WhatsApp.\\n\\n`;\n\n    // Retorna a mensagem formatada como string JSON\n    return {\n      textMessage: {\n        msg: JSON.stringify(mensagem.trim())\n      }\n    };\n  } else {\n    // Caso o número possua WhatsApp, retorna uma mensagem informativa\n    return {\n      textMessage: {\n        msg: JSON.stringify(\"O número telefônico possui WhatsApp.\")\n      }\n    };\n  }\n} else {\n  // Retorna uma mensagem padrão caso não haja dados suficientes\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados para validação do WhatsApp.\")\n    }\n  };\n}\n"
+      },
+      "id": "ca711444-fe82-44f5-add2-33e615851c5e",
+      "name": "MontaMensagemSemWhatSappPendente1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "810e1daa-e022-40f0-bd32-e0b9ec69bb7d",
+              "name": "instanceName",
+              "value": "=CL121B",
+              "type": "string"
+            },
+            {
+              "id": "bf00bf08-62c9-42d7-bc1b-1631c1616232",
+              "name": "apikey",
+              "value": "=91A84E0A8535-4D32-B792-58BF44C62DD1",
+              "type": "string"
+            },
+            {
+              "id": "4b5a48f1-de6a-4261-9013-2d52dc29d292",
+              "name": "textMessage",
+              "value": "={{ $('dados').item.json.textMessage }}",
+              "type": "string"
+            },
+            {
+              "id": "a33d2ff0-62d2-485d-9d41-243f5ea93e91",
+              "name": "phone",
+              "value": "={{ $('dados').item.json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "1e3d038e-bbff-4399-8bb8-6ff226a372a9",
+              "name": "nomeRquerente",
+              "value": "={{ $('dados').item.json.REQUERENTE }}",
+              "type": "string"
+            },
+            {
+              "id": "ba41aa48-5940-49c1-aa8e-48648271c622",
+              "name": "delay",
+              "value": "={{ Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2112,
+        -464
+      ],
+      "id": "e2c21eb0-0cbe-404d-8ce2-ce2bb60b27fa",
+      "name": "dadosRequerente1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente1').first().json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('dadosRequerente1').first().json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"5519999522207-1626738024@g.us\",\n  \"text\": {{ $json.textMessage.msg.toJsonString() }},\n  \"delay\": {{ $('dadosRequerente1').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+        "options": {}
+      },
+      "id": "9e3011da-0572-40e0-a368-2d7f38fd029f",
+      "name": "SendTextIT1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2992,
+        -320
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        -1264
+      ],
+      "id": "9260da28-9032-45a6-8cf2-c7b818abfba7",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3088,
+        -1008
+      ],
+      "id": "fe7f3976-86d6-495c-ac02-ded97ca7e19c",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3008,
+        -576
+      ],
+      "id": "bab9620d-8d74-418c-bcf2-4f85e14544c0",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        -320
+      ],
+      "id": "9fded82c-77f0-4992-a485-a3f9edead5e9",
+      "name": "No Operation, do nothing3"
+    }
+  ],
+  "connections": {
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Instancias": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "dadosRequerente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FILTRA INSTACIAS": {
+      "main": [
+        [
+          {
+            "node": "Switch Open",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Open": {
+      "main": [
+        [
+          {
+            "node": "dadosRequerente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "FILTRA INSTACIAS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Verifica Instancias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "SendText",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MontaMensagemSemWhatSappPendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dadosRequerente": {
+      "main": [
+        [
+          {
+            "node": "Verifica WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaMensagemSemWhatSappPendente": {
+      "main": [
+        [
+          {
+            "node": "SendTextIT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica WhatsApp1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "SendText1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MontaMensagemSemWhatSappPendente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaMensagemSemWhatSappPendente1": {
+      "main": [
+        [
+          {
+            "node": "SendTextIT1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dadosRequerente1": {
+      "main": [
+        [
+          {
+            "node": "Verifica WhatsApp1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendText": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendTextIT": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendText1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendTextIT1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 60,
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "fields": {
+            "consumerTag": "amq.ctag-FosapHdM8gdIPIVvGvfl8g",
+            "deliveryTag": 30,
+            "redelivered": true,
+            "exchange": "notifications_exchange",
+            "routingKey": "whatsApp.suporte"
+          },
+          "properties": {
+            "headers": {}
+          },
+          "content": "{\"textMessage\":\"\\\"Denis, Boa tarde!\\\\n\\\\nVocê possui um chamado aguardando aprovação.\\\\n\\\\n🔹 Número do chamado: 10754\\\\n🔹 Categoria: Aprovação de Pagamento\\\\n🔹 Solicitante: Dayane Gomes\\\\n\\\\nAcesse para validar:\\\\nhttps://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=10754&\\\\n\\\\nAtenciosamente,\\\\nTecnologia da Informação.\\\"\",\"Instancias\":\"SUPORTE\",\"phone\":\"5519981353889\",\"REQUERENTE\":\"dayane.gomes\"}"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "77c4caeb-5647-48d8-bba7-45e02fb17ee6",
+  "activeVersionId": "77c4caeb-5647-48d8-bba7-45e02fb17ee6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-04-22T19:34:24.820Z",
+      "createdAt": "2025-04-22T19:34:24.820Z",
+      "role": "workflow:owner",
+      "workflowId": "qcyT7W8SAZdu0zZI",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-06-15T17:43:57.615Z",
+    "createdAt": "2026-06-08T19:40:42.999Z",
+    "versionId": "77c4caeb-5647-48d8-bba7-45e02fb17ee6",
+    "workflowId": "qcyT7W8SAZdu0zZI",
+    "nodes": [
+      {
+        "parameters": {
+          "queue": "whatsapp_queue",
+          "options": {
+            "binding": {
+              "bindings": [
+                {
+                  "exchange": "notifications_exchange",
+                  "routingKey": "whatsApp.suporte"
+                }
+              ]
+            },
+            "acknowledge": "executionFinishesSuccessfully",
+            "durable": true,
+            "parallelMessages": 1
+          }
+        },
+        "type": "n8n-nodes-base.rabbitmqTrigger",
+        "typeVersion": 1,
+        "position": [
+          -112,
+          -336
+        ],
+        "id": "6ab86c44-17ad-46c9-9615-c86fb405c0cc",
+        "name": "RabbitMQ Trigger",
+        "credentials": {
+          "rabbitmq": {
+            "id": "6NVyHI8GsuRN8ROo",
+            "name": "RabbitMQ notifications"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/instance/fetchInstances",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {}
+            ]
+          },
+          "options": {}
+        },
+        "id": "eaaea3c0-8e54-46bd-b1b6-dd94c32656f8",
+        "name": "Verifica Instancias",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          928,
+          -336
+        ],
+        "alwaysOutputData": false,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "F82teAW6Y016N8z4",
+            "name": "EVOLUTIONAPI"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          1888,
+          -464
+        ],
+        "id": "5ba8a18c-28ae-4270-87a3-0f7514bb9dcc",
+        "name": "Merge2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "21068754-66f5-4775-a5fb-a933a4198871",
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "CL121A",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          1408,
+          -480
+        ],
+        "id": "1852b50c-5926-4f6f-b122-172a8348e184",
+        "name": "FILTRA INSTACIAS"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.connectionStatus }}",
+                      "rightValue": "open",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "4d936d03-f2cb-4c53-988f-0ebcf7e184b3"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "open"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "039a2d21-c382-46da-bad1-8eac01b0da65",
+                      "leftValue": "={{ $json.connectionStatus }}",
+                      "rightValue": "connecting",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "connecting"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "37770b2c-8562-4360-8c90-00696fcc340a",
+                      "leftValue": "={{ $json.connectionStatus }}",
+                      "rightValue": "close",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "connecting"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "20bd30db-04c0-4ccb-b93a-1fe712fc97ad",
+        "name": "Switch Open",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          1600,
+          -496
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "8188a362-543f-4169-bdab-257e8863d899",
+                "leftValue": "={{ $json.error.message }}",
+                "rightValue": "=",
+                "operator": {
+                  "type": "string",
+                  "operation": "notExists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1152,
+          -336
+        ],
+        "id": "5dc2eaf6-b30c-4d7a-9ae8-bbb00095709c",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "327eccb0-9d8d-4fb3-a9f3-0cccd0aa2a0d",
+                "name": "textMessage",
+                "value": "={{ $json.content.parseJson().textMessage }}",
+                "type": "string"
+              },
+              {
+                "id": "53ca0ca5-8b33-4a17-9b46-6ba4974d1b2c",
+                "name": "Instancias",
+                "value": "={{ $json.content.parseJson().Instancias }}",
+                "type": "string"
+              },
+              {
+                "id": "48d7f6fa-f361-45ca-b925-5083a3c8ed53",
+                "name": "phone",
+                "value": "={{ $json.content.parseJson().phone}}",
+                "type": "string"
+              },
+              {
+                "id": "f3dc0bdf-a6ad-48b1-bbb3-49f4db373f71",
+                "name": "REQUERENTE",
+                "value": "={{ $json.content.parseJson().REQUERENTE}}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          144,
+          -336
+        ],
+        "id": "1983fe0d-28fd-428f-8e25-789bd26144be",
+        "name": "dados"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.Instancias }}",
+                      "rightValue": "SUPORTE",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "d255fa4a-f280-4851-b944-443de67a6f97"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "SUPORTE"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          672,
+          -336
+        ],
+        "id": "a60d7447-a931-4132-9037-a825df15b1c6",
+        "name": "Switch"
+      },
+      {
+        "parameters": {
+          "errorMessage": "erro Api Evolution"
+        },
+        "type": "n8n-nodes-base.stopAndError",
+        "typeVersion": 1,
+        "position": [
+          1408,
+          -224
+        ],
+        "id": "58834534-7b66-40f1-89a6-7c05ce321b5f",
+        "name": "Stop and Error"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente').first().json.instanceName }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{ $('dadosRequerente').first().json.apikey }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.number }}\",\n  \"text\": {{ $('dadosRequerente').item.json.textMessage }},\n  \"delay\": {{ $('dadosRequerente').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+          "options": {}
+        },
+        "id": "048c32d8-7d22-4189-9a4e-b12e9f3af76c",
+        "name": "SendText",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2688,
+          -1264
+        ],
+        "alwaysOutputData": false,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/chat/whatsappNumbers/{{ $json.instanceName }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{ $('FILTRA INSTACIAS').item.json.token }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"numbers\": [\"{{ $json.phone }}\"]\n}",
+          "options": {}
+        },
+        "id": "3135285a-1eb8-427a-955a-726cf55e1a2b",
+        "name": "Verifica WhatsApp",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2112,
+          -1152
+        ],
+        "alwaysOutputData": true,
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "3640dc24-99be-4aae-ab85-509e8606fb67",
+                "leftValue": "={{ $json.exists }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          2432,
+          -1152
+        ],
+        "id": "e887a421-9211-482b-84b4-e7a73fc8f7dd",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Coleta os dados do nó $('MergePendente') e do nó $('If')\nconst dadosRequerente = $node[\"dadosRequerente\"].json;\nconst validacaoWhatsApp = $node[\"If1\"].json;\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados do requerente e da validação do WhatsApp\nif (dadosRequerente && validacaoWhatsApp) {\n  const requerente = dadosRequerente; // Dados do requerente\n  const whatsappValido = validacaoWhatsApp.exists;\n  const jid = validacaoWhatsApp.jid;\n  const numero = validacaoWhatsApp.number;\n\n  if (!whatsappValido) {\n    const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n    // Cria a mensagem informando que o número não possui WhatsApp, incluindo jid\n    const mensagem = `${saudacao}!\\n\\n` +\n      `O número telefônico ${numero} do requerente ${requerente.nomeRquerente} não possui WhatsApp.\\n\\n`;\n\n    // Retorna a mensagem formatada como string JSON\n    return {\n      textMessage: {\n        msg: JSON.stringify(mensagem.trim())\n      }\n    };\n  } else {\n    // Caso o número possua WhatsApp, retorna uma mensagem informativa\n    return {\n      textMessage: {\n        msg: JSON.stringify(\"O número telefônico possui WhatsApp.\")\n      }\n    };\n  }\n} else {\n  // Retorna uma mensagem padrão caso não haja dados suficientes\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados para validação do WhatsApp.\")\n    }\n  };\n}\n"
+        },
+        "id": "947643c4-0edb-4fff-ad8b-2b806751910a",
+        "name": "MontaMensagemSemWhatSappPendente",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2688,
+          -1008
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "810e1daa-e022-40f0-bd32-e0b9ec69bb7d",
+                "name": "instanceName",
+                "value": "={{ $json.name }}",
+                "type": "string"
+              },
+              {
+                "id": "bf00bf08-62c9-42d7-bc1b-1631c1616232",
+                "name": "apikey",
+                "value": "={{ $json.token }}",
+                "type": "string"
+              },
+              {
+                "id": "4b5a48f1-de6a-4261-9013-2d52dc29d292",
+                "name": "textMessage",
+                "value": "={{ $('dados').item.json.textMessage }}",
+                "type": "string"
+              },
+              {
+                "id": "a33d2ff0-62d2-485d-9d41-243f5ea93e91",
+                "name": "phone",
+                "value": "={{ $('dados').item.json.phone }}",
+                "type": "string"
+              },
+              {
+                "id": "1e3d038e-bbff-4399-8bb8-6ff226a372a9",
+                "name": "nomeRquerente",
+                "value": "={{ $('dados').item.json.REQUERENTE }}",
+                "type": "string"
+              },
+              {
+                "id": "aa9e982a-0812-40f8-be70-5d56421916f7",
+                "name": "delay",
+                "value": "={{ Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000 }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1888,
+          -1152
+        ],
+        "id": "751f8bf2-e9e2-45f0-83b3-8f6614c1fe92",
+        "name": "dadosRequerente"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente').first().json.instanceName }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{ $('dadosRequerente').first().json.apikey }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"5519999522207-1626738024@g.us\",\n  \"text\": {{ $json.textMessage.msg.toJsonString() }},\n  \"delay\": {{ $('dadosRequerente').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+          "options": {}
+        },
+        "id": "e961c7c9-bcc3-4865-857b-b4ccb85a173a",
+        "name": "SendTextIT",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2880,
+          -1008
+        ],
+        "alwaysOutputData": false,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          416,
+          -336
+        ],
+        "id": "3aa2df51-cde6-4745-8dfe-590a332f9aad",
+        "name": "Wait",
+        "webhookId": "26a0a8a5-899a-46e3-a29e-1d9c173ba303"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente1').first().json.instanceName }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{ $('dadosRequerente1').first().json.apikey }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('dadosRequerente1').first().json.phone }}\",\n  \"text\": {{ $('dadosRequerente1').first().json.textMessage.toJsonString() }},\n  \"delay\": {{ $('dadosRequerente1').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+          "options": {}
+        },
+        "id": "5dd47c4e-5fa4-4877-820f-637e6b91121d",
+        "name": "SendText1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2800,
+          -576
+        ],
+        "alwaysOutputData": false,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/\nchat/whatsappNumbers/{{ $json.instanceName }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{ $json.apikey }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"numbers\": [\"{{ $json.phone }}\"]\n}",
+          "options": {}
+        },
+        "id": "09303a81-e885-4a68-a243-92bd14f23017",
+        "name": "Verifica WhatsApp1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2320,
+          -464
+        ],
+        "alwaysOutputData": false,
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "3640dc24-99be-4aae-ab85-509e8606fb67",
+                "leftValue": "={{ $json.exists }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          2496,
+          -464
+        ],
+        "id": "16214c9d-2055-44a3-8992-a920e72d4f04",
+        "name": "If2"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Coleta os dados do nó $('MergePendente') e do nó $('If')\nconst dadosRequerente = $node[\"dadosRequerente1\"].json;\nconst validacaoWhatsApp = $node[\"If2\"].json;\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados do requerente e da validação do WhatsApp\nif (dadosRequerente && validacaoWhatsApp) {\n  const requerente = dadosRequerente; // Dados do requerente\n  const whatsappValido = validacaoWhatsApp.exists;\n  const jid = validacaoWhatsApp.jid;\n  const numero = validacaoWhatsApp.number;\n\n  if (!whatsappValido) {\n    const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n    // Cria a mensagem informando que o número não possui WhatsApp, incluindo jid\n    const mensagem = `${saudacao}!\\n\\n` +\n      `O número telefônico ${numero} do requerente ${requerente.nomeRquerente} não possui WhatsApp.\\n\\n`;\n\n    // Retorna a mensagem formatada como string JSON\n    return {\n      textMessage: {\n        msg: JSON.stringify(mensagem.trim())\n      }\n    };\n  } else {\n    // Caso o número possua WhatsApp, retorna uma mensagem informativa\n    return {\n      textMessage: {\n        msg: JSON.stringify(\"O número telefônico possui WhatsApp.\")\n      }\n    };\n  }\n} else {\n  // Retorna uma mensagem padrão caso não haja dados suficientes\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados para validação do WhatsApp.\")\n    }\n  };\n}\n"
+        },
+        "id": "ca711444-fe82-44f5-add2-33e615851c5e",
+        "name": "MontaMensagemSemWhatSappPendente1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2800,
+          -320
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "810e1daa-e022-40f0-bd32-e0b9ec69bb7d",
+                "name": "instanceName",
+                "value": "=CL121B",
+                "type": "string"
+              },
+              {
+                "id": "bf00bf08-62c9-42d7-bc1b-1631c1616232",
+                "name": "apikey",
+                "value": "=91A84E0A8535-4D32-B792-58BF44C62DD1",
+                "type": "string"
+              },
+              {
+                "id": "4b5a48f1-de6a-4261-9013-2d52dc29d292",
+                "name": "textMessage",
+                "value": "={{ $('dados').item.json.textMessage }}",
+                "type": "string"
+              },
+              {
+                "id": "a33d2ff0-62d2-485d-9d41-243f5ea93e91",
+                "name": "phone",
+                "value": "={{ $('dados').item.json.phone }}",
+                "type": "string"
+              },
+              {
+                "id": "1e3d038e-bbff-4399-8bb8-6ff226a372a9",
+                "name": "nomeRquerente",
+                "value": "={{ $('dados').item.json.REQUERENTE }}",
+                "type": "string"
+              },
+              {
+                "id": "ba41aa48-5940-49c1-aa8e-48648271c622",
+                "name": "delay",
+                "value": "={{ Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000 }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2112,
+          -464
+        ],
+        "id": "e2c21eb0-0cbe-404d-8ce2-ce2bb60b27fa",
+        "name": "dadosRequerente1"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://evolutionapi.mdgintermediacoes.com.br/message/sendText/{{ $('dadosRequerente1').first().json.instanceName }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{ $('dadosRequerente1').first().json.apikey }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"5519999522207-1626738024@g.us\",\n  \"text\": {{ $json.textMessage.msg.toJsonString() }},\n  \"delay\": {{ $('dadosRequerente1').item.json.delay }},\n  \"linkPreview\": true,\n  \"mentionsEveryOne\": true\n}",
+          "options": {}
+        },
+        "id": "9e3011da-0572-40e0-a368-2d7f38fd029f",
+        "name": "SendTextIT1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2992,
+          -320
+        ],
+        "alwaysOutputData": false,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2896,
+          -1264
+        ],
+        "id": "9260da28-9032-45a6-8cf2-c7b818abfba7",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          3088,
+          -1008
+        ],
+        "id": "fe7f3976-86d6-495c-ac02-ded97ca7e19c",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          3008,
+          -576
+        ],
+        "id": "bab9620d-8d74-418c-bcf2-4f85e14544c0",
+        "name": "No Operation, do nothing2"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          3200,
+          -320
+        ],
+        "id": "9fded82c-77f0-4992-a485-a3f9edead5e9",
+        "name": "No Operation, do nothing3"
+      }
+    ],
+    "connections": {
+      "RabbitMQ Trigger": {
+        "main": [
+          [
+            {
+              "node": "dados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verifica Instancias": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "node": "dadosRequerente1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "FILTRA INSTACIAS": {
+        "main": [
+          [
+            {
+              "node": "Switch Open",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch Open": {
+        "main": [
+          [
+            {
+              "node": "dadosRequerente",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "FILTRA INSTACIAS",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Stop and Error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dados": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Verifica Instancias",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verifica WhatsApp": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "SendText",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MontaMensagemSemWhatSappPendente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dadosRequerente": {
+        "main": [
+          [
+            {
+              "node": "Verifica WhatsApp",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MontaMensagemSemWhatSappPendente": {
+        "main": [
+          [
+            {
+              "node": "SendTextIT",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verifica WhatsApp1": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "SendText1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MontaMensagemSemWhatSappPendente1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MontaMensagemSemWhatSappPendente1": {
+        "main": [
+          [
+            {
+              "node": "SendTextIT1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dadosRequerente1": {
+        "main": [
+          [
+            {
+              "node": "Verifica WhatsApp1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SendText": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SendTextIT": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SendText1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SendTextIT1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 77c4caeb",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

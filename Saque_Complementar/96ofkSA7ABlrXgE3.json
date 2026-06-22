@@ -1,0 +1,3059 @@
+{
+  "updatedAt": "2025-05-26T18:41:21.858Z",
+  "createdAt": "2025-05-21T11:53:07.745Z",
+  "id": "96ofkSA7ABlrXgE3",
+  "name": "Simulação - BMG SAQUE COMPLEMENTAR",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f83ab9ac-57d2-471c-9156-fbecd4cca128",
+              "name": "login",
+              "value": "robo.54873",
+              "type": "string"
+            },
+            {
+              "id": "c88f03dd-1f83-42d2-baa2-d3c47d1f3694",
+              "name": "senha",
+              "value": "Cosmo@001",
+              "type": "string"
+            },
+            {
+              "id": "bae96078-ad32-4b68-be2b-5b0aa6285af1",
+              "name": "loginConsig",
+              "value": "MDG54873.DAYANESTE",
+              "type": "string"
+            },
+            {
+              "id": "4724c2b0-7e62-4601-8929-baf611283647",
+              "name": "senhaConsig",
+              "value": "Cosmo@003",
+              "type": "string"
+            },
+            {
+              "id": "c025f066-dbcf-484b-aad9-11547fce83f3",
+              "name": "credilusToken",
+              "value": "kDSgE9KhSkkXk0WQkA0FU1f6VQ6N6g0Olvxl0Byhb1b6280f",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        40,
+        -3220
+      ],
+      "id": "8a2ae654-8ce1-4f67-83a5-f7367753e078",
+      "name": "Credentials"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+              "name": "CPF",
+              "value": "={{ $('Merge1').item.json.query.padStart(11, 0) }}",
+              "type": "string"
+            },
+            {
+              "id": "b2526609-1d42-4bb4-a5a3-f2d9f01277cb",
+              "name": "codigoEntidade",
+              "value": "1581",
+              "type": "string"
+            },
+            {
+              "id": "f7974c47-4fa6-46c5-bb02-45e225acfbc8",
+              "name": "remoteJid",
+              "value": "5519993418990@s.whatsapp.net",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -3220
+      ],
+      "id": "a54ca5e3-cd65-4d8c-b0b5-483471c50b2b",
+      "name": "Get Body"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.econsig.bmg.com\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:buscarCartoesDisponiveis soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n         <param xsi:type=\"web:CartaoDisponivelParameter\">\n            <login xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.login }}</login>\n            <senha xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.senha }}</senha>\n            <codigoEntidade xsi:type=\"xsd:int\">{{ $('Get Body').item.json.codigoEntidade }}</codigoEntidade>\n            <cpf xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Get Body').item.json.CPF }}</cpf>\n         </param>\n      </web:buscarCartoesDisponiveis>\n   </soapenv:Body>\n</soapenv:Envelope>",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        -3280
+      ],
+      "id": "cbf1d83d-dfe3-4ff2-ba23-b62e6f06921b",
+      "name": "Buscar Cartoes Disponiveis",
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        940,
+        -3300
+      ],
+      "id": "2eaedc24-ceac-4e89-9dea-bf5262ee1f78",
+      "name": "XML Buscar Cartões Disponíveis"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n    xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n    xmlns:web=\"http://webservice.econsig.bmg.com\">\n    <soapenv:Header />\n    <soapenv:Body>\n        <web:buscarLimiteSaque soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n            <param xsi:type=\"web:DadosCartaoParameter\">\n                <login xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.login }}</login>\n                <senha xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.senha }}</senha>\n                <codigoEntidade xsi:type=\"xsd:int\">{{ $('Buscar Cartões Disponíveis Response').item.json.entidade }}</codigoEntidade>\n                <cpf xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Get Body').item.json.CPF }}</cpf>\n                <matricula xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}</matricula>\n                <numeroContaInterna xsi:type=\"xsd:long\">{{ $('Buscar Cartões Disponíveis Response').item.json.numeroContaInterna }}</numeroContaInterna>\n                <tipoSaque xsi:type=\"xsd:int\">{{ $('Buscar Cartões Disponíveis Response').item.json.modalidadeSaque == \"Parcelado\" ? 2 : 1 }}</tipoSaque>\n            </param>\n        </web:buscarLimiteSaque>\n    </soapenv:Body>\n</soapenv:Envelope>",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1780,
+        -3280
+      ],
+      "id": "ca89f06b-796f-4292-a12b-f590d1edfba3",
+      "name": "Buscar Limite Saque",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        -3280
+      ],
+      "id": "edf9768d-4128-4ae5-bb6e-fac645b7e9c2",
+      "name": "XML Buscar Limite Saque"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"limiteCartao\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.limiteCartao._ }},\n  \"limiteDisponivel\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.limiteDisponivel._ }},\n\"valorMargem\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorMargem._ }},\n\"valorSaqueMaximo\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorSaqueMaximo._ }},\n\"valorSaqueMinimo\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorSaqueMinimo._ }},\n\"valorSaqueParaMargemComplementarComAgregacaoDeMargem\":{{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorSaqueParaMargemComplementarComAgregacaoDeMargem._ }},\n\"mensagemErro\": \"{{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.mensagemDeErro._ }}\"\n}\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2180,
+        -3280
+      ],
+      "id": "3ccdb29e-960e-4633-9f10-700b7b4e577f",
+      "name": "Buscar Limite Saque Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a083d6b1-b22e-455f-9713-f35c52ca49a8",
+              "name": "cpfImpedidoComissionar",
+              "value": "={{ $json.cpfImpedidoComissionar._ }}",
+              "type": "boolean"
+            },
+            {
+              "id": "69c48e07-1805-4d6e-a2ea-8f3fe54948b7",
+              "name": "entidade",
+              "value": "={{ $json.entidade._ }}",
+              "type": "string"
+            },
+            {
+              "id": "d03bac7e-2501-4390-9b18-4e5c2e68c031",
+              "name": "liberado",
+              "value": "={{ $json.liberado._ }}",
+              "type": "boolean"
+            },
+            {
+              "id": "450b5227-6d9b-4fda-bda5-9666a5a1fdf2",
+              "name": "modalidadeSaque",
+              "value": "={{ $json.modalidadeSaque._ === \"SaqueAutorizado (Rotativo)\" ? 1 : $json.modalidadeSaque._ === \"Parcelado\" ? 2 : 0 }}\n",
+              "type": "number"
+            },
+            {
+              "id": "2adae826-b59a-44cb-93f0-ddd40f8e22a1",
+              "name": "numeroAdesao",
+              "value": "={{ $json.numeroAdesao._ }}",
+              "type": "string"
+            },
+            {
+              "id": "4ee5a041-d573-49c9-9b77-55d08fcb698d",
+              "name": "numeroCartao",
+              "value": "={{ $json.numeroCartao._ }}",
+              "type": "string"
+            },
+            {
+              "id": "c8bb2965-0846-40a6-b8a0-c4a3e8316ba8",
+              "name": "numeroContaInterna",
+              "value": "={{ $json.numeroContaInterna._ }}",
+              "type": "string"
+            },
+            {
+              "id": "b82b942f-8582-446b-a087-6fbe1d9ded98",
+              "name": "mensagemImpedimento",
+              "value": "={{ $json.mensagemImpedimento._ }}",
+              "type": "string"
+            },
+            {
+              "id": "4f3ff8fd-889f-48b9-a7d3-e9c2eba23ea2",
+              "name": "matricula",
+              "value": "={{ $json.matricula._ }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1320,
+        -3300
+      ],
+      "id": "f6682f1e-18e3-48ab-a368-d7fe25d44b85",
+      "name": "Buscar Cartões Disponíveis Response"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.econsig.bmg.com\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:buscarSimulacao soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n         <param xsi:type=\"web:SimulacaoCartaoParameter\">\n            <login xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.login }}</login>\n            <senha xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.senha }}</senha>\n            <codigoEntidade xsi:type=\"xsd:int\">1581</codigoEntidade>\n            <valorSaque xsi:type=\"xsd:double\">{{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}</valorSaque>\n         </param>\n      </web:buscarSimulacao>\n   </soapenv:Body>\n</soapenv:Envelope>",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2580,
+        -3260
+      ],
+      "id": "ca3dd503-f596-4723-85d4-f86597c30cf3",
+      "name": "Buscar Simulação",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        -3260
+      ],
+      "id": "968beb18-87a9-43a6-8737-e3cf1f65e5ab",
+      "name": "XML Buscar Simulação"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"numeroParcelas\":  {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarSimulacaoResponse'].buscarSimulacaoReturn.buscarSimulacaoReturn.numeroParcelas._ }},\n  \"valorParcela\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarSimulacaoResponse'].buscarSimulacaoReturn.buscarSimulacaoReturn.valorParcela._ }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2980,
+        -3260
+      ],
+      "id": "b3654032-4780-4a9a-84fb-3b6e55527157",
+      "name": "Buscar Simulação Response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "37b5b7bd-8f97-4c45-9c99-a75e8009b90a",
+              "leftValue": "={{ $items('Buscar Cartões Disponíveis Response').length  }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1520,
+        -3300
+      ],
+      "id": "c4e4c9fa-90ea-4226-ac73-373920ea0ea3",
+      "name": "Tem impedimento"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9c429913-f1cc-4bfe-af39-293acb5de6fb",
+              "leftValue": "={{ $json.mensagemErro }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "6fa74e12-6071-4dda-993a-16e3978f7a5d",
+              "leftValue": "={{ $json.mensagemErro }}",
+              "rightValue": "undefined",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2340,
+        -3280
+      ],
+      "id": "c3540c12-d8e7-4d69-84d4-4b90e31e2703",
+      "name": "Restrição Limite Saque"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "263e0bbf-cd26-4164-840c-20a63d507ce0",
+              "leftValue": "={{ $json.CPF }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        520,
+        -3260
+      ],
+      "id": "7e80d2ce-3e10-4525-a698-8c2b29faae2a",
+      "name": "Verifica campos cpf e type_digitation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "838f35ef-ec7a-404c-9b76-c4ed5808e3d2",
+              "leftValue": "={{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3160,
+        -3260
+      ],
+      "id": "8735c85a-863e-450f-a5d8-542419321f46",
+      "name": "Tem saque"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Falha ao realizar digitação\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1080,
+        -920
+      ],
+      "id": "491f97a5-44a7-4a22-af15-588df475d798",
+      "name": "Falha na digitação"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f76ea07-3184-4296-a03f-d73b8507d67c",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "39dcf00f-b81a-4e45-a75b-5d2d84401dd7",
+              "name": "step",
+              "value": "Buscar Cartões Disponíveis impedimento",
+              "type": "string"
+            },
+            {
+              "id": "930a948a-480a-4a71-a30d-395d2a29f284",
+              "name": "message",
+              "value": "Há alguns impedimentos nesse item",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -1860
+      ],
+      "id": "f95debab-ee6a-49a6-8e20-94c315d6dba6",
+      "name": "Responde com mensagem de impedimento1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f54023ce-e41d-4af2-99ef-ac1d12bd0f17",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "60a4d955-2c52-4805-9ce8-9dc9a2ff17e0",
+              "name": "step",
+              "value": "Buscar Limite Saque com restrição de saque",
+              "type": "string"
+            },
+            {
+              "id": "d8f6bd24-4b87-4409-8e2b-f0894658019b",
+              "name": "message",
+              "value": "={{ $json.mensagemErro }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -1440
+      ],
+      "id": "28da3916-dbf7-4b59-abc1-4c77177e6694",
+      "name": "Responde se ha restrição no saque1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f0e411ce-e80a-4f13-8c24-fe418e27f670",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "65a91fec-60a1-487e-97bd-535ea293b66c",
+              "name": "step",
+              "value": "Buscar Cartões Disponíveis",
+              "type": "string"
+            },
+            {
+              "id": "6717365f-697d-4670-a00b-b448e9fbc161",
+              "name": "message",
+              "value": "= {{ JSON.stringify($json.error.message) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -2060
+      ],
+      "id": "87e458c8-7228-4ec5-8bd1-73e63ba8867e",
+      "name": "On Error Buscar  Cartões Disponíveis1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "48d1788a-bc06-472d-8c7f-948b0d18ff47",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "323b2d87-dcb6-4c45-91e2-03ee1fbc44d4",
+              "name": "step",
+              "value": "Buscar Limite Saque",
+              "type": "string"
+            },
+            {
+              "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+              "name": "message",
+              "value": "={{ JSON.stringify($json.error.message) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -1640
+      ],
+      "id": "ce6303e2-6d9d-4462-8b14-15647ffabe95",
+      "name": "On Error Buscar Limite Saque1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ac3a69c-cb65-4a39-b00c-31aab3907557",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "5b2efb96-3df2-4d59-916a-75d6574c01c5",
+              "name": "step",
+              "value": " Buscar Simulação",
+              "type": "string"
+            },
+            {
+              "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+              "name": " message",
+              "value": "={{ JSON.stringify($json.error.message) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -1260
+      ],
+      "id": "5b472dc1-32ea-4362-bb58-37af43c5922f",
+      "name": "On Error Buscar Simulação1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "376b7752-d407-461d-a1aa-a128c47bfa80",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "3ff6a849-1c5a-4053-ad24-1053f64569d5",
+              "name": "step",
+              "value": "Sem limite de saque",
+              "type": "string"
+            },
+            {
+              "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+              "name": "message",
+              "value": "Sem limite de saque",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -1080
+      ],
+      "id": "41cbb757-6003-4e31-8681-17f53a428763",
+      "name": "Responde sem limite de saque1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 8
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4560,
+        -2220
+      ],
+      "id": "23ab2a7b-a642-434a-a28e-4b8fd3e8f3cd",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1948883-42d8-4746-b557-c3731300a492",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "0fe11459-4583-4176-b692-37054bcb8c6c",
+              "name": "step",
+              "value": "Verificação de CPF e type_digitation",
+              "type": "string"
+            },
+            {
+              "id": "4da9d51b-8166-4774-ba46-fc886aeef891",
+              "name": "message",
+              "value": "Favor informar o CPF e type_digitation",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -2240
+      ],
+      "id": "a88cb818-68c5-4ff0-8b85-cb94694c6a20",
+      "name": "Field Verification1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4900,
+        -2120
+      ],
+      "id": "eeee8b3e-eba9-4f18-a59c-581912df96ca",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "message",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        4720,
+        -2120
+      ],
+      "id": "44caad3c-d83c-4c4e-abec-b020d565e0c4",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const caminho = item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:buscarCartoesDisponiveisResponse\"]\n        .buscarCartoesDisponiveisReturn.cartoesRetorno.cartoesRetorno;\n    \n    return Array.isArray(caminho) ? caminho.map(c => ({ json: c })) : [{ json: caminho }];\n}).flat();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        -3300
+      ],
+      "id": "b8c2a6f5-4a8c-448e-9bf5-a30db4aa8640",
+      "name": "Dividir Cartões"
+    },
+    {
+      "parameters": {
+        "content": "## ERROS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 1620,
+        "width": 1720,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        120,
+        -2380
+      ],
+      "typeVersion": 1,
+      "id": "009189ce-e9a1-4aaf-b449-54d22c77210e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b950827a-ec92-48a6-b9ba-ccf258fffd9c",
+              "name": "CPF",
+              "value": "={{ $('Get Body').item.json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "ec4a2748-11ce-4dce-a745-ddc9555c7bc6",
+              "name": "limiteDisponivel",
+              "value": "={{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}",
+              "type": "number"
+            },
+            {
+              "id": "0e040c1d-d2d8-4934-95a2-70378be6a268",
+              "name": "valorParcela",
+              "value": "={{ $json.valorParcela }}",
+              "type": "number"
+            },
+            {
+              "id": "71f7f5ec-2d4d-4d9a-92f8-aef915c3c19e",
+              "name": "numeroParcelas",
+              "value": "={{ $json.numeroParcelas }}",
+              "type": "number"
+            },
+            {
+              "id": "57c3443b-3961-4d23-a51e-61e62baa77b3",
+              "name": "entidade",
+              "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.entidade }}",
+              "type": "string"
+            },
+            {
+              "id": "28647ed0-ce07-4647-9475-148473b802f2",
+              "name": "modalidadeSaque",
+              "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.modalidadeSaque }}",
+              "type": "number"
+            },
+            {
+              "id": "21636941-9379-4b1e-ab9b-461b3dc53876",
+              "name": "numeroAdesao",
+              "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.numeroAdesao }}",
+              "type": "string"
+            },
+            {
+              "id": "58f062bf-b634-4a0a-9081-e526496537af",
+              "name": "numeroContaInterna",
+              "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.numeroContaInterna }}",
+              "type": "string"
+            },
+            {
+              "id": "ab3462c6-fc5a-4a48-85f3-9c739aff23ef",
+              "name": "matricula",
+              "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3360,
+        -3260
+      ],
+      "id": "e766e941-1f54-4a2a-96bc-f44dd6dfbb6a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        3560,
+        -3260
+      ],
+      "id": "75069d5c-5494-4426-abc9-8e73cd5479af",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -720,
+        -3160
+      ],
+      "id": "e33067d3-eff8-4188-a262-b44fa1bb1ca7",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        5240,
+        -2120
+      ],
+      "id": "39b43ea5-4e35-48fa-ad86-f998de81140b",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ef63825c-8ea1-4533-a20b-b5a5a19014b3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1060,
+        -3340
+      ],
+      "id": "d66f355b-9ef1-4af5-a955-3129f34e910d",
+      "name": "Webhook",
+      "webhookId": "ef63825c-8ea1-4533-a20b-b5a5a19014b3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -180,
+        -3220
+      ],
+      "id": "51687a91-60a6-429b-8521-ad12b8c0869a",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        5460,
+        -2120
+      ],
+      "id": "688ad9e2-8f1c-4f75-bcf1-fa4e4528a945",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4180,
+        -3400
+      ],
+      "id": "298ab6fa-5005-4583-bce2-219252514c74",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "content": "## SIMULA PARCELA\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 460,
+        "width": 1240
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2300,
+        -3420
+      ],
+      "typeVersion": 1,
+      "id": "611de339-eb30-43ef-815f-12aa235475c1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## BUSCA LIMITE SAQUE\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 440,
+        "width": 780
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1480,
+        -3400
+      ],
+      "typeVersion": 1,
+      "id": "4b18b4f0-23f1-4edf-9d4e-36f953016cd6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## VERIFICA SE TEM CARTÃO \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 440,
+        "width": 1180
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        -3400
+      ],
+      "typeVersion": 1,
+      "id": "e79dab1d-4603-41b8-92b7-7c6dc56429c3",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega o body como string\nlet raw = items[0].json.body;\n\n// Remove vírgula no final (caso exista)\nraw = raw.replace(/,\\s*}/, '}');\n\n// Converte de string para objeto JSON\nconst parsed = JSON.parse(raw);\n\n// Retorna o objeto limpo\nreturn [{ json: parsed }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -860,
+        -3340
+      ],
+      "id": "e59f9991-e64d-45c0-b940-8d41f15b96d9",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "keys": {
+          "key": [
+            {
+              "currentKey": "cpf",
+              "newKey": "query"
+            }
+          ]
+        },
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.renameKeys",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        -3340
+      ],
+      "id": "77e58c04-9e6d-4e80-a48d-bb81f370385f",
+      "name": "Rename Keys"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -3480
+      ],
+      "id": "5f809db3-7564-45d3-a503-43c9abf6a568",
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## RECEBIMENTO DE DADOS \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 620,
+        "width": 1240,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1080,
+        -3500
+      ],
+      "typeVersion": 1,
+      "id": "6e68d28d-75ef-4857-8eb3-1ade70e31fab",
+      "name": "Sticky Note4"
+    }
+  ],
+  "connections": {
+    "Credentials": {
+      "main": [
+        [
+          {
+            "node": "Get Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Body": {
+      "main": [
+        [
+          {
+            "node": "Verifica campos cpf e type_digitation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cartoes Disponiveis": {
+      "main": [
+        [
+          {
+            "node": "XML Buscar Cartões Disponíveis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "On Error Buscar  Cartões Disponíveis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML Buscar Cartões Disponíveis": {
+      "main": [
+        [
+          {
+            "node": "Dividir Cartões",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Limite Saque": {
+      "main": [
+        [
+          {
+            "node": "XML Buscar Limite Saque",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "On Error Buscar Limite Saque1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML Buscar Limite Saque": {
+      "main": [
+        [
+          {
+            "node": "Buscar Limite Saque Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cartões Disponíveis Response": {
+      "main": [
+        [
+          {
+            "node": "Tem impedimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Limite Saque Response": {
+      "main": [
+        [
+          {
+            "node": "Restrição Limite Saque",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Simulação": {
+      "main": [
+        [
+          {
+            "node": "XML Buscar Simulação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "On Error Buscar Simulação1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML Buscar Simulação": {
+      "main": [
+        [
+          {
+            "node": "Buscar Simulação Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Simulação Response": {
+      "main": [
+        [
+          {
+            "node": "Tem saque",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem impedimento": {
+      "main": [
+        [
+          {
+            "node": "Buscar Limite Saque",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responde com mensagem de impedimento1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restrição Limite Saque": {
+      "main": [
+        [
+          {
+            "node": "Buscar Simulação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responde se ha restrição no saque1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica campos cpf e type_digitation": {
+      "main": [
+        [
+          {
+            "node": "Buscar Cartoes Disponiveis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Field Verification1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem saque": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responde sem limite de saque1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Falha na digitação": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Responde com mensagem de impedimento1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Responde se ha restrição no saque1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "On Error Buscar  Cartões Disponíveis1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "On Error Buscar Limite Saque1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "On Error Buscar Simulação1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Responde sem limite de saque1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Field Verification1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dividir Cartões": {
+      "main": [
+        [
+          {
+            "node": "Buscar Cartões Disponíveis Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Rename Keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Keys": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 180
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.5",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.5",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.5",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "27",
+            "content-type": "text/plain;charset=UTF-8",
+            "accept": "*/*",
+            "accept-language": "*",
+            "sec-fetch-mode": "cors",
+            "user-agent": "node",
+            "accept-encoding": "br, gzip, deflate"
+          },
+          "params": {},
+          "query": {},
+          "body": "{\n  \"cpf\": \"29590620000\",\n}",
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/ef63825c-8ea1-4533-a20b-b5a5a19014b3",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "When Executed by Another Workflow": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "1383df60-4482-488b-88cc-9bfbad1ce526",
+  "activeVersionId": "1383df60-4482-488b-88cc-9bfbad1ce526",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-21T11:53:07.745Z",
+      "createdAt": "2025-05-21T11:53:07.745Z",
+      "role": "workflow:owner",
+      "workflowId": "96ofkSA7ABlrXgE3",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "1383df60-4482-488b-88cc-9bfbad1ce526",
+    "workflowId": "96ofkSA7ABlrXgE3",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f83ab9ac-57d2-471c-9156-fbecd4cca128",
+                "name": "login",
+                "value": "robo.54873",
+                "type": "string"
+              },
+              {
+                "id": "c88f03dd-1f83-42d2-baa2-d3c47d1f3694",
+                "name": "senha",
+                "value": "Cosmo@001",
+                "type": "string"
+              },
+              {
+                "id": "bae96078-ad32-4b68-be2b-5b0aa6285af1",
+                "name": "loginConsig",
+                "value": "MDG54873.DAYANESTE",
+                "type": "string"
+              },
+              {
+                "id": "4724c2b0-7e62-4601-8929-baf611283647",
+                "name": "senhaConsig",
+                "value": "Cosmo@003",
+                "type": "string"
+              },
+              {
+                "id": "c025f066-dbcf-484b-aad9-11547fce83f3",
+                "name": "credilusToken",
+                "value": "kDSgE9KhSkkXk0WQkA0FU1f6VQ6N6g0Olvxl0Byhb1b6280f",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          40,
+          -3220
+        ],
+        "id": "8a2ae654-8ce1-4f67-83a5-f7367753e078",
+        "name": "Credentials"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+                "name": "CPF",
+                "value": "={{ $('Merge1').item.json.query.padStart(11, 0) }}",
+                "type": "string"
+              },
+              {
+                "id": "b2526609-1d42-4bb4-a5a3-f2d9f01277cb",
+                "name": "codigoEntidade",
+                "value": "1581",
+                "type": "string"
+              },
+              {
+                "id": "f7974c47-4fa6-46c5-bb02-45e225acfbc8",
+                "name": "remoteJid",
+                "value": "5519993418990@s.whatsapp.net",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          240,
+          -3220
+        ],
+        "id": "a54ca5e3-cd65-4d8c-b0b5-483471c50b2b",
+        "name": "Get Body"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/xml",
+          "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.econsig.bmg.com\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:buscarCartoesDisponiveis soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n         <param xsi:type=\"web:CartaoDisponivelParameter\">\n            <login xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.login }}</login>\n            <senha xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.senha }}</senha>\n            <codigoEntidade xsi:type=\"xsd:int\">{{ $('Get Body').item.json.codigoEntidade }}</codigoEntidade>\n            <cpf xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Get Body').item.json.CPF }}</cpf>\n         </param>\n      </web:buscarCartoesDisponiveis>\n   </soapenv:Body>\n</soapenv:Envelope>",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          720,
+          -3280
+        ],
+        "id": "cbf1d83d-dfe3-4ff2-ba23-b62e6f06921b",
+        "name": "Buscar Cartoes Disponiveis",
+        "executeOnce": false,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          940,
+          -3300
+        ],
+        "id": "2eaedc24-ceac-4e89-9dea-bf5262ee1f78",
+        "name": "XML Buscar Cartões Disponíveis"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "text/xml",
+          "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n    xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n    xmlns:web=\"http://webservice.econsig.bmg.com\">\n    <soapenv:Header />\n    <soapenv:Body>\n        <web:buscarLimiteSaque soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n            <param xsi:type=\"web:DadosCartaoParameter\">\n                <login xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.login }}</login>\n                <senha xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.senha }}</senha>\n                <codigoEntidade xsi:type=\"xsd:int\">{{ $('Buscar Cartões Disponíveis Response').item.json.entidade }}</codigoEntidade>\n                <cpf xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Get Body').item.json.CPF }}</cpf>\n                <matricula xsi:type=\"soapenc:string\"\n                    xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}</matricula>\n                <numeroContaInterna xsi:type=\"xsd:long\">{{ $('Buscar Cartões Disponíveis Response').item.json.numeroContaInterna }}</numeroContaInterna>\n                <tipoSaque xsi:type=\"xsd:int\">{{ $('Buscar Cartões Disponíveis Response').item.json.modalidadeSaque == \"Parcelado\" ? 2 : 1 }}</tipoSaque>\n            </param>\n        </web:buscarLimiteSaque>\n    </soapenv:Body>\n</soapenv:Envelope>",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1780,
+          -3280
+        ],
+        "id": "ca89f06b-796f-4292-a12b-f590d1edfba3",
+        "name": "Buscar Limite Saque",
+        "executeOnce": false,
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          2000,
+          -3280
+        ],
+        "id": "edf9768d-4128-4ae5-bb6e-fac645b7e9c2",
+        "name": "XML Buscar Limite Saque"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={\n  \"limiteCartao\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.limiteCartao._ }},\n  \"limiteDisponivel\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.limiteDisponivel._ }},\n\"valorMargem\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorMargem._ }},\n\"valorSaqueMaximo\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorSaqueMaximo._ }},\n\"valorSaqueMinimo\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorSaqueMinimo._ }},\n\"valorSaqueParaMargemComplementarComAgregacaoDeMargem\":{{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.valorSaqueParaMargemComplementarComAgregacaoDeMargem._ }},\n\"mensagemErro\": \"{{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarLimiteSaqueResponse'].buscarLimiteSaqueReturn.mensagemDeErro._ }}\"\n}\n ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2180,
+          -3280
+        ],
+        "id": "3ccdb29e-960e-4633-9f10-700b7b4e577f",
+        "name": "Buscar Limite Saque Response"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a083d6b1-b22e-455f-9713-f35c52ca49a8",
+                "name": "cpfImpedidoComissionar",
+                "value": "={{ $json.cpfImpedidoComissionar._ }}",
+                "type": "boolean"
+              },
+              {
+                "id": "69c48e07-1805-4d6e-a2ea-8f3fe54948b7",
+                "name": "entidade",
+                "value": "={{ $json.entidade._ }}",
+                "type": "string"
+              },
+              {
+                "id": "d03bac7e-2501-4390-9b18-4e5c2e68c031",
+                "name": "liberado",
+                "value": "={{ $json.liberado._ }}",
+                "type": "boolean"
+              },
+              {
+                "id": "450b5227-6d9b-4fda-bda5-9666a5a1fdf2",
+                "name": "modalidadeSaque",
+                "value": "={{ $json.modalidadeSaque._ === \"SaqueAutorizado (Rotativo)\" ? 1 : $json.modalidadeSaque._ === \"Parcelado\" ? 2 : 0 }}\n",
+                "type": "number"
+              },
+              {
+                "id": "2adae826-b59a-44cb-93f0-ddd40f8e22a1",
+                "name": "numeroAdesao",
+                "value": "={{ $json.numeroAdesao._ }}",
+                "type": "string"
+              },
+              {
+                "id": "4ee5a041-d573-49c9-9b77-55d08fcb698d",
+                "name": "numeroCartao",
+                "value": "={{ $json.numeroCartao._ }}",
+                "type": "string"
+              },
+              {
+                "id": "c8bb2965-0846-40a6-b8a0-c4a3e8316ba8",
+                "name": "numeroContaInterna",
+                "value": "={{ $json.numeroContaInterna._ }}",
+                "type": "string"
+              },
+              {
+                "id": "b82b942f-8582-446b-a087-6fbe1d9ded98",
+                "name": "mensagemImpedimento",
+                "value": "={{ $json.mensagemImpedimento._ }}",
+                "type": "string"
+              },
+              {
+                "id": "4f3ff8fd-889f-48b9-a7d3-e9c2eba23ea2",
+                "name": "matricula",
+                "value": "={{ $json.matricula._ }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1320,
+          -3300
+        ],
+        "id": "f6682f1e-18e3-48ab-a368-d7fe25d44b85",
+        "name": "Buscar Cartões Disponíveis Response"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/xml",
+          "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.econsig.bmg.com\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:buscarSimulacao soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n         <param xsi:type=\"web:SimulacaoCartaoParameter\">\n            <login xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.login }}</login>\n            <senha xsi:type=\"soapenc:string\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">{{ $('Credentials').item.json.senha }}</senha>\n            <codigoEntidade xsi:type=\"xsd:int\">1581</codigoEntidade>\n            <valorSaque xsi:type=\"xsd:double\">{{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}</valorSaque>\n         </param>\n      </web:buscarSimulacao>\n   </soapenv:Body>\n</soapenv:Envelope>",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2580,
+          -3260
+        ],
+        "id": "ca3dd503-f596-4723-85d4-f86597c30cf3",
+        "name": "Buscar Simulação",
+        "executeOnce": false,
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          2800,
+          -3260
+        ],
+        "id": "968beb18-87a9-43a6-8737-e3cf1f65e5ab",
+        "name": "XML Buscar Simulação"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={\n  \"numeroParcelas\":  {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarSimulacaoResponse'].buscarSimulacaoReturn.buscarSimulacaoReturn.numeroParcelas._ }},\n  \"valorParcela\": {{ $json['soapenv:Envelope']['soapenv:Body']['ns1:buscarSimulacaoResponse'].buscarSimulacaoReturn.buscarSimulacaoReturn.valorParcela._ }}\n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2980,
+          -3260
+        ],
+        "id": "b3654032-4780-4a9a-84fb-3b6e55527157",
+        "name": "Buscar Simulação Response"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "37b5b7bd-8f97-4c45-9c99-a75e8009b90a",
+                "leftValue": "={{ $items('Buscar Cartões Disponíveis Response').length  }}",
+                "rightValue": 1,
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1520,
+          -3300
+        ],
+        "id": "c4e4c9fa-90ea-4226-ac73-373920ea0ea3",
+        "name": "Tem impedimento"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "9c429913-f1cc-4bfe-af39-293acb5de6fb",
+                "leftValue": "={{ $json.mensagemErro }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "empty",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "6fa74e12-6071-4dda-993a-16e3978f7a5d",
+                "leftValue": "={{ $json.mensagemErro }}",
+                "rightValue": "undefined",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          2340,
+          -3280
+        ],
+        "id": "c3540c12-d8e7-4d69-84d4-4b90e31e2703",
+        "name": "Restrição Limite Saque"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "263e0bbf-cd26-4164-840c-20a63d507ce0",
+                "leftValue": "={{ $json.CPF }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          520,
+          -3260
+        ],
+        "id": "7e80d2ce-3e10-4525-a698-8c2b29faae2a",
+        "name": "Verifica campos cpf e type_digitation"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "838f35ef-ec7a-404c-9b76-c4ed5808e3d2",
+                "leftValue": "={{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}",
+                "rightValue": 200,
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          3160,
+          -3260
+        ],
+        "id": "8735c85a-863e-450f-a5d8-542419321f46",
+        "name": "Tem saque"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Falha ao realizar digitação\"\n}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1080,
+          -920
+        ],
+        "id": "491f97a5-44a7-4a22-af15-588df475d798",
+        "name": "Falha na digitação"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "4f76ea07-3184-4296-a03f-d73b8507d67c",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "39dcf00f-b81a-4e45-a75b-5d2d84401dd7",
+                "name": "step",
+                "value": "Buscar Cartões Disponíveis impedimento",
+                "type": "string"
+              },
+              {
+                "id": "930a948a-480a-4a71-a30d-395d2a29f284",
+                "name": "message",
+                "value": "Há alguns impedimentos nesse item",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          -1860
+        ],
+        "id": "f95debab-ee6a-49a6-8e20-94c315d6dba6",
+        "name": "Responde com mensagem de impedimento1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f54023ce-e41d-4af2-99ef-ac1d12bd0f17",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "60a4d955-2c52-4805-9ce8-9dc9a2ff17e0",
+                "name": "step",
+                "value": "Buscar Limite Saque com restrição de saque",
+                "type": "string"
+              },
+              {
+                "id": "d8f6bd24-4b87-4409-8e2b-f0894658019b",
+                "name": "message",
+                "value": "={{ $json.mensagemErro }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          -1440
+        ],
+        "id": "28da3916-dbf7-4b59-abc1-4c77177e6694",
+        "name": "Responde se ha restrição no saque1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f0e411ce-e80a-4f13-8c24-fe418e27f670",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "65a91fec-60a1-487e-97bd-535ea293b66c",
+                "name": "step",
+                "value": "Buscar Cartões Disponíveis",
+                "type": "string"
+              },
+              {
+                "id": "6717365f-697d-4670-a00b-b448e9fbc161",
+                "name": "message",
+                "value": "= {{ JSON.stringify($json.error.message) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          -2060
+        ],
+        "id": "87e458c8-7228-4ec5-8bd1-73e63ba8867e",
+        "name": "On Error Buscar  Cartões Disponíveis1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "48d1788a-bc06-472d-8c7f-948b0d18ff47",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "323b2d87-dcb6-4c45-91e2-03ee1fbc44d4",
+                "name": "step",
+                "value": "Buscar Limite Saque",
+                "type": "string"
+              },
+              {
+                "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+                "name": "message",
+                "value": "={{ JSON.stringify($json.error.message) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          -1640
+        ],
+        "id": "ce6303e2-6d9d-4462-8b14-15647ffabe95",
+        "name": "On Error Buscar Limite Saque1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1ac3a69c-cb65-4a39-b00c-31aab3907557",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "5b2efb96-3df2-4d59-916a-75d6574c01c5",
+                "name": "step",
+                "value": " Buscar Simulação",
+                "type": "string"
+              },
+              {
+                "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+                "name": " message",
+                "value": "={{ JSON.stringify($json.error.message) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          -1260
+        ],
+        "id": "5b472dc1-32ea-4362-bb58-37af43c5922f",
+        "name": "On Error Buscar Simulação1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "376b7752-d407-461d-a1aa-a128c47bfa80",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "3ff6a849-1c5a-4053-ad24-1053f64569d5",
+                "name": "step",
+                "value": "Sem limite de saque",
+                "type": "string"
+              },
+              {
+                "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+                "name": "message",
+                "value": "Sem limite de saque",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          -1080
+        ],
+        "id": "41cbb757-6003-4e31-8681-17f53a428763",
+        "name": "Responde sem limite de saque1"
+      },
+      {
+        "parameters": {
+          "numberInputs": 8
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          4560,
+          -2220
+        ],
+        "id": "23ab2a7b-a642-434a-a28e-4b8fd3e8f3cd",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1948883-42d8-4746-b557-c3731300a492",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "0fe11459-4583-4176-b692-37054bcb8c6c",
+                "name": "step",
+                "value": "Verificação de CPF e type_digitation",
+                "type": "string"
+              },
+              {
+                "id": "4da9d51b-8166-4774-ba46-fc886aeef891",
+                "name": "message",
+                "value": "Favor informar o CPF e type_digitation",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          -2240
+        ],
+        "id": "a88cb818-68c5-4ff0-8b85-cb94694c6a20",
+        "name": "Field Verification1"
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          4900,
+          -2120
+        ],
+        "id": "eeee8b3e-eba9-4f18-a59c-581912df96ca",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "compare": "selectedFields",
+          "fieldsToCompare": "message",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.removeDuplicates",
+        "typeVersion": 2,
+        "position": [
+          4720,
+          -2120
+        ],
+        "id": "44caad3c-d83c-4c4e-abec-b020d565e0c4",
+        "name": "Remove Duplicates"
+      },
+      {
+        "parameters": {
+          "jsCode": "return $input.all().map(item => {\n    const caminho = item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:buscarCartoesDisponiveisResponse\"]\n        .buscarCartoesDisponiveisReturn.cartoesRetorno.cartoesRetorno;\n    \n    return Array.isArray(caminho) ? caminho.map(c => ({ json: c })) : [{ json: caminho }];\n}).flat();\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1140,
+          -3300
+        ],
+        "id": "b8c2a6f5-4a8c-448e-9bf5-a30db4aa8640",
+        "name": "Dividir Cartões"
+      },
+      {
+        "parameters": {
+          "content": "## ERROS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 1620,
+          "width": 1720,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          120,
+          -2380
+        ],
+        "typeVersion": 1,
+        "id": "009189ce-e9a1-4aaf-b449-54d22c77210e",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b950827a-ec92-48a6-b9ba-ccf258fffd9c",
+                "name": "CPF",
+                "value": "={{ $('Get Body').item.json.CPF }}",
+                "type": "string"
+              },
+              {
+                "id": "ec4a2748-11ce-4dce-a745-ddc9555c7bc6",
+                "name": "limiteDisponivel",
+                "value": "={{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}",
+                "type": "number"
+              },
+              {
+                "id": "0e040c1d-d2d8-4934-95a2-70378be6a268",
+                "name": "valorParcela",
+                "value": "={{ $json.valorParcela }}",
+                "type": "number"
+              },
+              {
+                "id": "71f7f5ec-2d4d-4d9a-92f8-aef915c3c19e",
+                "name": "numeroParcelas",
+                "value": "={{ $json.numeroParcelas }}",
+                "type": "number"
+              },
+              {
+                "id": "57c3443b-3961-4d23-a51e-61e62baa77b3",
+                "name": "entidade",
+                "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.entidade }}",
+                "type": "string"
+              },
+              {
+                "id": "28647ed0-ce07-4647-9475-148473b802f2",
+                "name": "modalidadeSaque",
+                "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.modalidadeSaque }}",
+                "type": "number"
+              },
+              {
+                "id": "21636941-9379-4b1e-ab9b-461b3dc53876",
+                "name": "numeroAdesao",
+                "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.numeroAdesao }}",
+                "type": "string"
+              },
+              {
+                "id": "58f062bf-b634-4a0a-9081-e526496537af",
+                "name": "numeroContaInterna",
+                "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.numeroContaInterna }}",
+                "type": "string"
+              },
+              {
+                "id": "ab3462c6-fc5a-4a48-85f3-9c739aff23ef",
+                "name": "matricula",
+                "value": "={{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3360,
+          -3260
+        ],
+        "id": "e766e941-1f54-4a2a-96bc-f44dd6dfbb6a",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          3560,
+          -3260
+        ],
+        "id": "75069d5c-5494-4426-abc9-8e73cd5479af",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -720,
+          -3160
+        ],
+        "id": "e33067d3-eff8-4188-a262-b44fa1bb1ca7",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          5240,
+          -2120
+        ],
+        "id": "39b43ea5-4e35-48fa-ad86-f998de81140b",
+        "name": "Respond to Webhook1"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "ef63825c-8ea1-4533-a20b-b5a5a19014b3",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -1060,
+          -3340
+        ],
+        "id": "d66f355b-9ef1-4af5-a955-3129f34e910d",
+        "name": "Webhook",
+        "webhookId": "ef63825c-8ea1-4533-a20b-b5a5a19014b3"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1,
+        "position": [
+          -180,
+          -3220
+        ],
+        "id": "51687a91-60a6-429b-8521-ad12b8c0869a",
+        "name": "Merge1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          5460,
+          -2120
+        ],
+        "id": "688ad9e2-8f1c-4f75-bcf1-fa4e4528a945",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          4180,
+          -3400
+        ],
+        "id": "298ab6fa-5005-4583-bce2-219252514c74",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "content": "## SIMULA PARCELA\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 460,
+          "width": 1240
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2300,
+          -3420
+        ],
+        "typeVersion": 1,
+        "id": "611de339-eb30-43ef-815f-12aa235475c1",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "## BUSCA LIMITE SAQUE\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 440,
+          "width": 780
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1480,
+          -3400
+        ],
+        "typeVersion": 1,
+        "id": "4b18b4f0-23f1-4edf-9d4e-36f953016cd6",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## VERIFICA SE TEM CARTÃO \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 440,
+          "width": 1180
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          260,
+          -3400
+        ],
+        "typeVersion": 1,
+        "id": "e79dab1d-4603-41b8-92b7-7c6dc56429c3",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Pega o body como string\nlet raw = items[0].json.body;\n\n// Remove vírgula no final (caso exista)\nraw = raw.replace(/,\\s*}/, '}');\n\n// Converte de string para objeto JSON\nconst parsed = JSON.parse(raw);\n\n// Retorna o objeto limpo\nreturn [{ json: parsed }];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -860,
+          -3340
+        ],
+        "id": "e59f9991-e64d-45c0-b940-8d41f15b96d9",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "keys": {
+            "key": [
+              {
+                "currentKey": "cpf",
+                "newKey": "query"
+              }
+            ]
+          },
+          "additionalOptions": {}
+        },
+        "type": "n8n-nodes-base.renameKeys",
+        "typeVersion": 1,
+        "position": [
+          -680,
+          -3340
+        ],
+        "id": "77e58c04-9e6d-4e80-a48d-bb81f370385f",
+        "name": "Rename Keys"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -400,
+          -3480
+        ],
+        "id": "5f809db3-7564-45d3-a503-43c9abf6a568",
+        "name": "When clicking ‘Test workflow’",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "content": "## RECEBIMENTO DE DADOS \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 620,
+          "width": 1240,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1080,
+          -3500
+        ],
+        "typeVersion": 1,
+        "id": "6e68d28d-75ef-4857-8eb3-1ade70e31fab",
+        "name": "Sticky Note4"
+      }
+    ],
+    "connections": {
+      "Credentials": {
+        "main": [
+          [
+            {
+              "node": "Get Body",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Body": {
+        "main": [
+          [
+            {
+              "node": "Verifica campos cpf e type_digitation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Cartoes Disponiveis": {
+        "main": [
+          [
+            {
+              "node": "XML Buscar Cartões Disponíveis",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "On Error Buscar  Cartões Disponíveis1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML Buscar Cartões Disponíveis": {
+        "main": [
+          [
+            {
+              "node": "Dividir Cartões",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Limite Saque": {
+        "main": [
+          [
+            {
+              "node": "XML Buscar Limite Saque",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "On Error Buscar Limite Saque1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML Buscar Limite Saque": {
+        "main": [
+          [
+            {
+              "node": "Buscar Limite Saque Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Cartões Disponíveis Response": {
+        "main": [
+          [
+            {
+              "node": "Tem impedimento",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Limite Saque Response": {
+        "main": [
+          [
+            {
+              "node": "Restrição Limite Saque",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Simulação": {
+        "main": [
+          [
+            {
+              "node": "XML Buscar Simulação",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "On Error Buscar Simulação1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML Buscar Simulação": {
+        "main": [
+          [
+            {
+              "node": "Buscar Simulação Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Simulação Response": {
+        "main": [
+          [
+            {
+              "node": "Tem saque",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tem impedimento": {
+        "main": [
+          [
+            {
+              "node": "Buscar Limite Saque",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responde com mensagem de impedimento1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Restrição Limite Saque": {
+        "main": [
+          [
+            {
+              "node": "Buscar Simulação",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responde se ha restrição no saque1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verifica campos cpf e type_digitation": {
+        "main": [
+          [
+            {
+              "node": "Buscar Cartoes Disponiveis",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Field Verification1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tem saque": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responde sem limite de saque1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Falha na digitação": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 7
+            }
+          ]
+        ]
+      },
+      "Responde com mensagem de impedimento1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "Responde se ha restrição no saque1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 4
+            }
+          ]
+        ]
+      },
+      "On Error Buscar  Cartões Disponíveis1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "On Error Buscar Limite Saque1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 3
+            }
+          ]
+        ]
+      },
+      "On Error Buscar Simulação1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 5
+            }
+          ]
+        ]
+      },
+      "Responde sem limite de saque1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 6
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Field Verification1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dividir Cartões": {
+        "main": [
+          [
+            {
+              "node": "Buscar Cartões Disponíveis Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "node": "Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Rename Keys",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rename Keys": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-02-18T14:02:38.331Z",
+      "createdAt": "2025-02-18T14:02:38.331Z",
+      "id": "Bd8bdkbUuGWtSaFv",
+      "name": "Saque Complementar"
+    }
+  ]
+}

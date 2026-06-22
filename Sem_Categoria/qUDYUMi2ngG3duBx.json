@@ -1,0 +1,973 @@
+{
+  "updatedAt": "2025-12-11T12:59:53.627Z",
+  "createdAt": "2025-08-14T14:43:55.611Z",
+  "id": "qUDYUMi2ngG3duBx",
+  "name": "Acessos - Cria Agilus",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ee573209-7012-4655-8f9f-528b584bb1da",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        48,
+        160
+      ],
+      "id": "6df322ac-dacc-4578-a2a2-259ad1d77c93",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b01cdf0-0c06-46e2-873e-d8d931ce3c13",
+              "name": "USUARIO",
+              "value": "={{ $json.USUARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "e359c01b-9003-42e7-8949-892230ad0d17",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "5f34780e-43a8-4728-9a1b-6919d5188a04",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "01875bee-ba27-4b7f-a63f-111ad758aae6",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "26ca6250-33f0-4b88-8201-0f1df0387c12",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "08ebe54f-9835-4a7c-af43-5ef90986238a",
+              "name": "First Name",
+              "value": "={{ $json.NOME.toUpperCase().split(\" \").slice(0,3).join(\" \" + \" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "c8dcb954-f5d8-42f4-865a-ced2132f0ffe",
+              "name": "Last Name",
+              "value": "={{ $json.NOME.split(\" \").last().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "f017c604-7930-490e-8937-aee0f311a308",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "c5b727e9-f63b-4a4d-abcf-7d6768279082",
+              "name": "CARGO",
+              "value": "={{ $json.CARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "42eab159-20bd-4159-9a6e-12de95bfcb22",
+              "name": "senhaPadrao",
+              "value": "={{ $json.senhaPadrao }}",
+              "type": "string"
+            },
+            {
+              "id": "f56cdc53-f444-47ca-b18c-90fed13387fc",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "d33eff32-af91-461c-8671-894208d726e4",
+              "name": "TITULO",
+              "value": "={{ $json.TITULO }}",
+              "type": "string"
+            },
+            {
+              "id": "051f531f-751e-4bc8-80d9-8382e88a8066",
+              "name": "URL",
+              "value": "={{ $json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        160
+      ],
+      "id": "3f338533-7b6e-429d-a6ba-e1d9fc471e4e",
+      "name": "Parametros"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.EMPRESA }}",
+                    "rightValue": "GASPAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0f35d77d-456a-411f-afcc-694ba3c7ca17"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GASPAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bb21548e-2742-4545-aa6b-351bef10ee51",
+                    "leftValue": "={{ $json.EMPRESA }}",
+                    "rightValue": "MDG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MDG"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "60c01a36-41d1-4d31-a357-3049a88f24ad",
+                    "leftValue": "={{ $json.EMPRESA }}",
+                    "rightValue": "ACG",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ACG"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        800,
+        -272
+      ],
+      "id": "071280b5-39ec-4fc7-b0f6-094c36abbf9e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "beb4e5f3-aed8-4d84-a2a6-382e0aa2f193",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "BKO COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BKO COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "913a4798-7b45-42e9-a9ce-fa8446a06de0",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "AGENTE DE VENDAS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENTE DE VENDAS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f1e7515-677c-4433-a266-97342dea0aca",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "LIDER COMERCIAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LIDER COMERCIAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0d9f492a-8768-43ec-bb78-0220184c1f43",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "COORDENADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COORDENADOR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "33c71223-1ce8-4dc7-9d72-7b6042eb9cfd",
+                    "leftValue": "={{ $json.CARGO }}",
+                    "rightValue": "ASSISTENTE OPERACIONAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASSISTENTE OPERACIONAL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        496,
+        112
+      ],
+      "id": "dd93bb90-42d3-4de5-9707-297cd9b4d64a",
+      "name": "MDG1"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Parametros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Parametros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parametros": {
+      "main": [
+        [
+          {
+            "node": "MDG1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        []
+      ]
+    },
+    "MDG1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "USUARIO": "maria.borba",
+          "Email": "maria.borba@mdgintermediacoes.com.br",
+          "NOME": "MARIA EDUARDA BORBA",
+          "EMPRESA": "GASPAR",
+          "CPF": "55126362869",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "TELEFONE": "+55 19 99418-0220",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      },
+      {
+        "json": {
+          "USUARIO": "kaueny.tozetti",
+          "Email": "kaueny.tozetti@mdgintermediacoes.com.br",
+          "NOME": "KAUENY FERNANDA PORTUGAL TOZETTI",
+          "EMPRESA": "GASPAR",
+          "CPF": "54438710821",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "TELEFONE": "+55 19 99920-7450",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      },
+      {
+        "json": {
+          "USUARIO": "bruna.lessa",
+          "Email": "bruna.lessa@mdgintermediacoes.com.br",
+          "NOME": "BRUNA ROTCHELLY MORAES LESSA",
+          "EMPRESA": "GASPAR",
+          "CPF": "45176367807",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "TELEFONE": "+55 19 99229-5370",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      },
+      {
+        "json": {
+          "USUARIO": "juliana.buzzo",
+          "Email": "juliana.buzzo@acgconsultoria.com.br",
+          "NOME": "JULIANA BERTOLINI BUZZO",
+          "EMPRESA": "ACG",
+          "CPF": "34290259877",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "TELEFONE": "+55 19 99723-2516",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      }
+    ],
+    "Parametros": [
+      {
+        "json": {
+          "USUARIO": "maria.borba",
+          "CPF": "55126362869",
+          "NOME": "MARIA EDUARDA BORBA",
+          "EMPRESA": "GASPAR",
+          "Email": "maria.borba@mdgintermediacoes.com.br",
+          "First Name": "MARIA  EDUARDA  BORBA",
+          "Last Name": "BORBA",
+          "TELEFONE": "+55 19 99418-0220",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      },
+      {
+        "json": {
+          "USUARIO": "kaueny.tozetti",
+          "CPF": "54438710821",
+          "NOME": "KAUENY FERNANDA PORTUGAL TOZETTI",
+          "EMPRESA": "GASPAR",
+          "Email": "kaueny.tozetti@mdgintermediacoes.com.br",
+          "First Name": "KAUENY  FERNANDA  PORTUGAL",
+          "Last Name": "TOZETTI",
+          "TELEFONE": "+55 19 99920-7450",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      },
+      {
+        "json": {
+          "USUARIO": "bruna.lessa",
+          "CPF": "45176367807",
+          "NOME": "BRUNA ROTCHELLY MORAES LESSA",
+          "EMPRESA": "GASPAR",
+          "Email": "bruna.lessa@mdgintermediacoes.com.br",
+          "First Name": "BRUNA  ROTCHELLY  MORAES",
+          "Last Name": "LESSA",
+          "TELEFONE": "+55 19 99229-5370",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      },
+      {
+        "json": {
+          "USUARIO": "juliana.buzzo",
+          "CPF": "34290259877",
+          "NOME": "JULIANA BERTOLINI BUZZO",
+          "EMPRESA": "ACG",
+          "Email": "juliana.buzzo@acgconsultoria.com.br",
+          "First Name": "JULIANA  BERTOLINI  BUZZO",
+          "Last Name": "BUZZO",
+          "TELEFONE": "+55 19 99723-2516",
+          "CARGO": "AGENTE DE VENDAS JÚNIOR",
+          "senhaPadrao": "Mudar@1234",
+          "ID": "0007540",
+          "TITULO": "CRIAÇÃO DE ACESSO - ACG/MDG/GASPAR",
+          "URL": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=0007540"
+        }
+      }
+    ]
+  },
+  "versionId": "d78ae6d0-268e-4123-ae86-ff96f6272158",
+  "activeVersionId": "d78ae6d0-268e-4123-ae86-ff96f6272158",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-08-14T14:43:55.611Z",
+      "createdAt": "2025-08-14T14:43:55.611Z",
+      "role": "workflow:owner",
+      "workflowId": "qUDYUMi2ngG3duBx",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-18T13:23:43.180Z",
+    "createdAt": "2025-12-18T13:23:43.180Z",
+    "versionId": "d78ae6d0-268e-4123-ae86-ff96f6272158",
+    "workflowId": "qUDYUMi2ngG3duBx",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "ee573209-7012-4655-8f9f-528b584bb1da",
+        "name": "When clicking ‘Execute workflow’",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          48,
+          160
+        ],
+        "id": "6df322ac-dacc-4578-a2a2-259ad1d77c93",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1b01cdf0-0c06-46e2-873e-d8d931ce3c13",
+                "name": "USUARIO",
+                "value": "={{ $json.USUARIO }}",
+                "type": "string"
+              },
+              {
+                "id": "e359c01b-9003-42e7-8949-892230ad0d17",
+                "name": "CPF",
+                "value": "={{ $json.CPF }}",
+                "type": "string"
+              },
+              {
+                "id": "5f34780e-43a8-4728-9a1b-6919d5188a04",
+                "name": "NOME",
+                "value": "={{ $json.NOME }}",
+                "type": "string"
+              },
+              {
+                "id": "01875bee-ba27-4b7f-a63f-111ad758aae6",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA }}",
+                "type": "string"
+              },
+              {
+                "id": "26ca6250-33f0-4b88-8201-0f1df0387c12",
+                "name": "Email",
+                "value": "={{ $json.Email }}",
+                "type": "string"
+              },
+              {
+                "id": "08ebe54f-9835-4a7c-af43-5ef90986238a",
+                "name": "First Name",
+                "value": "={{ $json.NOME.toUpperCase().split(\" \").slice(0,3).join(\" \" + \" \") }}",
+                "type": "string"
+              },
+              {
+                "id": "c8dcb954-f5d8-42f4-865a-ced2132f0ffe",
+                "name": "Last Name",
+                "value": "={{ $json.NOME.split(\" \").last().toUpperCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "f017c604-7930-490e-8937-aee0f311a308",
+                "name": "TELEFONE",
+                "value": "={{ $json.TELEFONE }}",
+                "type": "string"
+              },
+              {
+                "id": "c5b727e9-f63b-4a4d-abcf-7d6768279082",
+                "name": "CARGO",
+                "value": "={{ $json.CARGO }}",
+                "type": "string"
+              },
+              {
+                "id": "42eab159-20bd-4159-9a6e-12de95bfcb22",
+                "name": "senhaPadrao",
+                "value": "={{ $json.senhaPadrao }}",
+                "type": "string"
+              },
+              {
+                "id": "f56cdc53-f444-47ca-b18c-90fed13387fc",
+                "name": "ID",
+                "value": "={{ $json.ID }}",
+                "type": "string"
+              },
+              {
+                "id": "d33eff32-af91-461c-8671-894208d726e4",
+                "name": "TITULO",
+                "value": "={{ $json.TITULO }}",
+                "type": "string"
+              },
+              {
+                "id": "051f531f-751e-4bc8-80d9-8382e88a8066",
+                "name": "URL",
+                "value": "={{ $json.URL }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          288,
+          160
+        ],
+        "id": "3f338533-7b6e-429d-a6ba-e1d9fc471e4e",
+        "name": "Parametros"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.EMPRESA }}",
+                      "rightValue": "GASPAR",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "0f35d77d-456a-411f-afcc-694ba3c7ca17"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "GASPAR"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "bb21548e-2742-4545-aa6b-351bef10ee51",
+                      "leftValue": "={{ $json.EMPRESA }}",
+                      "rightValue": "MDG",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "MDG"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "60c01a36-41d1-4d31-a357-3049a88f24ad",
+                      "leftValue": "={{ $json.EMPRESA }}",
+                      "rightValue": "ACG",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ACG"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          800,
+          -272
+        ],
+        "id": "071280b5-39ec-4fc7-b0f6-094c36abbf9e",
+        "name": "Switch"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "beb4e5f3-aed8-4d84-a2a6-382e0aa2f193",
+                      "leftValue": "={{ $json.CARGO }}",
+                      "rightValue": "BKO COMERCIAL",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "BKO COMERCIAL"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "913a4798-7b45-42e9-a9ce-fa8446a06de0",
+                      "leftValue": "={{ $json.CARGO }}",
+                      "rightValue": "AGENTE DE VENDAS",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "AGENTE DE VENDAS"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "5f1e7515-677c-4433-a266-97342dea0aca",
+                      "leftValue": "={{ $json.CARGO }}",
+                      "rightValue": "LIDER COMERCIAL",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "LIDER COMERCIAL"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "0d9f492a-8768-43ec-bb78-0220184c1f43",
+                      "leftValue": "={{ $json.CARGO }}",
+                      "rightValue": "COORDENADOR",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "COORDENADOR"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "33c71223-1ce8-4dc7-9d72-7b6042eb9cfd",
+                      "leftValue": "={{ $json.CARGO }}",
+                      "rightValue": "ASSISTENTE OPERACIONAL",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ASSISTENTE OPERACIONAL"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          496,
+          112
+        ],
+        "id": "dd93bb90-42d3-4de5-9707-297cd9b4d64a",
+        "name": "MDG1"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Parametros",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Parametros",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parametros": {
+        "main": [
+          [
+            {
+              "node": "MDG1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          []
+        ]
+      },
+      "MDG1": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}

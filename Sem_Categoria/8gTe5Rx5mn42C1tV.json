@@ -1,0 +1,422 @@
+{
+  "updatedAt": "2025-09-03T11:54:30.194Z",
+  "createdAt": "2025-01-24T21:02:10.211Z",
+  "id": "8gTe5Rx5mn42C1tV",
+  "name": "Resumo Mensal Precatório",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "081dd134-8773-4d66-9a54-e7b98e88ce95",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n\tlista_cpfs.cpf AS CPF,\n\tlista_raw.numero AS 'Numero Processo',\n\tlista_raw.numero_cnj AS 'Numero CNJ',\n\tlista_raw.requerente_1 AS 'Nome Requerente 1',\n\tDATE_FORMAT(lista_raw.data_consulta_robo, '%d/%m/%Y %H:%i:%s') AS 'Data Consulta'\nFROM\n\tlista_raw AS lista_raw \n\tINNER JOIN lista_cpfs AS lista_cpfs \n\tON lista_raw.id = lista_cpfs.id_lista_raw\nWHERE \n\tYEAR(lista_raw.data_consulta_robo) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND\n\tMONTH(lista_raw.data_consulta_robo) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH));\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "a652e105-26cd-4485-81de-fb8d88c7854c",
+      "name": "Get Mensal data",
+      "credentials": {
+        "mySql": {
+          "id": "tLeljoxd4z0GWrif",
+          "name": "MariaDb Precatorio RPA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "compression": true,
+          "fileName": "={{`precatorio-${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}.xlsx`}}",
+          "headerRow": true,
+          "sheetName": "={{`${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}`}}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        0
+      ],
+      "id": "394070f0-1473-49b7-a956-5f931abf39dd",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "sendTo": "daniel.gaspar@mdgintermediacoes.com.br",
+        "subject": "=Relatório Mensal Precatorio",
+        "message": "=    <p style=\"font-family: Arial, sans-serif; color: #333;\">Prezados</p>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Segue a extração realizada do sistema de\n        <strong>RPA do Precatorio</strong>.\n    </p>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Caso queira um melhor detalhe nos dados,\n        visite o sistema <a href=\"https://precilus.acgconsultoria.com.br\">Precilus</a></p>\n\n\n    </br>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Atenciosamente,</p>\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\"><strong>Desenvolvimento MDG</strong></p>\n\n    <img src=\"https://i.imgur.com/A96b1p9.jpeg\" alt=\"Assinatura\" style=\"max-width: 50%; height: auto;\"><br>\n",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          },
+          "ccList": "raul.guimaraes@mdgintermediacoes.com.br"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        20,
+        200
+      ],
+      "id": "09b63409-a409-433e-b10b-07bbd160beb6",
+      "name": "Send to Boss",
+      "webhookId": "7157af12-0be4-4385-922f-ffa31d70e347",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        420,
+        200
+      ],
+      "id": "ba4f2540-150c-478e-bc26-5aab9248f547",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "-1001534937224"
+            },
+            {
+              "name": "message",
+              "value": "=Amuaigos,  Foi enviada a planilha com a extração dos dados do sistema Precilus.  Nome Arquivo: {{`precatorio-${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}.xlsx`}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        200
+      ],
+      "id": "99ecad05-f052-4ec0-aff0-43d21dbfda13",
+      "name": "Envio telegram Kira Dev"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Mensal data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Mensal data": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send to Boss",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Boss": {
+      "main": [
+        [
+          {
+            "node": "Envio telegram Kira Dev",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envio telegram Kira Dev": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1bf18aeb-7545-4573-81a4-34c013827f7c",
+  "activeVersionId": "1bf18aeb-7545-4573-81a4-34c013827f7c",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-01-24T21:02:10.211Z",
+      "createdAt": "2025-01-24T21:02:10.211Z",
+      "role": "workflow:owner",
+      "workflowId": "8gTe5Rx5mn42C1tV",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "1bf18aeb-7545-4573-81a4-34c013827f7c",
+    "workflowId": "8gTe5Rx5mn42C1tV",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "months",
+                "triggerAtHour": 10
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "081dd134-8773-4d66-9a54-e7b98e88ce95",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT\n\tlista_cpfs.cpf AS CPF,\n\tlista_raw.numero AS 'Numero Processo',\n\tlista_raw.numero_cnj AS 'Numero CNJ',\n\tlista_raw.requerente_1 AS 'Nome Requerente 1',\n\tDATE_FORMAT(lista_raw.data_consulta_robo, '%d/%m/%Y %H:%i:%s') AS 'Data Consulta'\nFROM\n\tlista_raw AS lista_raw \n\tINNER JOIN lista_cpfs AS lista_cpfs \n\tON lista_raw.id = lista_cpfs.id_lista_raw\nWHERE \n\tYEAR(lista_raw.data_consulta_robo) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND\n\tMONTH(lista_raw.data_consulta_robo) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH));\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          220,
+          0
+        ],
+        "id": "a652e105-26cd-4485-81de-fb8d88c7854c",
+        "name": "Get Mensal data",
+        "credentials": {
+          "mySql": {
+            "id": "tLeljoxd4z0GWrif",
+            "name": "MariaDb Precatorio RPA"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "options": {
+            "compression": true,
+            "fileName": "={{`precatorio-${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}.xlsx`}}",
+            "headerRow": true,
+            "sheetName": "={{`${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}`}}"
+          }
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          420,
+          0
+        ],
+        "id": "394070f0-1473-49b7-a956-5f931abf39dd",
+        "name": "Convert to File"
+      },
+      {
+        "parameters": {
+          "sendTo": "daniel.gaspar@mdgintermediacoes.com.br",
+          "subject": "=Relatório Mensal Precatorio",
+          "message": "=    <p style=\"font-family: Arial, sans-serif; color: #333;\">Prezados</p>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Segue a extração realizada do sistema de\n        <strong>RPA do Precatorio</strong>.\n    </p>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Caso queira um melhor detalhe nos dados,\n        visite o sistema <a href=\"https://precilus.acgconsultoria.com.br\">Precilus</a></p>\n\n\n    </br>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Atenciosamente,</p>\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\"><strong>Desenvolvimento MDG</strong></p>\n\n    <img src=\"https://i.imgur.com/A96b1p9.jpeg\" alt=\"Assinatura\" style=\"max-width: 50%; height: auto;\"><br>\n",
+          "options": {
+            "appendAttribution": false,
+            "attachmentsUi": {
+              "attachmentsBinary": [
+                {}
+              ]
+            },
+            "ccList": "raul.guimaraes@mdgintermediacoes.com.br"
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          20,
+          200
+        ],
+        "id": "09b63409-a409-433e-b10b-07bbd160beb6",
+        "name": "Send to Boss",
+        "webhookId": "7157af12-0be4-4385-922f-ffa31d70e347",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "iEXJKdMeC12THwyd",
+            "name": "Gmail Desenvolvimento"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          420,
+          200
+        ],
+        "id": "ba4f2540-150c-478e-bc26-5aab9248f547",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "phone",
+                "value": "-1001534937224"
+              },
+              {
+                "name": "message",
+                "value": "=Amuaigos,  Foi enviada a planilha com a extração dos dados do sistema Precilus.  Nome Arquivo: {{`precatorio-${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}.xlsx`}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          220,
+          200
+        ],
+        "id": "99ecad05-f052-4ec0-aff0-43d21dbfda13",
+        "name": "Envio telegram Kira Dev"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Mensal data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Mensal data": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Send to Boss",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send to Boss": {
+        "main": [
+          [
+            {
+              "node": "Envio telegram Kira Dev",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envio telegram Kira Dev": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}

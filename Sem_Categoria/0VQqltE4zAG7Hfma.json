@@ -1,0 +1,155 @@
+{
+  "updatedAt": "2026-06-18T16:51:44.980Z",
+  "createdAt": "2026-04-30T15:32:29.638Z",
+  "id": "0VQqltE4zAG7Hfma",
+  "name": "My workflow 35",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "649b5542-b242-434f-8280-5274282de8c4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://senffconsig.senff.com.br/api/v1/admin/cip/list-benefits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "document",
+              "value": "00917213858"
+            },
+            {
+              "name": "agency_id",
+              "value": "24"
+            },
+            {
+              "name": "agreement_id",
+              "value": "16"
+            },
+            {
+              "name": "product_id",
+              "value": "1"
+            },
+            {
+              "name": "withdraw_type_id",
+              "value": "1"
+            },
+            {
+              "name": "name",
+              "value": "ivete sangalo"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json, text/plain, */*"
+            },
+            {
+              "name": "accept-language",
+              "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+            },
+            {
+              "name": "account",
+              "value": "senff-web"
+            },
+            {
+              "name": "authorization",
+              "value": "Bearer ***REDACTED***"
+            },
+            {
+              "name": "priority",
+              "value": "u=1, i"
+            },
+            {
+              "name": "referer",
+              "value": "https://senffconsig.senff.com.br/app/proposals/add"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Google Chrome\";v=\"149\", \"Chromium\";v=\"149\", \"Not)A;Brand\";v=\"24\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "sec-fetch-dest",
+              "value": "empty"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "cors"
+            },
+            {
+              "name": "sec-fetch-site",
+              "value": "same-origin"
+            },
+            {
+              "name": "tenant-id",
+              "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+            },
+            {
+              "name": "user-agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "x-correlation-id",
+              "value": "496f9a98-f0b2-4b33-8755-1736d68b4e12"
+            },
+            {
+              "name": "x-store-code",
+              "value": "101"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        144,
+        144
+      ],
+      "id": "9a2c2def-6f47-4840-8ef5-155f642ca6cd",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "3dffce5b-45d7-4212-86f5-9fdd471c4ab3",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-30T15:32:29.638Z",
+      "createdAt": "2026-04-30T15:32:29.638Z",
+      "role": "workflow:owner",
+      "workflowId": "0VQqltE4zAG7Hfma",
+      "projectId": "gFw9T73PG6yNA59g"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

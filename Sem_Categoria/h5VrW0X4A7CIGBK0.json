@@ -1,0 +1,1413 @@
+{
+  "updatedAt": "2026-02-27T15:19:47.665Z",
+  "createdAt": "2025-04-23T18:02:53.612Z",
+  "id": "h5VrW0X4A7CIGBK0",
+  "name": "Notificação - Chamados GLPI 1.0.6 old",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ae262a15-afd5-46df-9d86-8f18069bf43f",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -60
+      ],
+      "id": "0ece422b-8752-40c4-9c47-f297b4cb77b1",
+      "name": "Webhook",
+      "webhookId": "ae262a15-afd5-46df-9d86-8f18069bf43f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1bd5f098-a960-40d7-be91-724dae195554",
+              "name": "ID",
+              "value": "={{ $json.body.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "9b308025-d39b-4ee2-ad23-2976224fef7d",
+              "name": "TITULO",
+              "value": "={{ $json.body['Título'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7a0c062c-66b2-4097-bde0-7c011b402d3c",
+              "name": "STATUS",
+              "value": "={{ $json.body.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "8e55ef1d-b931-4828-bafa-e4b2bd66b40d",
+              "name": "STATUS APROVACÃO",
+              "value": "={{ $json.body['Status do pedido de aprovação'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c42bba14-0e27-4d62-99fd-8cf28366f135",
+              "name": "REQUERENTE",
+              "value": "={{ $json.body.Requerentes.toUpperCase().trim().split(\",\").first() }}",
+              "type": "string"
+            },
+            {
+              "id": "af5b3a15-477a-4ece-b625-519b3b6de734",
+              "name": "DESCRICÃO",
+              "value": "={{ $json.body['Descrição'] }}",
+              "type": "string"
+            },
+            {
+              "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+              "name": "URL",
+              "value": "={{ $json.body['URL GLPI'].concat('/front/ticket.form.php?id=').concat($json.body.ID) }}",
+              "type": "string"
+            },
+            {
+              "id": "b6526f08-01be-4f85-8e93-b5df770edb8a",
+              "name": "ATENDENTE",
+              "value": "={{ $json.body['Atribuído'].trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "afdb474e-af20-46c4-8bd4-30bd9170882d",
+              "name": "APROVADOR",
+              "value": "={{ $json.body['Validações'][0].Validador.toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "ea817911-7e87-403d-963b-2e45d4df9333",
+              "name": "ATRIBUIDO GRUPO",
+              "value": "={{ $json.body['Atribuído para grupos'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -60
+      ],
+      "id": "a727fa99-c7c5-44dc-9fba-9696507fad12",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "040b34eb-6e2e-4690-8d63-4eb2731dc241",
+                    "leftValue": "={{ $json['STATUS APROVACÃO'] }}",
+                    "rightValue": "Esperando por uma validação",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9bad8e49-58cc-46a6-8883-56c8adea2044",
+                    "leftValue": "={{ $json.STATUS }}",
+                    "rightValue": "Pendente",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d629dd78-4971-40c1-8a86-be47244c7b32",
+                    "leftValue": "={{ $json['ATRIBUIDO GRUPO'] }}",
+                    "rightValue": "Desenvolvimento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        460,
+        -60
+      ],
+      "id": "1bc5a792-3920-41df-b99a-1de3f000e391",
+      "name": "Switch",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "087a5cd5-66de-4902-8ead-dd88fb187100",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        980,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "E:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "3c4b2c10-5827-4eb2-afd7-8e678220c89a",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        800,
+        140
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "id": "bf4d11c4-6f58-4f5b-b2bc-89c347d5b91d",
+      "name": "Formata campos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1220,
+        160
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/SUPORTE ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"55{{ $('MergePendente').item.json.TELEFONE }}\",\"textMessage\": {\"text\":{{ $json.textMessage.msg }}}}\n",
+        "options": {}
+      },
+      "id": "67328073-14d1-4bba-ae75-04cbf671197c",
+      "name": "InformeRequerente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3760,
+        -540
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('Switch')\nconst chamados = $('MergePendente').all();\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados e monta a mensagem\nif (chamados && chamados.length > 0 && chamados[0].json) {\n  const chamado = chamados[0].json; // Pega o primeiro item no formato correto\n  const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n  // Cria a mensagem com os dados do chamado\n  const mensagem = `${saudacao}, ${chamado.NOME.split(\" \")[0]}.\\n\\n` +\n    `Seu chamado de número ${chamado.ID}, com o título \"${chamado.TITULO}\", está atualmente com o status \"${chamado.STATUS}\".\\n\\n` +\n    `Para mais detalhes, acesse o chamado no GLPI: ${chamado.URL}\\n\\n` +\n    `Atenciosamente,\\nTecnologia da Informação.`;\n\n  // Retorna a mensagem formatada como string JSON\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n} else {\n  // Retorna uma mensagem padrão caso não haja dados\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados do chamado para informar o solicitante.\")\n    }\n  };\n}\n"
+      },
+      "id": "6461e89a-4508-42b1-94e4-26eaa0ee292b",
+      "name": "MontaMensagemPendente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3540,
+        -520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/SUPORTE ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"55{{ $('MergeAprovador').item.json.TELEFONE }}\",\"textMessage\": {\"text\":{{ $json.textMessage.msg }}}}\n",
+        "options": {}
+      },
+      "id": "ba64010d-0258-407b-85c7-2e3ae8114f65",
+      "name": "InformeAprovador",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3320,
+        -100
+      ],
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('APROVADOR')\nconst chamados = $('MergeAprovador').all();\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados e monta a mensagem\nif (chamados && chamados.length > 0 && chamados[0].json) {\n  const chamado = chamados[0].json; // Pega o primeiro item no formato correto\n  const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n  // Cria a mensagem para o aprovador informando o chamado aguardando aprovação\n  const mensagem = `${saudacao}, ${chamado.NOME.split(\" \")[0]},\\n\\n` +\n    `O chamado de número ${chamado.ID}, com o título \"${chamado.TITULO}\",\\n\\n` +\n    `está no status de aprovação \"${chamado['STATUS APROVACÃO']}\".\\n\\n` +\n    `O requerente deste chamado é ${chamado.REQUERENTE}.\\n\\n` +\n    `Para mais detalhes, acesse o chamado no GLPI: ${chamado.URL}\\n\\n` +\n    `Atenciosamente,\\nTecnologia da Informação.`;\n\n  // Retorna a mensagem formatada como string JSON\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n} else {\n  // Retorna uma mensagem padrão caso não haja dados\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados do chamado aguardando aprovação.\")\n    }\n  };\n}\n"
+      },
+      "id": "35482db7-5fcc-45e0-8985-865457965e75",
+      "name": "MontaAprovação",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3080,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "REQUERENTE",
+              "field2": "E-MAIL/USUARIO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1840,
+        -480
+      ],
+      "id": "8274be11-efcf-4516-a1be-6e91ca1351d8",
+      "name": "PENDENTE",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2180,
+        20
+      ],
+      "id": "e3d081dd-1f4c-45cb-ae5c-12e522baf7a5",
+      "name": "MergeAprovador"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "NOME",
+              "field2": "REQUERENTE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1840,
+        -320
+      ],
+      "id": "f59b4f23-aa56-484a-b713-2594e4a4690b",
+      "name": "PENDENTE1",
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2400,
+        -400
+      ],
+      "id": "715f82a8-ca4c-4531-8a53-8254d574f4f7",
+      "name": "MergePendente"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        5420,
+        40
+      ],
+      "id": "d58c04d2-80ed-4fd4-8a54-34dcd2f4b2b6",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://evolutionapi-dev.mdgintermediacoes.com.br/chat/whatsappNumbers/SUPORTE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "=apikey",
+              "value": "=s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"numbers\": [\n    \"55{{ $('MergePendente').item.json.TELEFONE }}\"\n  ]\n}",
+        "options": {}
+      },
+      "id": "1e04a385-a5a0-400c-bbe9-44d5c107622b",
+      "name": "Verifica WhatsApp2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2920,
+        -420
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3640dc24-99be-4aae-ab85-509e8606fb67",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3100,
+        -420
+      ],
+      "id": "6f6d25f4-311d-454f-958a-b08100728d85",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://evolutionapi-dev.mdgintermediacoes.com.br/chat/whatsappNumbers/SUPORTE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "=s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"numbers\": [\n    \"55{{ $('MergeAprovador').item.json.TELEFONE }}\"\n  ]\n}",
+        "options": {}
+      },
+      "id": "3ec654c8-f7e5-425c-987f-7edc0deaeb6e",
+      "name": "Verifica WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2640,
+        0
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3640dc24-99be-4aae-ab85-509e8606fb67",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2820,
+        0
+      ],
+      "id": "3cbea628-80b9-4b77-967a-7f22248e9219",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('MergePendente') e do nó $('If')\nconst dadosRequerente = $node[\"MergeAprovador\"].json;\nconst validacaoWhatsApp = $node[\"If1\"].json;\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados do requerente e da validação do WhatsApp\nif (dadosRequerente && validacaoWhatsApp) {\n  const requerente = dadosRequerente; // Dados do requerente\n  const whatsappValido = validacaoWhatsApp.exists;\n  const jid = validacaoWhatsApp.jid;\n  const numero = validacaoWhatsApp.number;\n\n  if (!whatsappValido) {\n    const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n    // Cria a mensagem informando que o número não possui WhatsApp, incluindo jid\n    const mensagem = `${saudacao}!\\n\\n` +\n      `O número telefônico ${numero} do Aprovador ${requerente.NOME} não possui WhatsApp.\\n\\n`;\n\n    // Retorna a mensagem formatada como string JSON\n    return {\n      textMessage: {\n        msg: JSON.stringify(mensagem.trim())\n      }\n    };\n  } else {\n    // Caso o número possua WhatsApp, retorna uma mensagem informativa\n    return {\n      textMessage: {\n        msg: JSON.stringify(\"O número telefônico possui WhatsApp.\")\n      }\n    };\n  }\n} else {\n  // Retorna uma mensagem padrão caso não haja dados suficientes\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados para validação do WhatsApp.\")\n    }\n  };\n}\n"
+      },
+      "id": "b51d98bf-55b7-4cc9-a4cb-d485582778b6",
+      "name": "MontaMensagemSemWhatSappAprovador",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3080,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('MergePendente') e do nó $('If')\nconst dadosRequerente = $node[\"MergePendente\"].json;\nconst validacaoWhatsApp = $node[\"If\"].json;\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados do requerente e da validação do WhatsApp\nif (dadosRequerente && validacaoWhatsApp) {\n  const requerente = dadosRequerente; // Dados do requerente\n  const whatsappValido = validacaoWhatsApp.exists;\n  const jid = validacaoWhatsApp.jid;\n  const numero = validacaoWhatsApp.number;\n\n  if (!whatsappValido) {\n    const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n    // Cria a mensagem informando que o número não possui WhatsApp, incluindo jid\n    const mensagem = `${saudacao}!\\n\\n` +\n      `O número telefônico ${numero} do requerente ${requerente.NOME} não possui WhatsApp.\\n\\n`;\n\n    // Retorna a mensagem formatada como string JSON\n    return {\n      textMessage: {\n        msg: JSON.stringify(mensagem.trim())\n      }\n    };\n  } else {\n    // Caso o número possua WhatsApp, retorna uma mensagem informativa\n    return {\n      textMessage: {\n        msg: JSON.stringify(\"O número telefônico possui WhatsApp.\")\n      }\n    };\n  }\n} else {\n  // Retorna uma mensagem padrão caso não haja dados suficientes\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados para validação do WhatsApp.\")\n    }\n  };\n}\n"
+      },
+      "id": "e7104ba9-9577-486a-ba63-c2774cea71d5",
+      "name": "MontaMensagemSemWhatSappPendente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3540,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/SUPORTE ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"5519999522207-1626738024@g.us\",\"textMessage\": {\"text\":{{ $json.textMessage.msg }}}}\n",
+        "options": {}
+      },
+      "id": "029c2ae1-adb3-4ee5-be89-5c8437dfb481",
+      "name": "InformeTi",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3340,
+        120
+      ],
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/SUPORTE ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"5519999522207-1626738024@g.us\",\"textMessage\": {\"text\":{{ $json.textMessage.msg }}}}\n",
+        "options": {}
+      },
+      "id": "8045302b-4feb-41ee-9098-d25389922c5a",
+      "name": "InformeTi1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3780,
+        -320
+      ],
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('APROVADOR')\nconst chamados = $('Ajusta campos').all();\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados e monta a mensagem\nif (chamados && chamados.length > 0 && chamados[0].json) {\n  const chamado = chamados[0].json; // Pega o primeiro item no formato correto\n  const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n  // Cria a mensagem para o aprovador informando o chamado aguardando aprovação\n  const mensagem = `${saudacao},\\n\\n` +\n    `O chamadinho da amizade número ${chamado.ID}, com o título \"${chamado.TITULO}\",\\n\\n` +\n    `O abençoado deste chamado é ${chamado.REQUERENTE}.\\n\\n` +\n    `Para mais detalhes, acesse o chamado no GLPI: ${chamado.URL}\\n\\n` +\n    `Atenciosamente,\\nTecnologia da Informação.`;\n\n  // Retorna a mensagem formatada como string JSON\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n} else {\n  // Retorna uma mensagem padrão caso não haja dados\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados do chamado aguardando aprovação.\")\n    }\n  };\n}\n"
+      },
+      "id": "40b59f56-400a-470d-9f46-3d0b353c414f",
+      "name": "MontaAprovação1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2180,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5880285a-f2b5-4471-bb99-0d258e11c749",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "928bd4f6-a750-43ab-a9b7-3fee7ceb0bdf",
+              "name": "TITULO",
+              "value": "={{ $json.TITULO }}",
+              "type": "string"
+            },
+            {
+              "id": "2210446b-3262-41d2-bef1-033032477ff9",
+              "name": "REQUERENTE",
+              "value": "={{ $json.REQUERENTE }}",
+              "type": "string"
+            },
+            {
+              "id": "0fdd5ec9-ae8c-42fb-adbb-af49b5097ce1",
+              "name": "URL",
+              "value": "={{ $json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1860,
+        320
+      ],
+      "id": "bacc1f70-6596-4ffb-aabd-99301dc2f251",
+      "name": "Ajusta campos"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/SUPORTE ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "s84p04mxmhmy429fysif1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"5519981746254\",\"textMessage\": {\"text\":{{ $json.textMessage.msg }}}}\n",
+        "options": {}
+      },
+      "id": "2de11417-6ff9-49de-afc7-71c9bb5af627",
+      "name": "InformeDev",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        320
+      ],
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "44c16ea8-dc4e-4b3c-b4fd-6bea3d0f337f",
+              "leftValue": "={{ $json.NOME }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2380,
+        20
+      ],
+      "id": "ab9c20b2-1aa5-4826-b50e-783da3aa70cc",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "717f8da4-38b5-426c-89d2-d59f8e45c1cc",
+              "leftValue": "={{ $json.NOME }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2720,
+        -300
+      ],
+      "id": "2716b206-7791-4e3c-875d-be6e0bb2000f",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "APROVADOR",
+              "field2": "E-MAIL/USUARIO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1840,
+        140
+      ],
+      "id": "e2906807-d278-422d-a35c-54961ef1f7f3",
+      "name": "APROVADOR1",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "APROVADOR",
+              "field2": "NOME"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1860,
+        -80
+      ],
+      "id": "34029061-492b-43ba-acdf-d94b87f23043",
+      "name": "APROVADOR",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "aaa40440-765c-4837-a461-04e0f12eb9ec",
+      "name": "Extract from File1",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        980,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "E:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "6ffe7c03-4d93-4fe4-8f6f-a49b18ffd6e3",
+      "name": "SSH1",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -220
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "id": "9b4cbd40-ee52-47c9-8a29-10bdc25da5aa",
+      "name": "Formata campos1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        -220
+      ],
+      "alwaysOutputData": false
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Formata campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "APROVADOR1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "APROVADOR",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PENDENTE",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PENDENTE1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "SSH1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ajusta campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata campos": {
+      "main": [
+        [
+          {
+            "node": "APROVADOR",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "APROVADOR1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MontaMensagemPendente": {
+      "main": [
+        [
+          {
+            "node": "InformeRequerente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaAprovação": {
+      "main": [
+        [
+          {
+            "node": "InformeAprovador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PENDENTE": {
+      "main": [
+        [
+          {
+            "node": "MergePendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeAprovador": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PENDENTE1": {
+      "main": [
+        [
+          {
+            "node": "MergePendente",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MergePendente": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InformeRequerente": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InformeAprovador": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica WhatsApp2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "MontaMensagemPendente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MontaMensagemSemWhatSappPendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "MontaAprovação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MontaMensagemSemWhatSappAprovador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaMensagemSemWhatSappAprovador": {
+      "main": [
+        [
+          {
+            "node": "InformeTi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaMensagemSemWhatSappPendente": {
+      "main": [
+        [
+          {
+            "node": "InformeTi1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InformeTi": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InformeTi1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajusta campos": {
+      "main": [
+        [
+          {
+            "node": "MontaAprovação1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaAprovação1": {
+      "main": [
+        [
+          {
+            "node": "InformeDev",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InformeDev": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Verifica WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Verifica WhatsApp2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "APROVADOR1": {
+      "main": [
+        [
+          {
+            "node": "MergeAprovador",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "APROVADOR": {
+      "main": [
+        [
+          {
+            "node": "MergeAprovador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Formata campos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata campos1": {
+      "main": [
+        [
+          {
+            "node": "PENDENTE",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "PENDENTE1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "connection": "upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "http",
+            "x-forwarded-for": "10.3.60.27, 10.3.60.26",
+            "host": "n8napp",
+            "content-length": "4032",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Título": "Novo(s) Colaborador(es) 26/02/2025",
+            "ID": "0005956",
+            "Requerentes": "AMANDA APARECIDA HENRIQUE VECCHIO, Nicholas Azevedo do Amaral",
+            "URL GLPI": "https://glpi.mdgintermediacoes.com.br",
+            "Descrição": "<p><strong>Dados dos novos colaboradores:</strong></p>\n<p> </p>\n<table style=\"border-collapse: collapse; width: 101.103%; height: 463.8px;\" border=\"1\"><colgroup><col style=\"width: 16.0317%;\"><col style=\"width: 15.2381%;\"><col style=\"width: 14.2857%;\"><col style=\"width: 14.6032%;\"><col style=\"width: 12.5397%;\"><col style=\"width: 13.9683%;\"><col style=\"width: 13.4921%;\"></colgroup>\n<tbody>\n<tr style=\"height: 58.8px;\">\n<td>\n<p><span style=\"color: #000000;\"><strong>Nome </strong></span><span style=\"color: #000000;\"><strong>Completo</strong></span></p>\n</td>\n<td><span style=\"color: #000000;\"><strong>CPF</strong></span></td>\n<td><span style=\"color: #000000;\"><strong>Celular</strong></span></td>\n<td><span style=\"color: #000000;\"><strong>Data de Nascimento</strong></span></td>\n<td><span style=\"color: #000000;\"><strong>Cargo</strong></span></td>\n<td><span style=\"color: #000000;\"><strong>Empresa </strong></span></td>\n<td><span style=\"color: #000000;\"><strong>Data de Início</strong></span></td>\n</tr>\n<tr style=\"height: 96.8px;\">\n<td style=\"margin: 0px; box-shadow: rgba(0, 0, 0, 0.05) 0px -1px inset; padding: 8px;\"><span style=\"margin: 0px;\">MANUELA LAUANY MARTINS RAMOS</span></td>\n<td><span style=\"color: #637381; font-family: arial, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: #fafafa; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">244.698.138-00</span></td>\n<td>19 98851-3995</td>\n<td>01/06/2006</td>\n<td>AGENTE DE VENDAS J</td>\n<td>GASPAR</td>\n<td>26/02/2025</td>\n</tr>\n<tr style=\"height: 62.8px;\">\n<td>Marina Martins Alves de Oliveira </td>\n<td>476860065810</td>\n<td>19 98292-8820</td>\n<td>13/02/1998</td>\n<td>AGENTE DE VENDAS J</td>\n<td>GASPAR</td>\n<td>26/02/25</td>\n</tr>\n<tr style=\"height: 62.8px;\">\n<td>JASMO, PEDRAS DA SILVA</td>\n<td>56188721881</td>\n<td>19 99333-8084</td>\n<td>02/06/2008</td>\n<td>AGENTE DE VENDAS J</td>\n<td>GASPAR</td>\n<td>26/02/2025</td>\n</tr>\n<tr style=\"height: 96.8px;\">\n<td style=\"margin: 0px; box-shadow: rgba(0, 0, 0, 0.05) 0px -1px inset; padding: 8px;\"><span style=\"margin: 0px;\">ALESSANDRA CRISTINA MARINHO DE SOUZA</span></td>\n<td><span style=\"color: #637381; font-family: arial, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: #fafafa; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">501.651.308-22</span></td>\n<td>19 98159-6076</td>\n<td>10/10/2001</td>\n<td>AGENTE DE VENDAS J</td>\n<td>ACG</td>\n<td>26/02/2025</td>\n</tr>\n<tr style=\"height: 62.8px;\">\n<td>Giovanna jenily da Silva Lopes gomes </td>\n<td>47371092821</td>\n<td> 19 98138-5499</td>\n<td>27/01/2000</td>\n<td>AGENTE DE VENDAS J</td>\n<td>ACG</td>\n<td>26/02/2025</td>\n</tr>\n<tr style=\"height: 23px;\">\n<td>Luiza Bernadete Damaceno Coelho</td>\n<td>527.177.338-84</td>\n<td>19 99790-1244</td>\n<td>26/10/2004</td>\n<td>AGENTE DE VENDAS J</td>\n<td>ACG</td>\n<td>26/02/2025</td>\n</tr>\n</tbody>\n</table>",
+            "Status": "Pendente",
+            "Atribuído": "Matheus Rodrigues de Almeida",
+            "Atribuído para grupos": ""
+          },
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/2689df49-e18d-4228-b84b-774d0b11c290",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "d9b04136-7efc-4584-ae6c-a9e0f6056fea",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-04-23T18:02:53.612Z",
+      "createdAt": "2025-04-23T18:02:53.612Z",
+      "role": "workflow:owner",
+      "workflowId": "h5VrW0X4A7CIGBK0",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

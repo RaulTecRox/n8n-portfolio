@@ -1,0 +1,283 @@
+{
+  "updatedAt": "2026-05-29T13:32:06.250Z",
+  "createdAt": "2026-03-12T16:28:26.333Z",
+  "id": "VPCKHnaKjdAjJhSa",
+  "name": "MCP SENFF",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "c63fa01d-612f-466e-8d86-ae136e35212d"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "847e12c5-1b6a-437e-a7a3-d7cafeb602c6",
+      "name": "MCP Server Trigger",
+      "webhookId": "c63fa01d-612f-466e-8d86-ae136e35212d"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Retona token_senff",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/f83f0a33-89a6-4857-b119-872de2afb570",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        },
+        "optimizeResponse": true,
+        "fieldsToInclude": "selected",
+        "fields": "access_token"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        -144,
+        272
+      ],
+      "id": "396524ec-d77b-4973-aa74-6c4567324e70",
+      "name": "token senff"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Consulta margem prefeitura londrina",
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/b44e6d64-620f-4a10-9051-79c70c949b0f",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "client_name",
+              "value": "={{ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "=cpf",
+              "value": "={{ $fromAI('parameters1_Value', ``, 'string') }}"
+            },
+            {
+              "name": "matricula",
+              "value": "={{ $fromAI('parameters2_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        272
+      ],
+      "id": "7ace72e8-9661-4bea-a6b4-ec5e9ee7b738",
+      "name": "Pref.Londrina senff"
+    },
+    {
+      "parameters": {
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        -80
+      ],
+      "id": "7eb11f15-089d-4f22-91ce-b91efddb187d",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        -80
+      ],
+      "id": "014a84e1-4f4b-4cd6-b574-d08f7aad1697",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -240,
+        -80
+      ],
+      "id": "fa2b90ce-ee88-4bad-93c4-80bb2cc851bf",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "token senff": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pref.Londrina senff": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "7d625247-a33f-405e-82f4-d4a867ff5f49",
+  "activeVersionId": "725a0e3e-bcef-4131-95f8-95e2be39cd79",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-12T16:28:26.333Z",
+      "createdAt": "2026-03-12T16:28:26.333Z",
+      "role": "workflow:owner",
+      "workflowId": "VPCKHnaKjdAjJhSa",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-12T19:42:51.422Z",
+    "createdAt": "2026-03-12T19:42:41.725Z",
+    "versionId": "725a0e3e-bcef-4131-95f8-95e2be39cd79",
+    "workflowId": "VPCKHnaKjdAjJhSa",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "c63fa01d-612f-466e-8d86-ae136e35212d"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "847e12c5-1b6a-437e-a7a3-d7cafeb602c6",
+        "name": "MCP Server Trigger",
+        "webhookId": "c63fa01d-612f-466e-8d86-ae136e35212d"
+      },
+      {
+        "parameters": {
+          "toolDescription": "Retona token_senff",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/f83f0a33-89a6-4857-b119-872de2afb570",
+          "options": {
+            "response": {
+              "response": {}
+            }
+          },
+          "optimizeResponse": true,
+          "fieldsToInclude": "selected",
+          "fields": "access_token"
+        },
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4,
+        "position": [
+          -64,
+          240
+        ],
+        "id": "396524ec-d77b-4973-aa74-6c4567324e70",
+        "name": "token senff"
+      },
+      {
+        "parameters": {
+          "toolDescription": "Consulta margem prefeitura londrina",
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/b44e6d64-620f-4a10-9051-79c70c949b0f",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "client_name",
+                "value": "={{ $fromAI('parameters0_Value', ``, 'string') }}"
+              },
+              {
+                "name": "=cpf",
+                "value": "={{ $fromAI('parameters1_Value', ``, 'string') }}"
+              },
+              {
+                "name": "matricula",
+                "value": "={{ $fromAI('parameters2_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4,
+        "position": [
+          96,
+          256
+        ],
+        "id": "7ace72e8-9661-4bea-a6b4-ec5e9ee7b738",
+        "name": "Pref.Londrina senff"
+      }
+    ],
+    "connections": {
+      "token senff": {
+        "ai_tool": [
+          [
+            {
+              "node": "MCP Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pref.Londrina senff": {
+        "ai_tool": [
+          [
+            {
+              "node": "MCP Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 725a0e3e",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

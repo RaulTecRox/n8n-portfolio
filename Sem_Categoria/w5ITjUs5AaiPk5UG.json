@@ -1,0 +1,288 @@
+{
+  "updatedAt": "2025-06-12T12:03:57.674Z",
+  "createdAt": "2025-06-04T19:46:31.628Z",
+  "id": "w5ITjUs5AaiPk5UG",
+  "name": "BKP workflow copy",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "jsonToBinary",
+        "destinationKey": "=data",
+        "options": {
+          "useRawData": false
+        }
+      },
+      "name": "Move Binary Data",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "position": [
+        660,
+        260
+      ],
+      "typeVersion": 1,
+      "id": "9b55aea6-6cea-4bc8-8608-e0b51c52a3cc"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "-1001534937224"
+            },
+            {
+              "name": "message",
+              "value": "=Realizado Backup de {{ $json.count_id }} workflows do N8N :D "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3dcb67e8-fee6-43b8-ad91-4447c7a46717",
+      "name": "Envio telegram Kira Dev",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2200,
+        20
+      ],
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "success"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1c3200dd-ea1c-4b0b-ac83-b5474c636e29",
+      "name": "Summarize",
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "710e9c60-fd7c-47a3-b1d0-4c2acd559086",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "45408678-141b-47da-bcb0-595368113bda",
+              "name": "textMessage",
+              "value": "=Realizado Backup de {{ $json.count_success }} workflows do N8N :D ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1240,
+        260
+      ],
+      "id": "29a0a147-da42-443f-956b-7fb820312732",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAAA-XXOyVI"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        1500,
+        260
+      ],
+      "id": "159f48a4-8cc0-45ff-b30e-d5c273b4b8d9",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        440,
+        260
+      ],
+      "id": "f1dffe34-a680-433f-afd1-26295e3c105b",
+      "name": "n8n",
+      "credentials": {
+        "n8nApi": {
+          "id": "WvD7d2nbFg2RPpZP",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "binaryPropertyName": "=data",
+        "path": "E:\\Dados\\TI\\05 - BKP\\N8N",
+        "options": {
+          "fileName": "={{ $('n8n').item.json.name }}"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        860,
+        260
+      ],
+      "id": "edce99de-b82a-4aa4-a5c1-51f35a464ee0",
+      "name": "SSH",
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Move Binary Data": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n": {
+      "main": [
+        [
+          {
+            "node": "Move Binary Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrencyRules": [],
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "67323f7e-63b7-490c-a79d-e8c20a18a57e",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-04T19:46:31.628Z",
+      "createdAt": "2025-06-04T19:46:31.628Z",
+      "role": "workflow:owner",
+      "workflowId": "w5ITjUs5AaiPk5UG",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

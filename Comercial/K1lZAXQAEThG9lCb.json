@@ -1,0 +1,823 @@
+{
+  "updatedAt": "2025-10-27T13:22:42.802Z",
+  "createdAt": "2025-02-21T13:58:35.293Z",
+  "id": "K1lZAXQAEThG9lCb",
+  "name": "Higenizador - Vanguard Upload",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        200
+      ],
+      "id": "6a69c908-f678-46ec-8486-89a819252f15",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1xzKXRUc0eeUF6L3YvysfZiLUWzIXGzXY",
+          "mode": "list",
+          "cachedResultName": "Higienizador Vanguard",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1xzKXRUc0eeUF6L3YvysfZiLUWzIXGzXY"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        140,
+        200
+      ],
+      "id": "9572fa34-2a49-4e33-b126-3456bc7999d1",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        200
+      ],
+      "id": "6bc44fc3-5dd8-4874-a781-8d3d4c2b965f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "25fe58a1-93f6-4ef6-b4b7-75ffe0479165",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "xlsx",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "83abdfe1-15b3-48dd-b67b-a329a64aba84",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "xls",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "179b179b-d4be-46b4-bab0-b6f2ba5100d4",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "csv",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        580,
+        200
+      ],
+      "id": "3d63746a-d7a0-4adc-9ba7-318e19963d73",
+      "name": "Filter5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d3612c77-cb61-4c06-9b62-5cf78d859eb8",
+              "leftValue": "={{ $json.lastModifyingUser.displayName }}",
+              "rightValue": "Desenvolvimento MDG",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        200
+      ],
+      "id": "43062324-8c25-4f0d-9ea8-cf7a82261a93",
+      "name": "Filter6"
+    },
+    {
+      "parameters": {
+        "queue": "higenizador_vanguard",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        2200,
+        200
+      ],
+      "id": "5770ec17-ecff-4053-84db-0d7647de6ca5",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2bc40dd8-b52c-42ce-99a0-837ed155c44e",
+              "name": "CPF",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "57fee8c0-8d13-4297-acc0-989ecd95406e",
+              "name": "NOME",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c539c90b-c78c-45ac-bc6a-2e805b204b44",
+              "name": "TELEFONE 1",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "3695e963-3f18-4a0c-8dbd-9b617150b7e3",
+              "name": "TELEFONE  2",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "87f1e4b1-1640-4451-aca6-1a6fd0497f2b",
+              "name": "TELEFONE  3",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "4f2d7f4b-b288-4610-9a6f-f360a7424e2c",
+              "name": "TELEFONE 4",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1320,
+        540
+      ],
+      "id": "8626e091-4f0d-4f77-ada0-29fc4d0bcdbd",
+      "name": "Colunas Planilha "
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{$('Cria planilha').item.json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tLuXl5QB5p6AlsLdlFvckJyIgWLeLd9dMFRAJvwJots/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1540,
+        540
+      ],
+      "id": "faf6d335-bf5c-4d01-b8ea-9a9a767f5b8b",
+      "name": "Adiciona Colunas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Cria planilha').item.json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1xzKXRUc0eeUF6L3YvysfZiLUWzIXGzXY",
+          "mode": "list",
+          "cachedResultName": "Higienizador ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1xzKXRUc0eeUF6L3YvysfZiLUWzIXGzXY"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1740,
+        540
+      ],
+      "id": "efb59b4f-9ac3-49c3-938c-21329849880c",
+      "name": "Move planilha driver compartilhado ",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "title": "=Hig_{{ $json.AquivoName.split(\".\").first() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1080,
+        540
+      ],
+      "id": "b6b245c3-1767-4aee-9d5a-4ed5407df555",
+      "name": "Cria planilha",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "44308ad2-bde1-4f6d-a19c-a41260327f84",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9ead94da-d9cd-48f2-8bf7-677147fa9353",
+              "name": "EMAIL",
+              "value": "={{ $json.lastModifyingUser.emailAddress }}",
+              "type": "string"
+            },
+            {
+              "id": "3f5535a5-f85b-422c-8ec8-9056baaadcef",
+              "name": "AquivoName",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        780,
+        200
+      ],
+      "id": "d2614734-7e9c-408e-9d00-4fb96b0b0326",
+      "name": "Dados Driver"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3678e50b-62b2-4948-8818-6fdbcaff63c1",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "cb7e9b59-698b-4b8a-96d4-e6635bbb4f88",
+              "name": "TELEFONE1",
+              "value": "={{ $json.TELEFONE1 }}",
+              "type": "string"
+            },
+            {
+              "id": "5df40063-8bca-4990-ba77-bea627b39936",
+              "name": "TELEFONE2",
+              "value": "={{ $json.TELEFONE2 }}",
+              "type": "string"
+            },
+            {
+              "id": "02e48c65-2d1a-425b-90f8-7b05675a567f",
+              "name": "TELEFONE3",
+              "value": "={{ $json.TELEFONE3 }}",
+              "type": "string"
+            },
+            {
+              "id": "cae16fc6-86bc-4690-b3c1-803e7c94ee5d",
+              "name": "TELEFONE4",
+              "value": "={{ $json.TELEFONE4 }}",
+              "type": "string"
+            },
+            {
+              "id": "22562ab5-e759-488d-bf3d-4a748cd8177c",
+              "name": "driver.EMAIL",
+              "value": "={{ $('Dados Driver').item.json.EMAIL }}",
+              "type": "string"
+            },
+            {
+              "id": "98c786e1-128c-494d-a588-11904644a628",
+              "name": "driver.AquivoName",
+              "value": "={{ $('Dados Driver').item.json.AquivoName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1960,
+        200
+      ],
+      "id": "ad3dc8ce-8c99-47e2-9d5d-3d2dfbd9a3c9",
+      "name": "Concilia dados"
+    },
+    {
+      "parameters": {
+        "content": "## RECEBE PLANILHA NO DRIVER\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 320,
+        "width": 780
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        120,
+        100
+      ],
+      "typeVersion": 1,
+      "id": "843123d0-381e-42ba-b5a1-9523d36b38f7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## EXTREI DADOS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 300,
+        "width": 580
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1100,
+        100
+      ],
+      "typeVersion": 1,
+      "id": "45f8d2f3-fc26-4130-abe3-9922852041a9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ENVIA PARA FILA\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 320,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1920,
+        100
+      ],
+      "typeVersion": 1,
+      "id": "dc42b682-9a8d-45ca-9425-039f7f8d84e8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## CRIA GOOGLE SHEETS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 280,
+        "width": 820
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1060,
+        440
+      ],
+      "typeVersion": 1,
+      "id": "9701c816-dbba-4912-94c1-f3a313d8381b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2420,
+        200
+      ],
+      "id": "04ad7c80-ba3f-4c7c-b114-642d5f1a9d00",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "connections": {
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Concilia dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter5": {
+      "main": [
+        [
+          {
+            "node": "Dados Driver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter6": {
+      "main": [
+        [
+          {
+            "node": "Filter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Colunas Planilha ": {
+      "main": [
+        [
+          {
+            "node": "Adiciona Colunas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Adiciona Colunas": {
+      "main": [
+        [
+          {
+            "node": "Move planilha driver compartilhado ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move planilha driver compartilhado ": {
+      "main": [
+        []
+      ]
+    },
+    "Cria planilha": {
+      "main": [
+        [
+          {
+            "node": "Colunas Planilha ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados Driver": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Concilia dados": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-10-15T02:17:51Z"
+    },
+    "node:Google Drive Trigger1": {
+      "lastTimeChecked": "2025-02-21T19:01:43Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Google Drive Trigger": [
+      {
+        "json": {
+          "kind": "drive#file",
+          "fileExtension": "xlsx",
+          "copyRequiresWriterPermission": false,
+          "md5Checksum": "b8e8b54bdef5c124632dab49c8e27fc3",
+          "writersCanShare": true,
+          "viewedByMe": false,
+          "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "parents": [
+            "1xzKXRUc0eeUF6L3YvysfZiLUWzIXGzXY"
+          ],
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBND9mzRkXz2jhuP2EUgk4oQgUyOdLzCyPkrXNFtA6VvseM0v_dQKE4wrXID5xAbEwgLsUBJfRQGACBIFXloC460I869M0b33H9hht86xW1er40=s220",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "shared": true,
+          "lastModifyingUser": {
+            "displayName": "Felipe Ferreira",
+            "kind": "drive#user",
+            "me": false,
+            "permissionId": "17396091491176820708",
+            "emailAddress": "felipe.ferreira@mdgintermediacoes.com.br",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIVo4jgF5dbfi_mENN0QheznukCoeEWsSeJQSJA9IILQcmwzw=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Felipe Ferreira",
+              "kind": "drive#user",
+              "me": false,
+              "permissionId": "17396091491176820708",
+              "emailAddress": "felipe.ferreira@mdgintermediacoes.com.br",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIVo4jgF5dbfi_mENN0QheznukCoeEWsSeJQSJA9IILQcmwzw=s64"
+            }
+          ],
+          "headRevisionId": "0B1V23J0xJuuDbzFOT0RRNW80b2pta0szUmZMTnMrMWhRQm5JPQ",
+          "webViewLink": "https://docs.google.com/spreadsheets/d/1QZLi5hiqj77gUVc8MIu2-QhlDlHoI_wi/edit?usp=drivesdk&ouid=103143123596259879442&rtpof=true&sd=true",
+          "webContentLink": "https://drive.google.com/uc?id=1QZLi5hiqj77gUVc8MIu2-QhlDlHoI_wi&export=download",
+          "size": "27184",
+          "viewersCanCopyContent": true,
+          "permissions": [
+            {
+              "id": "17604633664812570778",
+              "displayName": "DG Serviços",
+              "type": "domain",
+              "kind": "drive#permission",
+              "role": "reader",
+              "allowFileDiscovery": true,
+              "domain": "mdgintermediacoes.com.br"
+            },
+            {
+              "id": "11534251328642009597",
+              "displayName": "Raul Guimaraes",
+              "type": "user",
+              "kind": "drive#permission",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjVLinhVP5SDvzoRw_GHsctAF_4I7cLShq9XtTZG73xlYmt8F0I=s64",
+              "emailAddress": "raul.guimaraes@mdgintermediacoes.com.br",
+              "role": "writer",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "id": "17396091491176820708",
+              "displayName": "Felipe Ferreira",
+              "type": "user",
+              "kind": "drive#permission",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIVo4jgF5dbfi_mENN0QheznukCoeEWsSeJQSJA9IILQcmwzw=s64",
+              "emailAddress": "felipe.ferreira@mdgintermediacoes.com.br",
+              "role": "owner",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "id": "16172521949113898529",
+              "displayName": "Desenvolvimento MDG",
+              "type": "user",
+              "kind": "drive#permission",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocKNvUuD7lRcJscziH6zg2mLZ4CDToWDJurLhHaT1z35L1bKEA=s64",
+              "emailAddress": "desenvolvimento@mdgintermediacoes.com.br",
+              "role": "writer",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "hasThumbnail": true,
+          "spaces": [
+            "drive"
+          ],
+          "id": "1QZLi5hiqj77gUVc8MIu2-QhlDlHoI_wi",
+          "name": "NÃO TOMADOR LUANA.xlsx",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "createdTime": "2025-04-15T17:02:21.575Z",
+          "modifiedTime": "2025-04-15T17:01:57.000Z",
+          "quotaBytesUsed": "27184",
+          "version": "3",
+          "originalFilename": "NÃO TOMADOR LUANA.xlsx",
+          "ownedByMe": false,
+          "fullFileExtension": "xlsx",
+          "isAppAuthorized": false,
+          "capabilities": {
+            "canChangeViewersCanCopyContent": false,
+            "canEdit": true,
+            "canCopy": true,
+            "canComment": true,
+            "canAddChildren": false,
+            "canDelete": false,
+            "canDownload": true,
+            "canListChildren": false,
+            "canRemoveChildren": false,
+            "canRename": true,
+            "canTrash": false,
+            "canReadRevisions": true,
+            "canChangeCopyRequiresWriterPermission": false,
+            "canMoveItemIntoTeamDrive": false,
+            "canUntrash": false,
+            "canModifyContent": true,
+            "canMoveItemOutOfDrive": false,
+            "canAddMyDriveParent": false,
+            "canRemoveMyDriveParent": true,
+            "canMoveItemWithinDrive": true,
+            "canShare": true,
+            "canMoveChildrenWithinDrive": false,
+            "canModifyContentRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canAcceptOwnership": false,
+            "canReadLabels": false,
+            "canModifyLabels": false,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": false,
+            "canRemoveContentRestriction": false,
+            "canDisableInheritedPermissions": false,
+            "canEnableInheritedPermissions": true
+          },
+          "thumbnailVersion": "1",
+          "modifiedByMe": false,
+          "permissionIds": [
+            "17604633664812570778",
+            "11534251328642009597",
+            "17396091491176820708",
+            "16172521949113898529"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "sha1Checksum": "8d7fd8eb9626d48f11449ff56dd2f0ac21cd0aab",
+          "sha256Checksum": "92bbd97380ea4ea76445eee147591505c933c3c81d586ef383b0232f932291d6",
+          "inheritedPermissionsDisabled": false
+        }
+      }
+    ]
+  },
+  "versionId": "ae1c206f-7ed5-4294-9c42-c08f6bcbe02c",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-02-21T13:58:35.293Z",
+      "createdAt": "2025-02-21T13:58:35.293Z",
+      "role": "workflow:owner",
+      "workflowId": "K1lZAXQAEThG9lCb",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2025-02-20T16:29:31.422Z",
+      "createdAt": "2025-02-20T16:29:31.422Z",
+      "id": "XZLWvH2vm1NnuOvm",
+      "name": "Comercial"
+    }
+  ]
+}

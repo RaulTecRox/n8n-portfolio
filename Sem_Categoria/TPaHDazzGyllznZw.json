@@ -1,0 +1,495 @@
+{
+  "updatedAt": "2025-09-26T14:44:53.306Z",
+  "createdAt": "2025-09-26T14:44:53.306Z",
+  "id": "TPaHDazzGyllznZw",
+  "name": "Extract Data QueroMais copy",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 23
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -240
+      ],
+      "id": "0bc0f458-5610-42a4-ab1c-2aaf9ef05530",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, payload FROM consulted WHERE step = 'SUCCESS';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        -240
+      ],
+      "id": "d4a0771a-d8a4-4514-8117-941644f82e5a",
+      "name": "Get Consulteds",
+      "credentials": {
+        "mySql": {
+          "id": "T9AP63oSzVHyX8t2",
+          "name": "MariaDb In100"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const all_data = $(\"Get Consulteds\").all()\n\nreturn all_data.map(item => {\n  return JSON.parse(item.json.payload)\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -240
+      ],
+      "id": "204f6029-9278-422e-b96e-3676d7a0cb8e",
+      "name": "Convert to json"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "fileName": "={{`IN100-QueroMais-${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}.xlsx`}}",
+          "sheetName": "={{`${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}`}}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        -240
+      ],
+      "id": "1857b620-781f-4ed6-bd1a-54fb17f13623",
+      "name": "Create a xlsx file"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "328a8ee5-5bc3-4377-bb95-7d6493dea8a5",
+              "name": "CPF",
+              "value": "={{ String($json.cpf).padStart(11, \"0\") }}",
+              "type": "string"
+            },
+            {
+              "id": "4e1daec5-0100-40c3-90e5-f718a4dbe1ee",
+              "name": "Nome",
+              "value": "={{ $json.nomeBeneficiario }}",
+              "type": "string"
+            },
+            {
+              "id": "d8a7e993-55e1-4470-9130-5d68778c9010",
+              "name": "Data de Nascimento",
+              "value": "={{ $json.dataNascimento.replace(/(\\d{2})(\\d{2})(\\d{4})/, \"$1/$2/$3\") }}",
+              "type": "string"
+            },
+            {
+              "id": "4d0ff018-ad72-4121-b633-5e09819f83a3",
+              "name": "Número Benefício",
+              "value": "={{ String($json.numeroBeneficio) }}",
+              "type": "string"
+            },
+            {
+              "id": "69764c3d-c809-44db-90a4-2b7655bf67ba",
+              "name": "Situação Benefício ",
+              "value": "={{ $json.situacaoBeneficio.descricao }}",
+              "type": "string"
+            },
+            {
+              "id": "b94ac7dc-4627-4da9-a649-bc8d228a417c",
+              "name": "Espécie de Benefício",
+              "value": "={{ $json.especieBeneficio.descricao }}",
+              "type": "string"
+            },
+            {
+              "id": "56b2df8e-4950-4246-ac99-d5217f0cde21",
+              "name": "Concedido Liminar",
+              "value": "={{ $json.concessaoJudicial ? \"SIM\" : \"NÃO\" }}",
+              "type": "string"
+            },
+            {
+              "id": "733aa29f-b695-468d-92ae-478ab1b564bd",
+              "name": "Estado Pagamento",
+              "value": "={{ $json.ufPagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "edd95d16-5a21-49f2-893a-12c8db0d7e0f",
+              "name": "Tipo de Crédito",
+              "value": "={{ $json.tipoCredito.descricao }}",
+              "type": "string"
+            },
+            {
+              "id": "f6456da1-b4a7-4669-8721-02c3a90cbad2",
+              "name": "Pagadora",
+              "value": "={{ $json.cbcIfPagadora }}",
+              "type": "number"
+            },
+            {
+              "id": "115426fe-2ca0-42a4-9ef6-6a246c5b15ea",
+              "name": "Agência Pagadora",
+              "value": "={{ $json.agenciaPagadora }}",
+              "type": "number"
+            },
+            {
+              "id": "0bb2ddf8-b10e-4263-979a-21059508c8e1",
+              "name": "Conta Corrente",
+              "value": "={{ $json.contaCorrente }}",
+              "type": "string"
+            },
+            {
+              "id": "4cb93861-c6f9-4e31-a2b7-df677c93e031",
+              "name": "Representante Legal",
+              "value": "={{ $json.possuiRepresentanteLegal ? \"SIM\" : \"NÃO\" }}",
+              "type": "string"
+            },
+            {
+              "id": "0cbb2582-df8f-4960-88e1-6d05fe3c2a0e",
+              "name": "Procurador",
+              "value": "={{ $json.possuiProcurador ? \"SIM\" : \"NÃO\" }}",
+              "type": "string"
+            },
+            {
+              "id": "3add73f5-5064-4c72-83aa-170840421fa4",
+              "name": "Entidade Representação",
+              "value": "={{ $json.possuiEntidadeRepresentacao ? \"SIM\" : \"NÃO\"  }}",
+              "type": "string"
+            },
+            {
+              "id": "cfa4e9bc-d788-4f24-95d5-c457a4df18ad",
+              "name": "Pensão Alimentícia",
+              "value": "={{ $json.pensaoAlimenticia.descricao }}",
+              "type": "string"
+            },
+            {
+              "id": "0e456f7f-5055-428d-b684-7e7858ddcb4c",
+              "name": "Bloqueado Para Empréstimo",
+              "value": "={{ $json.bloqueadoParaEmprestimo ? \"SIM\" : \"NÃO\" }}",
+              "type": "string"
+            },
+            {
+              "id": "99ffd536-66d5-4edf-b089-eb5ee9a141aa",
+              "name": "Data Última Perícia",
+              "value": "={{ $json.dataUltimaPericia.replace(/(\\d{2})(\\d{2})(\\d{4})/, \"$1/$2/$3\") }}",
+              "type": "string"
+            },
+            {
+              "id": "734195fa-4eb7-4796-81db-7e3f7da57c3b",
+              "name": "Data Despacho Benefício",
+              "value": "={{ $json.dataDespachoBeneficio.replace(/(\\d{2})(\\d{2})(\\d{4})/, \"$1/$2/$3\") }}",
+              "type": "string"
+            },
+            {
+              "id": "22b89e84-914f-4dd1-bd4b-936dcee274dc",
+              "name": "Margem Dísponivel",
+              "value": "={{ $json.margemDisponivel }}",
+              "type": "number"
+            },
+            {
+              "id": "bd7529a0-6274-45ef-92b4-8e02a92e96e3",
+              "name": "Margem Disponível Cartão",
+              "value": "={{ $json.margemDisponivelCartao }}",
+              "type": "number"
+            },
+            {
+              "id": "e97c6eb0-ed73-4b31-9cb0-ae2691720498",
+              "name": "Valor Limite Cartão",
+              "value": "={{ $json.valorLimiteCartao }}",
+              "type": "number"
+            },
+            {
+              "id": "5b07e726-b67a-4e3e-8f83-453b1f252fe2",
+              "name": "Quantidade Empréstimos Ativos Suspensos",
+              "value": "={{ $json.qtdEmprestimosAtivosSuspensos }}",
+              "type": "number"
+            },
+            {
+              "id": "144ecf05-83c5-4874-bb38-96aa3fe35ec3",
+              "name": "Quantidade  Empréstimos Suspensos",
+              "value": "={{ $json.qtdEmprestimosSuspensos }}",
+              "type": "number"
+            },
+            {
+              "id": "3a1fa10d-7b39-4cc4-8cd3-d7af6258ddcb",
+              "name": "Quantidade Empréstimos Refin",
+              "value": "={{ $json.qtdEmprestimosRefin }}",
+              "type": "number"
+            },
+            {
+              "id": "40c632d2-c5b5-43f2-9b6f-99e1b1c8049c",
+              "name": "Quantidade Empréstimos Porta",
+              "value": "={{ $json.qtdEmprestimosPorta }}",
+              "type": "number"
+            },
+            {
+              "id": "3846adb4-b38a-4d0c-8bf9-644998069e8f",
+              "name": "Data Consulta",
+              "value": "={{ $json.dataConsulta.replace(/(\\d{2})(\\d{2})(\\d{4})/, \"$1/$2/$3\") }}",
+              "type": "string"
+            },
+            {
+              "id": "1fdf4717-e4cd-4684-9098-f130260e05d6",
+              "name": "Elegível Empréstimo",
+              "value": "={{ $json.elegivelEmprestimo ? \"SIM\" : \"NÃO\" }}",
+              "type": "boolean"
+            },
+            {
+              "id": "20590dab-5c76-4e10-b000-4f6b29163355",
+              "name": "Margem Disponível RCC",
+              "value": "={{ $json.margemDisponivelRCC }}",
+              "type": "number"
+            },
+            {
+              "id": "b193cab9-d96e-42d5-856b-0d1b2f3e7722",
+              "name": "Valor Limite RCC",
+              "value": "={{ $json.valorLimiteRCC }}",
+              "type": "number"
+            },
+            {
+              "id": "ac08ebd0-23a3-4b00-9be4-2b2b0ab40fde",
+              "name": "Valor Liquido",
+              "value": "={{ $json.valorLiquido }}",
+              "type": "number"
+            },
+            {
+              "id": "38b84922-7e25-4dfc-b468-172e5a3e5764",
+              "name": "Valor Comprometido",
+              "value": "={{ $json.valorComprometido }}",
+              "type": "number"
+            },
+            {
+              "id": "a76df38a-ddf2-4647-b5a5-f2ec0b782963",
+              "name": "Valor Máximo Comprometimento",
+              "value": "={{ $json.valorMaximoComprometimento }}",
+              "type": "number"
+            },
+            {
+              "id": "03927441-09e3-4316-b7a6-54ece98befc6",
+              "name": "dataBloqueioBeneficio",
+              "value": "={{ $json.dataBloqueioBeneficio.replace(/(\\d{2})(\\d{2})(\\d{4})/, \"$1/$2/$3\") }}",
+              "type": "string"
+            },
+            {
+              "id": "86c4c6d3-60c6-4955-a9df-4467cc83ad13",
+              "name": "valorDisponivelAverbacaoEmprestimo",
+              "value": "={{ $json.valorDisponivelAverbacaoEmprestimo }}",
+              "type": "number"
+            },
+            {
+              "id": "2d51265d-71eb-4558-ab01-880b27117d33",
+              "name": "Tipo Bloqueio",
+              "value": "={{ $json.tipoBloqueio.descricao }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        -240
+      ],
+      "id": "5fd575a8-e5f2-4cc2-b020-72a9d06f87be",
+      "name": "Rename keys"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "-1001534937224"
+            },
+            {
+              "name": "message",
+              "value": "=Amuaigos,  Foi enviada a planilha com a extração dos dados do sistema IN100 do banco QUEROMAIS.  Nome Arquivo: {{`IN100-QueroMais-${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}.xlsx`}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        -240
+      ],
+      "id": "0dff4c0f-1977-407d-a930-f431dec7c2a0",
+      "name": "Envio telegram Kira Dev"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        -240
+      ],
+      "id": "a4799055-7545-40a1-ba96-2c2901647a3a",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "sendTo": "felipe.ferreira@mdgintermediacoes.com.br, raul.guimaraes@mdgintermediacoes.com.br",
+        "subject": "=Extração IN100 QueroMais - {{`${new Date().toLocaleDateString('pt-BR').replace(/\\//g, '-')}`}}",
+        "message": "=    <p style=\"font-family: Arial, sans-serif; color: #333;\">Meus Gostosos</p>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Segue extração de dados do IN100 do banco <strong>QueroMais</strong>.\n    </p>\n\n    </br>\n\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">Atenciosamente,</p>\n    <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\"><strong>Desenvolvimento MDG</strong></p>\n\n    <img src=\"https://i.imgur.com/A96b1p9.jpeg\" alt=\"Assinatura\" style=\"max-width: 50%; height: auto;\"><br>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          },
+          "ccList": "raul.guimaraes@mdgintermediacoes.com.br"
+        },
+        "path": "4a693d93-89aa-4fd0-9ac1-fd079027d06f"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        -240
+      ],
+      "id": "42b7935c-0659-4450-bf6c-60cb9b04e3d0",
+      "name": "Send to Boss",
+      "webhookId": "4a693d93-89aa-4fd0-9ac1-fd079027d06f",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Consulteds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Consulteds": {
+      "main": [
+        [
+          {
+            "node": "Convert to json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to json": {
+      "main": [
+        [
+          {
+            "node": "Rename keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename keys": {
+      "main": [
+        [
+          {
+            "node": "Create a xlsx file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a xlsx file": {
+      "main": [
+        [
+          {
+            "node": "Send to Boss",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envio telegram Kira Dev": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Boss": {
+      "main": [
+        [
+          {
+            "node": "Envio telegram Kira Dev",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 300
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "f165adee-60fc-4b13-95c8-2849140c7625",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-26T14:44:53.306Z",
+      "createdAt": "2025-09-26T14:44:53.306Z",
+      "role": "workflow:owner",
+      "workflowId": "TPaHDazzGyllznZw",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

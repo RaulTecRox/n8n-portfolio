@@ -1,0 +1,76 @@
+{
+  "updatedAt": "2026-05-18T18:27:14.719Z",
+  "createdAt": "2026-05-18T18:27:14.719Z",
+  "id": "c85e4bca-586b-4215-85bf-cbf35129d105",
+  "name": "Proxy - Criar Venda (PF+INSS)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "proxy-criar-venda",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "c09f4202-0935-417a-a73f-fa4cc4ce8aa0",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        400
+      ],
+      "webhookId": "proxy-criar-venda"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sistema.benmais.com/api/api-create-sale",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=={{\n(function() {\n  const b = $json.body;\n  const base = {\n    customer: {\n      tax_id: b.tax_id,\n      name: b.name,\n      email: b.email,\n      phone: b.phone,\n      address: {\n        zip_code: b.zip_code,\n        street: b.street,\n        number: b.number,\n        neighborhood: b.neighborhood,\n        city: b.city,\n        state: b.state\n      }\n    },\n    product_id: b.product_id,\n    whatsapp: b.phone,\n    operator_id: b.operator_id || \"\"\n  };\n  if (b.tipo_cliente === \"PF\") {\n    base.custom_fields = {\n      \"4ac62ade-98c2-4b2f-81da-5cfddc5b91b9\": b.payment_day_type,\n      \"8dcae81b-1947-47de-b2e2-184de8187414\": b.payment_day,\n      \"4b55d2b1-b5c6-4b36-a452-59c77092a954\": b.bank\n    };\n  } else {\n    base.custom_fields = {\n      \"8205e586-38ae-413f-8107-7165375cbd72\": b.salary_range || \"\",\n      \"1fc8814b-1dd4-4b47-8ae6-61f45c4804f4\": b.benefit_number,\n      \"4b55d2b1-b5c6-4b36-a452-59c77092a954\": b.bank\n    };\n  }\n  return base;\n})()\n}}",
+        "options": {}
+      },
+      "id": "ecc20121-828e-4530-8de9-6a3f3ce633c6",
+      "name": "Criar Venda",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jpbiKVId7HHKfgDS",
+          "name": "Ben+"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Criar Venda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": null,
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "896db1ea-9df0-4282-9c92-ab98be3eed25",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [],
+  "activeVersion": null,
+  "tags": []
+}

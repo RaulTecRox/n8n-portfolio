@@ -1,0 +1,1993 @@
+{
+  "updatedAt": "2025-11-12T11:54:20.706Z",
+  "createdAt": "2025-03-25T13:51:59.398Z",
+  "id": "hxIbUR1lRjENwwDj",
+  "name": "Busca CPF BMG copy",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/c43ef7b3-dc9e-4e54-abc5-8d3b19d22ccb",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.cpf }}"
+            },
+            {
+              "name": "type_digitation",
+              "value": "simulation"
+            },
+            {
+              "name": "remoteJid",
+              "value": "5519981150857@s.whatsapp.net"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1500,
+        120
+      ],
+      "id": "129e655f-e013-4c5d-8b25-f9c5bbd0768e",
+      "name": "HTTP Request",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        20
+      ],
+      "id": "21f81a62-b483-4ce1-a440-20c33ae2a6ae",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2680,
+        100
+      ],
+      "id": "a60830eb-8398-4615-a8d5-6857273082d2",
+      "name": "Wait",
+      "webhookId": "e5abf6de-3f09-4e83-a36f-da86ac1e3afb"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        -60
+      ],
+      "id": "af96c05e-067c-42b9-b753-7eb3635182d3",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * \nFROM cpfs_bmg \nWHERE id > {{$json[\"LAST_ID\"]}}\nORDER BY id ASC\nLIMIT 10;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        860,
+        20
+      ],
+      "id": "c70a0038-3f99-4993-8088-886acff82ccb",
+      "name": "MySQL",
+      "credentials": {
+        "mySql": {
+          "id": "fPwgeEpjllC7rjHG",
+          "name": "GovServLus MariaDB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "-1001534937224"
+            },
+            {
+              "name": "message",
+              "value": "=CPF Encontrado no BMG:\nCPF: {{ $('Loop Over Items').item.json.cpf }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "html"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "934a62d4-5124-4991-b37d-14367043597d",
+      "name": "Envio telegram Kira Dev",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1980,
+        180
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "path": "becf66ec-faf1-4830-b640-5883952d3c14",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        120,
+        -160
+      ],
+      "id": "e4a21041-a93d-4ddc-91fb-fb3437c81fd9",
+      "name": "Webhook",
+      "webhookId": "becf66ec-faf1-4830-b640-5883952d3c14",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "cpfs_bmg",
+          "mode": "list",
+          "cachedResultName": "cpfs_bmg"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "cpf",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "step",
+              "value": "={{ $('If').item.json.step }}"
+            },
+            {
+              "column": "error_json",
+              "value": "={{ $json.data }}"
+            },
+            {
+              "column": "error_message",
+              "value": "={{ $('HTTP Request').item.json.message }}"
+            }
+          ]
+        },
+        "options": {
+          "replaceEmptyStrings": true
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        2840,
+        -100
+      ],
+      "id": "edd0ecfb-15d7-49f3-ac4f-b62eddc6b16c",
+      "name": "MySQL1",
+      "credentials": {
+        "mySql": {
+          "id": "fPwgeEpjllC7rjHG",
+          "name": "GovServLus MariaDB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d19f761c-dfcb-464b-909e-0d24149fe81d",
+              "leftValue": "={{ $json.status_code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "ae6e5ce2-1cae-4754-b9f2-bdd33df1c22d",
+              "leftValue": "={{ $json.status_code }}",
+              "rightValue": "400",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1740,
+        120
+      ],
+      "id": "f2fa0e65-742a-46f2-969c-7bb7e8f86710",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        380,
+        -320
+      ],
+      "id": "c2bc621b-3f46-48ff-a7f5-64fe6faf838c",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "-1001534937224"
+            },
+            {
+              "name": "message",
+              "value": "=Que Truaiste deu erro no pegador de cpf do bmg:\n\n{{ $json.execution.error.message }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "html"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7f05f12c-5481-48ac-99c8-a15324b30f76",
+      "name": "Envio telegram erro",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        660,
+        -320
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  \"xml\": $('HTTP Request').first().json.message.replace(/^500 - \"/, \"\").replace(/\"$/, \"\").replace(/^\"|\"$/g, \"\").replace(/\\\\\"/g, '\"')\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        20
+      ],
+      "id": "ff99bd50-41e8-454f-90f4-75a5c014ae5e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allData = $('XML error').first().json\n\nreturn {\"data\": JSON.stringify(allData)};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2660,
+        -100
+      ],
+      "id": "43ec71e5-a337-4f40-915b-ae9ba181f6ab",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        -100
+      ],
+      "id": "bec67416-ced3-477d-83f3-95b1cb753d08",
+      "name": "XML error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "408c1885-4bf2-40b9-ba26-0c7a86b27461",
+              "leftValue": "={{ $json.xml }}",
+              "rightValue": "<",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2180,
+        20
+      ],
+      "id": "cff7bb78-6ace-4613-8112-f9c0980b2db2",
+      "name": "Is XML"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "cpfs_bmg",
+          "mode": "list",
+          "cachedResultName": "cpfs_bmg"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "cpf",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "step",
+              "value": "={{ $('If').item.json.step }}"
+            },
+            {
+              "column": "error_message",
+              "value": "={{ $('If').item.json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        2500,
+        100
+      ],
+      "id": "53c972f0-343d-47ee-9ba9-50cfcb008c72",
+      "name": "MySQL2",
+      "credentials": {
+        "mySql": {
+          "id": "fPwgeEpjllC7rjHG",
+          "name": "GovServLus MariaDB"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        0
+      ],
+      "id": "a1433e2b-71e7-4dbb-a63b-5f239c684319",
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        160
+      ],
+      "id": "4ab3b7cf-9aea-4dee-baee-5aebac0d9c73",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "hxIbUR1lRjENwwDj",
+          "mode": "list",
+          "cachedResultName": "Busca CPF BMG copy"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1500,
+        -80
+      ],
+      "id": "3f294960-05ab-4fb4-8faa-11537527a8e1",
+      "name": "Execute Workflow",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e13ee94-deb5-4a73-b55f-72682d5ca491",
+              "name": "LAST_ID",
+              "value": "={{ $json.LAST_ID }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        680,
+        20
+      ],
+      "id": "7267e633-a7db-401b-96e0-7c7682ee6d2d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1ifF8HweIZKHJ6ckgQzC5sFhcA3e5jbyc8GtQz3_0mQ8/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ifF8HweIZKHJ6ckgQzC5sFhcA3e5jbyc8GtQz3_0mQ8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CPF": "={{ $('Loop Over Items').item.json.cpf }}"
+          },
+          "matchingColumns": [
+            "CPF"
+          ],
+          "schema": [
+            {
+              "id": "CPF",
+              "displayName": "CPF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        180
+      ],
+      "id": "c72692ba-e18e-4610-853d-44c75a94e3ff",
+      "name": "Salva cpf",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FHQF5SJm4DnhmXnj",
+          "name": "Google Sheets account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "DADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "2",
+            "LAST_ID": "={{ $('Loop Over Items').item.json.id }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "LAST_ID",
+              "displayName": "LAST_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        360
+      ],
+      "id": "b5426ca9-dec2-4434-a4ca-20b06e93431e",
+      "name": "atualiza contador",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "DADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "2",
+            "LAST_ID": "={{ $('Loop Over Items').item.json.id }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "LAST_ID",
+              "displayName": "LAST_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2860,
+        100
+      ],
+      "id": "bf0147e1-5e6c-4fee-9c3c-b3300ac17651",
+      "name": "atualiza contador1",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "DADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        460,
+        20
+      ],
+      "id": "1e61b2db-68e5-48a4-bd7c-360fcda08984",
+      "name": "Consulta Contador",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "atualiza contador1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envio telegram Kira Dev": {
+      "main": [
+        [
+          {
+            "node": "Salva cpf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "MySQL1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Envio telegram Kira Dev",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Envio telegram erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Is XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "MySQL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML error": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is XML": {
+      "main": [
+        [
+          {
+            "node": "XML error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MySQL2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL2": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Consulta Contador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "MySQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salva cpf": {
+      "main": [
+        [
+          {
+            "node": "atualiza contador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "atualiza contador": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "atualiza contador1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Envio telegram erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Contador": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envio telegram erro": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6d8b1069-b002-43fc-9a21-18299c550a93",
+  "activeVersionId": "6d8b1069-b002-43fc-9a21-18299c550a93",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-03-25T13:51:59.398Z",
+      "createdAt": "2025-03-25T13:51:59.398Z",
+      "role": "workflow:owner",
+      "workflowId": "hxIbUR1lRjENwwDj",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-18T13:23:43.159Z",
+    "createdAt": "2025-12-18T13:23:43.159Z",
+    "versionId": "6d8b1069-b002-43fc-9a21-18299c550a93",
+    "workflowId": "hxIbUR1lRjENwwDj",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/c43ef7b3-dc9e-4e54-abc5-8d3b19d22ccb",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "cpf",
+                "value": "={{ $json.cpf }}"
+              },
+              {
+                "name": "type_digitation",
+                "value": "simulation"
+              },
+              {
+                "name": "remoteJid",
+                "value": "5519981150857@s.whatsapp.net"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1500,
+          120
+        ],
+        "id": "129e655f-e013-4c5d-8b25-f9c5bbd0768e",
+        "name": "HTTP Request",
+        "executeOnce": false,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1200,
+          20
+        ],
+        "id": "21f81a62-b483-4ce1-a440-20c33ae2a6ae",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          2680,
+          100
+        ],
+        "id": "a60830eb-8398-4615-a8d5-6857273082d2",
+        "name": "Wait",
+        "webhookId": "e5abf6de-3f09-4e83-a36f-da86ac1e3afb"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1680,
+          -60
+        ],
+        "id": "af96c05e-067c-42b9-b753-7eb3635182d3",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT * \nFROM cpfs_bmg \nWHERE id > {{$json[\"LAST_ID\"]}}\nORDER BY id ASC\nLIMIT 10;",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          860,
+          20
+        ],
+        "id": "c70a0038-3f99-4993-8088-886acff82ccb",
+        "name": "MySQL",
+        "credentials": {
+          "mySql": {
+            "id": "fPwgeEpjllC7rjHG",
+            "name": "GovServLus MariaDB"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "phone",
+                "value": "-1001534937224"
+              },
+              {
+                "name": "message",
+                "value": "=CPF Encontrado no BMG:\nCPF: {{ $('Loop Over Items').item.json.cpf }}"
+              },
+              {
+                "name": "parse_mode",
+                "value": "html"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "934a62d4-5124-4991-b37d-14367043597d",
+        "name": "Envio telegram Kira Dev",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          1980,
+          180
+        ],
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "path": "becf66ec-faf1-4830-b640-5883952d3c14",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          120,
+          -160
+        ],
+        "id": "e4a21041-a93d-4ddc-91fb-fb3437c81fd9",
+        "name": "Webhook",
+        "webhookId": "becf66ec-faf1-4830-b640-5883952d3c14",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "table": {
+            "__rl": true,
+            "value": "cpfs_bmg",
+            "mode": "list",
+            "cachedResultName": "cpfs_bmg"
+          },
+          "dataMode": "defineBelow",
+          "columnToMatchOn": "cpf",
+          "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "step",
+                "value": "={{ $('If').item.json.step }}"
+              },
+              {
+                "column": "error_json",
+                "value": "={{ $json.data }}"
+              },
+              {
+                "column": "error_message",
+                "value": "={{ $('HTTP Request').item.json.message }}"
+              }
+            ]
+          },
+          "options": {
+            "replaceEmptyStrings": true
+          }
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          2840,
+          -100
+        ],
+        "id": "edd0ecfb-15d7-49f3-ac4f-b62eddc6b16c",
+        "name": "MySQL1",
+        "credentials": {
+          "mySql": {
+            "id": "fPwgeEpjllC7rjHG",
+            "name": "GovServLus MariaDB"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "d19f761c-dfcb-464b-909e-0d24149fe81d",
+                "leftValue": "={{ $json.status_code }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "ae6e5ce2-1cae-4754-b9f2-bdd33df1c22d",
+                "leftValue": "={{ $json.status_code }}",
+                "rightValue": "400",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1740,
+          120
+        ],
+        "id": "f2fa0e65-742a-46f2-969c-7bb7e8f86710",
+        "name": "If"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          380,
+          -320
+        ],
+        "id": "c2bc621b-3f46-48ff-a7f5-64fe6faf838c",
+        "name": "Error Trigger"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/3bbcfb3e-3e11-48a1-8adc-6ffdca7c2b39",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "phone",
+                "value": "-1001534937224"
+              },
+              {
+                "name": "message",
+                "value": "=Que Truaiste deu erro no pegador de cpf do bmg:\n\n{{ $json.execution.error.message }}"
+              },
+              {
+                "name": "parse_mode",
+                "value": "html"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "7f05f12c-5481-48ac-99c8-a15324b30f76",
+        "name": "Envio telegram erro",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          660,
+          -320
+        ],
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "jsCode": "return {\n  \"xml\": $('HTTP Request').first().json.message.replace(/^500 - \"/, \"\").replace(/\"$/, \"\").replace(/^\"|\"$/g, \"\").replace(/\\\\\"/g, '\"')\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1980,
+          20
+        ],
+        "id": "ff99bd50-41e8-454f-90f4-75a5c014ae5e",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "jsCode": "const allData = $('XML error').first().json\n\nreturn {\"data\": JSON.stringify(allData)};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2660,
+          -100
+        ],
+        "id": "43ec71e5-a337-4f40-915b-ae9ba181f6ab",
+        "name": "Code1"
+      },
+      {
+        "parameters": {
+          "dataPropertyName": "xml",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          2480,
+          -100
+        ],
+        "id": "bec67416-ced3-477d-83f3-95b1cb753d08",
+        "name": "XML error"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "408c1885-4bf2-40b9-ba26-0c7a86b27461",
+                "leftValue": "={{ $json.xml }}",
+                "rightValue": "<",
+                "operator": {
+                  "type": "string",
+                  "operation": "startsWith"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          2180,
+          20
+        ],
+        "id": "cff7bb78-6ace-4613-8112-f9c0980b2db2",
+        "name": "Is XML"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "table": {
+            "__rl": true,
+            "value": "cpfs_bmg",
+            "mode": "list",
+            "cachedResultName": "cpfs_bmg"
+          },
+          "dataMode": "defineBelow",
+          "columnToMatchOn": "cpf",
+          "valueToMatchOn": "={{ $('Loop Over Items').item.json.cpf }}",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "step",
+                "value": "={{ $('If').item.json.step }}"
+              },
+              {
+                "column": "error_message",
+                "value": "={{ $('If').item.json.message }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          2500,
+          100
+        ],
+        "id": "53c972f0-343d-47ee-9ba9-50cfcb008c72",
+        "name": "MySQL2",
+        "credentials": {
+          "mySql": {
+            "id": "fPwgeEpjllC7rjHG",
+            "name": "GovServLus MariaDB"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          100,
+          0
+        ],
+        "id": "a1433e2b-71e7-4dbb-a63b-5f239c684319",
+        "name": "When clicking ‘Test workflow’",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          100,
+          160
+        ],
+        "id": "4ab3b7cf-9aea-4dee-baee-5aebac0d9c73",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "hxIbUR1lRjENwwDj",
+            "mode": "list",
+            "cachedResultName": "Busca CPF BMG copy"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {
+            "waitForSubWorkflow": false
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          1500,
+          -80
+        ],
+        "id": "3f294960-05ab-4fb4-8faa-11537527a8e1",
+        "name": "Execute Workflow",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2e13ee94-deb5-4a73-b55f-72682d5ca491",
+                "name": "LAST_ID",
+                "value": "={{ $json.LAST_ID }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          680,
+          20
+        ],
+        "id": "7267e633-a7db-401b-96e0-7c7682ee6d2d",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1ifF8HweIZKHJ6ckgQzC5sFhcA3e5jbyc8GtQz3_0mQ8/edit?gid=0#gid=0",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Página1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ifF8HweIZKHJ6ckgQzC5sFhcA3e5jbyc8GtQz3_0mQ8/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "CPF": "={{ $('Loop Over Items').item.json.cpf }}"
+            },
+            "matchingColumns": [
+              "CPF"
+            ],
+            "schema": [
+              {
+                "id": "CPF",
+                "displayName": "CPF",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          2160,
+          180
+        ],
+        "id": "c72692ba-e18e-4610-853d-44c75a94e3ff",
+        "name": "Salva cpf",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "FHQF5SJm4DnhmXnj",
+            "name": "Google Sheets account - Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit?gid=0#gid=0",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "DADOS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "row_number": "2",
+              "LAST_ID": "={{ $('Loop Over Items').item.json.id }}"
+            },
+            "matchingColumns": [
+              "row_number"
+            ],
+            "schema": [
+              {
+                "id": "LAST_ID",
+                "displayName": "LAST_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          2160,
+          360
+        ],
+        "id": "b5426ca9-dec2-4434-a4ca-20b06e93431e",
+        "name": "atualiza contador",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "TckYcAKTANWzd2jN",
+            "name": "Google Sheets account DEV"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit?gid=0#gid=0",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "DADOS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "row_number": "2",
+              "LAST_ID": "={{ $('Loop Over Items').item.json.id }}"
+            },
+            "matchingColumns": [
+              "row_number"
+            ],
+            "schema": [
+              {
+                "id": "LAST_ID",
+                "displayName": "LAST_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          2860,
+          100
+        ],
+        "id": "bf0147e1-5e6c-4fee-9c3c-b3300ac17651",
+        "name": "atualiza contador1",
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "TckYcAKTANWzd2jN",
+            "name": "Google Sheets account DEV"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit?gid=0#gid=0",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "DADOS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gCgL0BQSTLnlJqq5EGU1yoEpjibN_k3PbPvOSj9STKw/edit#gid=0"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          460,
+          20
+        ],
+        "id": "1e61b2db-68e5-48a4-bd7c-360fcda08984",
+        "name": "Consulta Contador",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "TckYcAKTANWzd2jN",
+            "name": "Google Sheets account DEV"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "atualiza contador1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MySQL": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envio telegram Kira Dev": {
+        "main": [
+          [
+            {
+              "node": "Salva cpf",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          []
+        ]
+      },
+      "MySQL1": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Envio telegram Kira Dev",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "node": "Envio telegram erro",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Is XML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "node": "MySQL1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML error": {
+        "main": [
+          [
+            {
+              "node": "Code1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is XML": {
+        "main": [
+          [
+            {
+              "node": "XML error",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MySQL2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MySQL2": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Consulta Contador",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Consulta Contador",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "MySQL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Salva cpf": {
+        "main": [
+          [
+            {
+              "node": "atualiza contador",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "atualiza contador": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "atualiza contador1": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Envio telegram erro",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consulta Contador": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envio telegram erro": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-02-18T14:02:38.331Z",
+      "createdAt": "2025-02-18T14:02:38.331Z",
+      "id": "Bd8bdkbUuGWtSaFv",
+      "name": "Saque Complementar"
+    }
+  ]
+}

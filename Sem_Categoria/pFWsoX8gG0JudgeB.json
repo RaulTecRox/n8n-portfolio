@@ -1,0 +1,1670 @@
+{
+  "updatedAt": "2026-03-12T16:26:55.970Z",
+  "createdAt": "2026-02-23T16:10:44.361Z",
+  "id": "pFWsoX8gG0JudgeB",
+  "name": "Consulta margem - SENFF PREFEITURA MUNICIPAL DE SÃO PAULO",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        32
+      ],
+      "id": "6605ffec-ae40-4db0-8c2e-c96a557721e1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f8b815fb-15b3-4704-9972-d71bed808268",
+              "leftValue": "={{ $json.Unidade }}",
+              "rightValue": "IPREM APOSENTADOS",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "0d73d8b6-78d7-470a-8267-64561b7e9307",
+              "leftValue": "={{ $json.Unidade }}",
+              "rightValue": "SECRETARIA MUNICIPAL DE GESTAO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -784,
+        720
+      ],
+      "id": "50b4e4a5-ff0d-4009-b4fb-bf38c9aa5ca0",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/name",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.nome }}"
+            },
+            {
+              "name": "state",
+              "value": "PR"
+            },
+            {
+              "name": "city"
+            },
+            {
+              "name": "neighborhood"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer ***REDACTED***"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 100000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        720
+      ],
+      "id": "2e4f9a14-f436-4698-b510-bba1fefe1cf2",
+      "name": "Consulta credilus",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfd7780d-59df-4498-bbb4-883044b73da6",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "c159842f-2bbf-4af7-8081-1fdfd7710dad",
+              "name": "CPFCNPJ",
+              "value": "={{ $json.CPFCNPJ }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        688
+      ],
+      "id": "8449d15c-f293-4777-8921-a8c668250e4c",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        704
+      ],
+      "id": "3519da3c-4fc5-4c92-ae38-7541b5644ccb",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "CPFCNPJ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        64,
+        688
+      ],
+      "id": "e1da4513-cfbb-497c-a7b6-c76fd4144553",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ea275530-dc42-4073-8da1-a6d68d695f6e",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "518bad48-134f-4b8a-b801-b5d686833c54",
+              "name": "CPFCNPJ",
+              "value": "={{ $json.CPFCNPJ }}",
+              "type": "string"
+            },
+            {
+              "id": "46ce2762-269b-4699-bd0c-7c6e50fcf452",
+              "name": "Remuneração do Mês",
+              "value": "={{ $('Filter').item.json['Remuneração do Mês'] }}",
+              "type": "string"
+            },
+            {
+              "id": "1f2d7de8-abff-47c0-8ee6-4c71962eac77",
+              "name": "Total de desconto",
+              "value": "={{ $('Filter').item.json['Total de desconto'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e5b2f8d5-3419-41dd-b0ba-640f92d582f3",
+              "name": "Total líquido",
+              "value": "={{ $('Filter').item.json['Total líquido'] }}",
+              "type": "string"
+            },
+            {
+              "id": "da537a2b-abb6-47f6-a70f-9d19662b6264",
+              "name": "Unidade",
+              "value": "={{ $('Filter').item.json.Unidade }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        688
+      ],
+      "id": "748430fa-ee15-4e18-950d-711006653f39",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "url": "https://senffconsig.senff.com.br/api/v1/admin/cip/list-benefits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "document",
+              "value": "={{ $json.CPFCNPJ }}"
+            },
+            {
+              "name": "agency_id",
+              "value": "28"
+            },
+            {
+              "name": "agreement_id",
+              "value": "15"
+            },
+            {
+              "name": "product_id",
+              "value": "1"
+            },
+            {
+              "name": "withdraw_type_id",
+              "value": "1"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json.NOME }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json, text/plain, */*"
+            },
+            {
+              "name": "accept-language",
+              "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+            },
+            {
+              "name": "account",
+              "value": "senff-web"
+            },
+            {
+              "name": "authorization",
+              "value": "Bearer ***REDACTED***"
+            },
+            {
+              "name": "priority",
+              "value": "u=1, i"
+            },
+            {
+              "name": "referer",
+              "value": "https://senffconsig.senff.com.br/app/proposals/add"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "sec-fetch-dest",
+              "value": "empty"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "cors"
+            },
+            {
+              "name": "sec-fetch-site",
+              "value": "same-origin"
+            },
+            {
+              "name": "tenant-id",
+              "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+            },
+            {
+              "name": "user-agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "x-correlation-id",
+              "value": "94dcc491-e3f7-4e08-994e-906e7fb2bf90"
+            },
+            {
+              "name": "x-store-code",
+              "value": "84"
+            },
+            {
+              "name": "cookie",
+              "value": "_gcl_au=1.1.631611721.1771438511;_fbp=fb.2.1771438510677.23332863710652657;AdoptVisitorId=CwZgpgRmAMwCYFoCcAOAbI40CMAmBAhqIirgMYCsMAZkmQOzQFA=;_clck=9fxogl%5E2%5Eg3u%5E0%5E2240;_gid=GA1.3.2036028009.1771942498;AdoptConsent=N4Ig7gpgRgzglgFwgSQCIgFwgKwBYBMAhoQJzbYC0ADAMZUBmFuUVhFAHHbh7rgGzZi7PPj4gANCABuceAgD2AJ2QATTCFwBmaBCq4VFEuz4HcVAIz4KhLQfb4a2XfRI0A7Kwkh5ABwTIAOwAVQgBzGEwAbRASVAAbACUAeQBhHyTUAGkvJMIqRQA5AC04KABbei8AZQSEXHpMpORQwi8y+JSpUIBHAE1kADUvZAANABk4INDkAFUIACEvKTcALwKxqV8ACxovGEIAUQGqZDiZmDAvFbAAdSC4OIBPXISvTTg4AAlUCAAFEa26AAupJfAgkgBXBAhcJREEgGjyAIwCABfxqLC4ACKAClzGAoF4IFJUdDHj4IOoEAlMli3CpaV5EcjSQMIIp4EjMPhJBCfCpCEgVABBBDqfBUUTUKz4XBBcy4DDmbAYCwAOmwbj4RRAAF8gA=;_ga=GA1.1.782352786.1771438510;_ga_01FQSBPD70=GS2.3.s1771942498$o2$g1$t1771942768$j60$l0$h0;_clsk=voy8b7%5E1771942769295%5E3%5E1%5Ez.clarity.ms%2Fcollect;_ga_SCMH061MNG=GS2.1.s1771942497$o2$g1$t1771944386$j60$l0$h1738681100;_ga_D9P4GFKQNT=GS2.1.s1771942497$o2$g1$t1771944386$j60$l0$h0;"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        288,
+        1168
+      ],
+      "id": "ef688be3-1bac-4fe6-953a-afac8257fe64",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "content": "#  DOWNLOAD BASE PREF.\n",
+        "height": 512,
+        "width": 1732
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "90fafae8-ad71-40d0-b9e3-371f948493fa",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        288,
+        224
+      ],
+      "id": "33c86b3f-9125-44cb-93c0-36fbdb7a5022",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "content": "# CONSULTA DADOS CREDILUS.\n## POR NOME",
+        "height": 480,
+        "width": 1744
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "532f519f-1088-4753-b064-96748bfb02f6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# CONSULTA MARGEM SENFF.\n## POR NOME",
+        "height": 672,
+        "width": 1748
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        1024
+      ],
+      "typeVersion": 1,
+      "id": "625c6429-723f-4a45-a857-a125c562bdd4",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5b4f56a9-87eb-452f-b74c-3f1d59ef80c2",
+              "leftValue": "={{ $json.access_token }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        688
+      ],
+      "id": "c2df0519-1c54-4c9d-905b-0d1626ad0651",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "access_token",
+        "key": "token_senff",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        496,
+        688
+      ],
+      "id": "014312c1-2e6e-42a2-a01f-8edd5d9ca5fb",
+      "name": "Consulta token",
+      "executeOnce": true,
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -320,
+        1280
+      ],
+      "id": "87836496-027d-4504-941a-378a040f548c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://senffconsig.senff.com.br/auth/v1/auth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json, text/plain, */*"
+            },
+            {
+              "name": "accept-language",
+              "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+            },
+            {
+              "name": "account",
+              "value": "senff-web"
+            },
+            {
+              "name": "origin",
+              "value": "https://senffconsig.senff.com.br"
+            },
+            {
+              "name": "priority",
+              "value": "u=1, i"
+            },
+            {
+              "name": "referer",
+              "value": "https://senffconsig.senff.com.br/"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "sec-fetch-dest",
+              "value": "empty"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "cors"
+            },
+            {
+              "name": "sec-fetch-site",
+              "value": "same-origin"
+            },
+            {
+              "name": "tenant-id",
+              "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+            },
+            {
+              "name": "user-agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "cookie",
+              "value": "_gid=GA1.3.483779073.1771438510;_gcl_au=1.1.631611721.1771438511;_fbp=fb.2.1771438510677.23332863710652657;_clck=9fxogl%5E2%5Eg3o%5E0%5E2240;AdoptVisitorId=CwZgpgRmAMwCYFoCcAOAbI40CMAmBAhqIirgMYCsMAZkmQOzQFA=;AdoptConsent=N4Ig7gpgRgzglgFwgSQCIgFwgKwBYBMAhoQJzbYC0ADAMZUBmFuUVhFAHHbh7rgGzZi7PPj4gANCABuceAgD2AJ2QATTCFwBmaBCq4VFEuz4HcVAIz4KhLQfb4a2XfRI0A7KwkgENegGUERTgAOwBzTGCAVwAbaMl5AAcEZGCAFUJQmEwAbRASVGiAJQB5AGEE4tQAaS9iwipFADkALTgoAFt6Lz9ChFx6KuLkUMIvdoLSqVCARwBNZAA1L2QADQAZOFTQ5ABVCAAhLyk3AC9GtalEgAsaLxhCAFEFqmRonZgwLxOwAHVUuGiAE86oUvJo4HAABKoCAABRWV3QAF14klipEEOlMjkUSAaPJgjAIMFkmosLgAIoAKXMYCgXnxhOJCAWEEU8AJmHwkkiCRUhCQKgAggh1PgqKJqFZzOxUjKMOZsBh8NgAHRuXDYZogAC+QA===;_ga=GA1.3.782352786.1771438510;_ga_01FQSBPD70=GS2.3.s1771438510$o1$g1$t1771438540$j30$l0$h0;_clsk=1lfcsbh%5E1771438540757%5E3%5E1%5Ez.clarity.ms%2Fcollect;_ga_D9P4GFKQNT=GS2.1.s1771438510$o1$g1$t1771438618$j60$l0$h0;_ga_SCMH061MNG=GS2.1.s1771438510$o1$g1$t1771438618$j60$l0$h834892409;"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "42586769856"
+            },
+            {
+              "name": "password",
+              "value": "Senff@2024"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -784,
+        1296
+      ],
+      "id": "04f039d4-3fff-47ac-9dcc-5dc736f9cec9",
+      "name": "autentica",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "token_senff",
+        "value": "={{ $json.access_token }}",
+        "expire": true,
+        "ttl": "={{ $json.expires_in }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        1296
+      ],
+      "id": "0bf09174-5ed9-46fc-bcb0-3b0de37a2655",
+      "name": "salva token",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\Desenvolvimento\\Projetos\\mdg\\SENFF\\Margem\\Pref.SP\\RelServidores_91_0.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        224
+      ],
+      "id": "17fabb95-18ee-4536-845f-eafaae192dff",
+      "name": "Download a file",
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": ";",
+          "encoding": "utf-8",
+          "relaxQuotes": true,
+          "fromLine": 4
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        224
+      ],
+      "id": "e7e52ce8-e755-4166-89e2-3f19fd508d0f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f11be3e2-c440-4e3e-a355-557789fe8579",
+              "name": "nome",
+              "value": "={{ $json['Nome Completo'] }}",
+              "type": "string"
+            },
+            {
+              "id": "9752d24b-3cfb-4cd4-813b-9f91ce5190e1",
+              "name": "Remuneração do Mês",
+              "value": "={{ $json['Remuneração do Mês'] }}",
+              "type": "string"
+            },
+            {
+              "id": "20115e27-f359-480f-b524-172303a98c4c",
+              "name": "Remuneração Bruta",
+              "value": "={{ $json['Remuneração Bruta'] }}",
+              "type": "string"
+            },
+            {
+              "id": "92543d54-f5c0-4abf-ab91-b12d9e1a6245",
+              "name": "Total de desconto",
+              "value": "={{ $json['Total de desconto'] }}",
+              "type": "string"
+            },
+            {
+              "id": "846442a6-36d2-4f2c-a123-8ec0062a5f96",
+              "name": "Total líquido",
+              "value": "={{ $json['Total líquido'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4bc21f19-c01b-4d08-a611-d30220f79553",
+              "name": "Unidade",
+              "value": "={{ $json.Unidade }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        224
+      ],
+      "id": "4f7a1b06-4b7a-4f75-ba4e-ef2c2a008558",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2091974d-2970-4ddd-8d30-5e3ea7237107",
+                    "leftValue": "={{ $json.Unidade }}",
+                    "rightValue": "SECRETARIA MUNICIPAL DE GESTAO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SECRETARIA MUNICIPAL DE GESTAO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "bd50978d-0d38-45d4-89da-4a5b62b708cd",
+                    "leftValue": "={{ $json.Unidade }}",
+                    "rightValue": "IPREM APOSENTADOS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IPREM APOSENTADOS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        1280
+      ],
+      "id": "21effb66-4582-464e-8a80-fdcb898fbda5",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e68dd178-241c-4606-bdf5-f0b4a47b2f0e",
+              "name": "access_token",
+              "value": "={{ $json.access_token }}",
+              "type": "string"
+            },
+            {
+              "id": "0fc55461-b470-4afd-8b7d-b2a9322a3a96",
+              "name": "NOME",
+              "value": "={{ $('Edit Fields3').item.json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "2ea924e2-d5dd-4a43-9d3c-5323a401528e",
+              "name": "CPFCNPJ",
+              "value": "={{ $('Edit Fields3').item.json.CPFCNPJ }}",
+              "type": "string"
+            },
+            {
+              "id": "ad25be0d-9fdd-4743-b634-7656f7f5c6dd",
+              "name": "Unidade",
+              "value": "={{ $('Edit Fields3').item.json.Unidade }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        1280
+      ],
+      "id": "fba8596f-bc2c-4681-b6ca-6ac4b9f09420",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst resultado = [];\n\nfor (const item of items) {\n\n  const rows = item.json.rows || [];\n  if (!rows.length) continue;\n\n  const data = rows[0];\n\n  const beneficiary_name = data.beneficiary_name || null;\n  const document = data.document || null;\n\n  const consultMargin = data.cip_benefit?.consult_margin || {};\n\n  function convertToNumber(value) {\n    if (value === null || value === undefined) return null;\n\n    const numericValue = Number(value);\n    if (isNaN(numericValue)) return null;\n\n    return Number((numericValue / 100).toFixed(2));\n  }\n\n  function formatBR(value) {\n    if (value === null) return null;\n\n    return value.toLocaleString('pt-BR', {\n      minimumFractionDigits: 2,\n      maximumFractionDigits: 2\n    });\n  }\n\n  function getEmploymentDescription(type) {\n      const map = {\n        1: \"Aposentado\",\n        2: \"Concursado\",\n        4: \"Celetista\",\n        5: \"Temporário\",\n        6: \"Pensionista\",\n        7: \"Efetivo\",\n        8: \"Estab. Constit.\",\n        9: \"Pensão Especial\",\n        13: \"Exclusivam. Comissão\",\n        17: \"Efetivo/CLT Permanente em Comissão/Confiança\",\n        28: \"Sem Vínculo Empregatício\",\n        29: \"Complementação de aposentadoria\",\n        30: \"Complementação de pensão\"\n      };\n\n    return map[type] || \"Não identificado\";\n  }\n\n  const availableMargin = convertToNumber(\n    consultMargin.available_margin_in_cents\n  );\n\n  const employment_type = consultMargin.employment_type ?? null;\n\n  resultado.push({\n    json: {\n      beneficiary_name,\n      document,\n\n      agency_name: consultMargin.agency_name || null,\n      employment_type,\n      employment_description: getEmploymentDescription(employment_type),\n      provision_number: consultMargin.provision_number || null,\n\n      available_margin_value_rcc: availableMargin,\n      available_margin_display_rcc: formatBR(availableMargin)\n    }\n  });\n\n}\n\nreturn resultado;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        1168
+      ],
+      "id": "4f78e3a2-8b5e-41e2-be98-4166b0cf1df7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0d80b0ac-d541-43f4-93c3-6a8f70eb0460",
+              "name": "beneficiary_name",
+              "value": "={{ $json.beneficiary_name }}",
+              "type": "string"
+            },
+            {
+              "id": "f1388e58-160d-4f40-853d-ef0d4bff8166",
+              "name": "document",
+              "value": "={{ $json.document }}",
+              "type": "string"
+            },
+            {
+              "id": "55aacaeb-11dc-4576-929f-db3ee99060e7",
+              "name": "agency_name",
+              "value": "={{ $json.agency_name }}",
+              "type": "string"
+            },
+            {
+              "id": "181265b7-8fa4-464c-85ca-5c59019238cf",
+              "name": "employment_type",
+              "value": "={{ $json.employment_type }}",
+              "type": "number"
+            },
+            {
+              "id": "d86792d0-aac5-405a-9ba2-328912587049",
+              "name": "employment_description",
+              "value": "={{ $json.employment_description }}",
+              "type": "string"
+            },
+            {
+              "id": "d4fffcc0-0d16-45c6-80ca-1b9f65682388",
+              "name": "provision_number",
+              "value": "={{ $json.provision_number }}",
+              "type": "string"
+            },
+            {
+              "id": "3594c6aa-0667-4f49-bf3d-633f22dc1784",
+              "name": "available_margin_value_rcc",
+              "value": "={{ $json.available_margin_value_rcc }}",
+              "type": "number"
+            },
+            {
+              "id": "da6c77a7-a42b-454c-8e17-bae00800a191",
+              "name": "available_margin_value_rcc",
+              "value": "={{ $json.available_margin_value_rcc }}",
+              "type": "number"
+            },
+            {
+              "id": "ba3aa950-113c-4c70-8b4e-98f4ba139365",
+              "name": "available_margin_value_rmc",
+              "value": "={{ $json.available_margin_value_rmc }}",
+              "type": "number"
+            },
+            {
+              "id": "48804f5b-e599-410e-89b2-1fd102b7e2f5",
+              "name": "Remuneração do Mês",
+              "value": "={{ $('Edit Fields3').item.json[\"Remuneração do Mês\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "3e0e2346-7c40-4c21-857f-e12f4f47d8d5",
+              "name": "Total de desconto",
+              "value": "={{ $('Edit Fields3').item.json[\"Total de desconto\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "05fdd10f-8357-4ed9-bae7-a13b398d289e",
+              "name": "Total líquido",
+              "value": "={{ $('Edit Fields3').item.json[\"Total líquido\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        1168
+      ],
+      "id": "a86e9fcf-8047-4d0f-bf9d-b756e69fa7bb",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "url": "https://senffconsig.senff.com.br/api/v1/admin/cip/list-benefits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "document",
+              "value": "={{ $json.CPFCNPJ }}"
+            },
+            {
+              "name": "agency_id",
+              "value": "29"
+            },
+            {
+              "name": "agreement_id",
+              "value": "15"
+            },
+            {
+              "name": "product_id",
+              "value": "1"
+            },
+            {
+              "name": "withdraw_type_id",
+              "value": "1"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json.NOME }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json, text/plain, */*"
+            },
+            {
+              "name": "accept-language",
+              "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+            },
+            {
+              "name": "account",
+              "value": "senff-web"
+            },
+            {
+              "name": "authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            },
+            {
+              "name": "priority",
+              "value": "u=1, i"
+            },
+            {
+              "name": "referer",
+              "value": "https://senffconsig.senff.com.br/app/proposals/add"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\""
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "?0"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "sec-fetch-dest",
+              "value": "empty"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "cors"
+            },
+            {
+              "name": "sec-fetch-site",
+              "value": "same-origin"
+            },
+            {
+              "name": "tenant-id",
+              "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+            },
+            {
+              "name": "user-agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "x-correlation-id",
+              "value": "84f16e61-0193-4991-ac83-f13572685da4"
+            },
+            {
+              "name": "x-store-code",
+              "value": "84"
+            },
+            {
+              "name": "cookie",
+              "value": "_gcl_au=1.1.631611721.1771438511;_fbp=fb.2.1771438510677.23332863710652657;AdoptVisitorId=CwZgpgRmAMwCYFoCcAOAbI40CMAmBAhqIirgMYCsMAZkmQOzQFA=;_clck=9fxogl%5E2%5Eg3u%5E0%5E2240;_gid=GA1.3.2036028009.1771942498;AdoptConsent=N4Ig7gpgRgzglgFwgSQCIgFwgKwBYBMAhoQJzbYC0ADAMZUBmFuUVhFAHHbh7rgGzZi7PPj4gANCABuceAgD2AJ2QATTCFwBmaBCq4VFEuz4HcVAIz4KhLQfb4a2XfRI0A7Kwkh5ABwTIAOwAVQgBzGEwAbRASVAAbACUAeQBhHyTUAGkvJMIqRQA5AC04KABbei8AZQSEXHpMpORQwi8y+JSpUIBHAE1kADUvZAANABk4INDkAFUIACEvKTcALwKxqV8ACxovGEIAUQGqZDiZmDAvFbAAdSC4OIBPXISvTTg4AAlUCAAFEa26AAupJfAgkgBXBAhcJREEgGjyAIwCABfxqLC4ACKAClzGAoF4IFJUdDHj4IOoEAlMli3CpaV5EcjSQMIIp4EjMPhJBCfCpCEgVABBBDqfBUUTUKz4XBBcy4DDmbAYCwAOmwbj4RRAAF8gA=;_ga=GA1.1.782352786.1771438510;_ga_01FQSBPD70=GS2.3.s1771942498$o2$g1$t1771942768$j60$l0$h0;_clsk=voy8b7%5E1771942769295%5E3%5E1%5Ez.clarity.ms%2Fcollect;_ga_SCMH061MNG=GS2.1.s1771942497$o2$g1$t1771944386$j60$l0$h1738681100;_ga_D9P4GFKQNT=GS2.1.s1771942497$o2$g1$t1771944386$j60$l0$h0;"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        288,
+        1392
+      ],
+      "id": "90e5738b-f3f4-4579-ba73-edd95d728330",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst resultado = [];\n\nfor (const item of items) {\n\n  const rows = item.json.rows || [];\n  if (!rows.length) continue;\n\n  const data = rows[0];\n\n  const beneficiary_name = data.beneficiary_name || null;\n  const document = data.document || null;\n\n  const consultMargin = data.cip_benefit?.consult_margin || {};\n\n  function convertToNumber(value) {\n    if (value === null || value === undefined) return null;\n\n    const numericValue = Number(value);\n    if (isNaN(numericValue)) return null;\n\n    return Number((numericValue / 100).toFixed(2));\n  }\n\n  function formatBR(value) {\n    if (value === null) return null;\n\n    return value.toLocaleString('pt-BR', {\n      minimumFractionDigits: 2,\n      maximumFractionDigits: 2\n    });\n  }\n\n  function getEmploymentDescription(type) {\n      const map = {\n        1: \"Aposentado\",\n        2: \"Concursado\",\n        4: \"Celetista\",\n        5: \"Temporário\",\n        6: \"Pensionista\",\n        7: \"Efetivo\",\n        8: \"Estab. Constit.\",\n        9: \"Pensão Especial\",\n        13: \"Exclusivam. Comissão\",\n        17: \"Efetivo/CLT Permanente em Comissão/Confiança\",\n        28: \"Sem Vínculo Empregatício\",\n        29: \"Complementação de aposentadoria\",\n        30: \"Complementação de pensão\"\n      };\n\n    return map[type] || \"Não identificado\";\n  }\n\n  const availableMargin = convertToNumber(\n    consultMargin.available_margin_in_cents\n  );\n\n  const employment_type = consultMargin.employment_type ?? null;\n\n  resultado.push({\n    json: {\n      beneficiary_name,\n      document,\n\n      agency_name: consultMargin.agency_name || null,\n      employment_type,\n      employment_description: getEmploymentDescription(employment_type),\n      provision_number: consultMargin.provision_number || null,\n\n      available_margin_value_rcc: availableMargin,\n      available_margin_display_rcc: formatBR(availableMargin)\n    }\n  });\n\n}\n\nreturn resultado;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        1392
+      ],
+      "id": "862d3d36-f878-4feb-8bd7-28a1f063088d",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0d80b0ac-d541-43f4-93c3-6a8f70eb0460",
+              "name": "beneficiary_name",
+              "value": "={{ $json.beneficiary_name }}",
+              "type": "string"
+            },
+            {
+              "id": "f1388e58-160d-4f40-853d-ef0d4bff8166",
+              "name": "document",
+              "value": "={{ $json.document }}",
+              "type": "string"
+            },
+            {
+              "id": "55aacaeb-11dc-4576-929f-db3ee99060e7",
+              "name": "agency_name",
+              "value": "={{ $json.agency_name }}",
+              "type": "string"
+            },
+            {
+              "id": "181265b7-8fa4-464c-85ca-5c59019238cf",
+              "name": "employment_type",
+              "value": "={{ $json.employment_type }}",
+              "type": "number"
+            },
+            {
+              "id": "d86792d0-aac5-405a-9ba2-328912587049",
+              "name": "employment_description",
+              "value": "={{ $json.employment_description }}",
+              "type": "string"
+            },
+            {
+              "id": "d4fffcc0-0d16-45c6-80ca-1b9f65682388",
+              "name": "provision_number",
+              "value": "={{ $json.provision_number }}",
+              "type": "string"
+            },
+            {
+              "id": "3594c6aa-0667-4f49-bf3d-633f22dc1784",
+              "name": "available_margin_value_rcc",
+              "value": "={{ $json.available_margin_value_rcc }}",
+              "type": "number"
+            },
+            {
+              "id": "da6c77a7-a42b-454c-8e17-bae00800a191",
+              "name": "available_margin_value_rcc",
+              "value": "={{ $json.available_margin_value_rcc }}",
+              "type": "number"
+            },
+            {
+              "id": "ba3aa950-113c-4c70-8b4e-98f4ba139365",
+              "name": "available_margin_value_rmc",
+              "value": "={{ $json.available_margin_value_rmc }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        1392
+      ],
+      "id": "9c9086fe-28f3-4d22-8c93-bb830c0a318b",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        224
+      ],
+      "id": "192dec2f-bbfd-4a6a-b73c-01aac1c57d25",
+      "name": "Limit"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Consulta credilus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta credilus": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Consulta token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta token": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "autentica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "autentica": {
+      "main": [
+        [
+          {
+            "node": "salva token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "salva token": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Download a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Edit Fields": [
+      {
+        "json": {
+          "nome": "ABADIA DOS REIS OLIVEIRA",
+          "Remuneração do Mês": "R$ 13.133,54",
+          "Remuneração Bruta": "R$ 13.133,54",
+          "Total de desconto": "R$ 3.587,98",
+          "Total líquido": "R$ 9.545,56",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "nome": "ABAETE PASCOAL CARNEIRO",
+          "Remuneração do Mês": "R$ 9.734,74",
+          "Remuneração Bruta": "R$ 10.870,66",
+          "Total de desconto": "R$ 1.184,06",
+          "Total líquido": "R$ 9.686,60",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "nome": "ABDENEGO PEDRO NASCIMENTO FILHO",
+          "Remuneração do Mês": "R$ 4.366,34",
+          "Remuneração Bruta": "R$ 4.366,34",
+          "Total de desconto": "R$ 2.289,31",
+          "Total líquido": "R$ 2.077,03",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "nome": "ABDIAS DO NASCIMENTO",
+          "Remuneração do Mês": "R$ 1.997,66",
+          "Remuneração Bruta": "R$ 1.997,66",
+          "Total de desconto": "R$ 52,73",
+          "Total líquido": "R$ 1.944,93",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "nome": "ABDO YOUSSEF BANNOUT",
+          "Remuneração do Mês": "R$ 4.854,22",
+          "Remuneração Bruta": "R$ 5.306,87",
+          "Total de desconto": "R$ 2.025,97",
+          "Total líquido": "R$ 3.280,90",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      },
+      {
+        "json": {
+          "nome": "ABEGAIR NOEMIA FRANCISCO",
+          "Remuneração do Mês": "R$ 1.684,41",
+          "Remuneração Bruta": "R$ 1.684,41",
+          "Total de desconto": "R$ 8,87",
+          "Total líquido": "R$ 1.675,54",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 5
+        }
+      },
+      {
+        "json": {
+          "nome": "ABEL ABRAME",
+          "Remuneração do Mês": "R$ 16.118,23",
+          "Remuneração Bruta": "R$ 17.304,81",
+          "Total de desconto": "R$ 2.338,47",
+          "Total líquido": "R$ 14.966,34",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 6
+        }
+      },
+      {
+        "json": {
+          "nome": "ABEL ALVES LOURENCO",
+          "Remuneração do Mês": "R$ 2.180,00",
+          "Remuneração Bruta": "R$ 2.180,00",
+          "Total de desconto": "R$ 762,93",
+          "Total líquido": "R$ 1.417,07",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 7
+        }
+      },
+      {
+        "json": {
+          "nome": "ABEL COSTA",
+          "Remuneração do Mês": "R$ 10.679,81",
+          "Remuneração Bruta": "R$ 10.679,81",
+          "Total de desconto": "R$ 3.025,75",
+          "Total líquido": "R$ 7.654,06",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 8
+        }
+      },
+      {
+        "json": {
+          "nome": "ABEL DA CONCEICAO E SILVA",
+          "Remuneração do Mês": "R$ 1.993,93",
+          "Remuneração Bruta": "R$ 2.046,14",
+          "Total de desconto": "R$ 52,21",
+          "Total líquido": "R$ 1.993,93",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 9
+        }
+      }
+    ],
+    "Limit": [
+      {
+        "json": {
+          "Nome Completo": "ABADIA DOS REIS OLIVEIRA",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "PROFESSOR EDUCACAO INFANTIL CAT 3",
+          "Remuneração do Mês": "R$ 13.133,54",
+          "Remuneração Bruta": "R$ 13.133,54",
+          "Total de desconto": "R$ 3.587,98",
+          "Total líquido": "R$ 9.545,56",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABAETE PASCOAL CARNEIRO",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "ANALISTA DE SAUDE - MEDICO  NIVEL III",
+          "Remuneração do Mês": "R$ 9.734,74",
+          "Demais Elementos da Remuneração": "R$ 1.135,92",
+          "Remuneração Bruta": "R$ 10.870,66",
+          "Total de desconto": "R$ 1.184,06",
+          "Total líquido": "R$ 9.686,60",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABDENEGO PEDRO NASCIMENTO FILHO",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "ASSISTENTE DE SUPORTE OPERACIONAL NIVEL III",
+          "Remuneração do Mês": "R$ 4.366,34",
+          "Remuneração Bruta": "R$ 4.366,34",
+          "Total de desconto": "R$ 2.289,31",
+          "Total líquido": "R$ 2.077,03",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABDIAS DO NASCIMENTO",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "ASSISTENTE DE SUPORTE OPERACIONAL NIVEL I",
+          "Remuneração do Mês": "R$ 1.997,66",
+          "Remuneração Bruta": "R$ 1.997,66",
+          "Total de desconto": "R$ 52,73",
+          "Total líquido": "R$ 1.944,93",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABDO YOUSSEF BANNOUT",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "ASSISTENTE DE SUPORTE OPERACIONAL NIVEL II",
+          "Remuneração do Mês": "R$ 4.854,22",
+          "Demais Elementos da Remuneração": "R$ 452,65",
+          "Remuneração Bruta": "R$ 5.306,87",
+          "Total de desconto": "R$ 2.025,97",
+          "Total líquido": "R$ 3.280,90",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABEGAIR NOEMIA FRANCISCO",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "AUXILIAR TECNICO EM SAUDE NIVEL II",
+          "Remuneração do Mês": "R$ 1.684,41",
+          "Remuneração Bruta": "R$ 1.684,41",
+          "Total de desconto": "R$ 8,87",
+          "Total líquido": "R$ 1.675,54",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 5
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABEL ABRAME",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "PROFESSOR ENSINO FUNDAMENTAL II E MEDIO CAT 3",
+          "Remuneração do Mês": "R$ 16.118,23",
+          "Demais Elementos da Remuneração": "R$ 1.186,58",
+          "Remuneração Bruta": "R$ 17.304,81",
+          "Total de desconto": "R$ 2.338,47",
+          "Total líquido": "R$ 14.966,34",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 6
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABEL ALVES LOURENCO",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "GUARDA CIVIL METROPOLITANO - 2a CLASSE (M)",
+          "Remuneração do Mês": "R$ 2.180,00",
+          "Remuneração Bruta": "R$ 2.180,00",
+          "Total de desconto": "R$ 762,93",
+          "Total líquido": "R$ 1.417,07",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 7
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABEL COSTA",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "PROFESSOR EDUCACAO INFANTIL CAT 3",
+          "Remuneração do Mês": "R$ 10.679,81",
+          "Remuneração Bruta": "R$ 10.679,81",
+          "Total de desconto": "R$ 3.025,75",
+          "Total líquido": "R$ 7.654,06",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 8
+        }
+      },
+      {
+        "json": {
+          "Nome Completo": "ABEL DA CONCEICAO E SILVA",
+          "Situação": "APOSENTADOS",
+          "Cargo Base": "PROFESSOR ENSINO FUNDAMENTAL II E MEDIO CAT 3",
+          "Remuneração do Mês": "R$ 1.993,93",
+          "Demais Elementos da Remuneração": "R$ 52,21",
+          "Remuneração Bruta": "R$ 2.046,14",
+          "Total de desconto": "R$ 52,21",
+          "Total líquido": "R$ 1.993,93",
+          "Unidade": "IPREM APOSENTADOS"
+        },
+        "pairedItem": {
+          "item": 9
+        }
+      }
+    ]
+  },
+  "versionId": "3ef9205b-d379-4515-8122-1e6d195bc4f0",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-23T16:10:44.361Z",
+      "createdAt": "2026-02-23T16:10:44.361Z",
+      "role": "workflow:owner",
+      "workflowId": "pFWsoX8gG0JudgeB",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

@@ -1,0 +1,731 @@
+{
+  "updatedAt": "2025-09-11T18:47:00.591Z",
+  "createdAt": "2025-08-22T15:11:02.457Z",
+  "id": "DO9yeTdP8vEl4YzR",
+  "name": "TICKT-7645",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Extraia os dados da planilha",
+        "options": {
+          "systemMessage": "=---\n\n# Persona\n\n* Você é um **Assistente de Extração de Dados**.\n* Seu objetivo principal é **ler imagens de planilhas e extrair dados linha a linha, estruturando em JSON, sem alterar o conteúdo original**.\n\n---\n\n# Instruções\n\n* Receberá como entrada **uma imagem contendo uma planilha**.\n* Cada **linha da planilha corresponde a uma pessoa**.\n* Os campos a serem extraídos são:\n\n\n<fields>\n  <field>Nome</field>\n  <field>Endereco (Rua, Linha, Av, etc)</field>\n  <field>Numero</field>\n  <field>Bairro</field>\n  <field>Cidade</field>\n</fields>\n\n\n* Caso algum campo não esteja presente, preencher com `\"\"` (string vazia).\n* **Não corrigir nem alterar dados originais.**\n* A saída deve conter **apenas os dados estruturados em JSON**.\n\n---\n\n# Few-Shot Exemplos\n\n### Exemplo de Entrada (texto representando imagem OCR)\n\n\nALTEVIR JOSE DE LIRA | RUA MURICI | 870 | COHAB FLORESTA | PORTO VELHO\nALUISIO ANICETO DA SILVA | LINHA T-8 DISTRITO TRIUNFO |  | CANDEIAS DO JAMARI | CANDEIAS DO JAMARI\n\n\n### Exemplo de Saída\n\n\n[\n  {\n    \"Nome\": \"ALTEVIR JOSE DE LIRA\",\n    \"Endereco\": \"RUA MURICI\",\n    \"Numero\": \"870\",\n    \"Bairro\": \"COHAB FLORESTA\",\n    \"Cidade\": \"PORTO VELHO\"\n  },\n  {\n    \"Nome\": \"ALUISIO ANICETO DA SILVA\",\n    \"Endereco\": \"LINHA T-8 DISTRITO TRIUNFO\",\n    \"Numero\": \"\",\n    \"Bairro\": \"CANDEIAS DO JAMARI\",\n    \"Cidade\": \"CANDEIAS DO JAMARI\"\n  }\n]\n\n\n---\n\n# Restrições\n\n*  Não alterar ou corrigir nomes, endereços ou cidades.\n*  Não adicionar comentários, explicações ou metadados além do JSON.\n*  Não traduzir nem normalizar os dados.\n*  Não incluir texto fora do formato JSON na saída final.\n\n---\n\n# Passos (CoT / Prompt Chaining)\n\n1. **Identificar** cada linha da planilha.\n2. **Separar** os campos de acordo com a ordem definida (Nome, Endereco, Numero, Bairro, Cidade).\n3. **Preencher** valores ausentes com `\"\"`.\n4. **Gerar JSON estruturado** com os campos na mesma ordem.\n5. **Validar** se todos os objetos têm os 5 campos definidos.\n6. **Retornar somente o JSON** como resposta final.\n7. **Verificar se a Cidade esta correta. \n\n---\n\n# Formatação\n\n* Resposta final **sempre em JSON válido**.\n* Estrutura em **array de objetos**.\n* Campos com `\"\"` quando faltarem valores.\n\n---\n\n# IMPORTANTE\n\n*  **Não corrigir dados originais.**\n*  **Sempre manter a estrutura JSON.**\n*  **Nunca adicionar explicações na saída.**\n*  **Cada linha da planilha = 1 objeto JSON.**\n*  **Os endereços são do Brasil.**\n---\n\n",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        240
+      ],
+      "id": "830122b2-1cac-4454-95ab-3b2c252c3e18",
+      "name": "AI Agent",
+      "retryOnFail": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:12b",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        416
+      ],
+      "id": "273fb73b-01ec-4886-be80-4b3b7c62316d",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pOegylLBwaHAjzk2",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4a22a50e-052b-449f-bbe8-90e80874728c",
+              "name": "output",
+              "value": "={{ $json.output.replaceAll('json','').replaceAll('`','').trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        144
+      ],
+      "id": "797dba08-b145-44ef-b3f9-8e3e14e72c67",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega a string JSON que está dentro de \"output\"\nconst raw = $json.output;\n\n// Converte a string para objeto JavaScript\nlet data;\ntry {\n  data = JSON.parse(raw);\n} catch (err) {\n  throw new Error(\"Erro ao converter JSON: \" + err.message);\n}\n\n// Função para separar rua e número\nfunction splitEndereco(endereco) {\n  if (!endereco) return { rua: \"\", numero: \"\" };\n  const partes = endereco.split(\",\");\n  return {\n    rua: partes[0]?.trim() || \"\",\n    numero: partes[1]?.trim() || \"\"\n  };\n}\n\nconst seen = new Set();\nconst ajustado = [];\n\nfor (const item of data) {\n  const { rua, numero } = splitEndereco(item.Endereco);\n\n  const id = `${item.Nome}|${rua}|${numero}`;\n  if (seen.has(id)) continue; // remove duplicados\n  seen.add(id);\n\n  ajustado.push({\n    Nome: item.Nome?.trim(),\n    Rua: rua,\n    Numero: numero,\n    Bairro: item.Bairro?.trim(),\n    Cidade: item.Cidade?.trim()\n  });\n}\n\n// Retorna cada registro como item separado do n8n\nreturn ajustado.map(r => ({ json: r }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        144
+      ],
+      "id": "c4c59dad-b7f2-4243-a8c8-50c8cf94b805",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -256,
+        240
+      ],
+      "id": "1de775e1-27be-4a3a-87e6-0407c1fba3ec",
+      "name": "Download file",
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fcb2a474-90cd-4fa5-b0f9-8a176e18947f",
+              "leftValue": "={{ $json.mimeType }}",
+              "rightValue": "image/jpeg",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        240
+      ],
+      "id": "1a2d9ad4-eeac-4cd0-868e-91a7f00b2140",
+      "name": "Filter pdf"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "limit": 3,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1eSo3G_wf20wKTsC3jttdhBSubMCNVnA8",
+            "mode": "list",
+            "cachedResultName": "TICKT-7645",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1eSo3G_wf20wKTsC3jttdhBSubMCNVnA8"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -704,
+        240
+      ],
+      "id": "f0904ca0-1de1-4206-93ba-478e8ed96569",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        240
+      ],
+      "id": "3d55104d-5f23-43a8-9cdf-83176b12e357",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1TfKAlAFHiq_LfQ7nxlGm-HJ8VfLNTGw4qKw_CzFUuaQ",
+          "mode": "list",
+          "cachedResultName": "TICKT-7645",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TfKAlAFHiq_LfQ7nxlGm-HJ8VfLNTGw4qKw_CzFUuaQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TfKAlAFHiq_LfQ7nxlGm-HJ8VfLNTGw4qKw_CzFUuaQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $json.Nome }}",
+            "Rua": "={{ $json.Rua }}",
+            "Numero": "={{ $json.Numero }}",
+            "Bairro": "={{ $json.Bairro }}",
+            "Cidade": "={{ $json.Cidade }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rua",
+              "displayName": "Rua",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero",
+              "displayName": "Numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Bairro",
+              "displayName": "Bairro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cidade",
+              "displayName": "Cidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "UF",
+              "displayName": "UF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        992,
+        144
+      ],
+      "id": "5b5eed6a-3dcb-43b6-bb88-cadfb74c5c54",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download file').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1xghHH34lo7c7q7XkHy6z3D2s24N2LCZB",
+          "mode": "list",
+          "cachedResultName": "FINALIZADO",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1xghHH34lo7c7q7XkHy6z3D2s24N2LCZB"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1216,
+        144
+      ],
+      "id": "28998164-afde-48ea-ad21-251e784692d7",
+      "name": "Move file",
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6cf87a51-64d3-4d1d-8554-e785d2690f8c",
+              "name": "Nome",
+              "value": "={{ $json.Nome }}",
+              "type": "string"
+            },
+            {
+              "id": "9483aeb3-59ed-4e9e-a5d3-14c687f0dbd5",
+              "name": "Rua",
+              "value": "={{ $json.Rua }}",
+              "type": "string"
+            },
+            {
+              "id": "c5827b62-21d0-4e9e-9e9a-4b062a0b5335",
+              "name": "Numero",
+              "value": "={{ $json.Numero }}",
+              "type": "string"
+            },
+            {
+              "id": "1747a2cd-1bab-47f0-8e38-59a2afec6f4e",
+              "name": "Bairro",
+              "value": "={{ $json.Bairro }}",
+              "type": "string"
+            },
+            {
+              "id": "a64aab5d-53c3-4e91-bc15-c4aaab790a1a",
+              "name": "Cidade",
+              "value": "={{ $json.Cidade.toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        144
+      ],
+      "id": "9edba563-242f-44c1-9b80-b2dd24839c0e",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        144
+      ],
+      "id": "df6f0644-177f-4033-a0e4-cff28e496ae9",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download file').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1379FnFPBq-7x6_iZs30kDdhGIyjSmWRD",
+          "mode": "list",
+          "cachedResultName": "error",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1379FnFPBq-7x6_iZs30kDdhGIyjSmWRD"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        336
+      ],
+      "id": "230af690-1c0a-439d-8c6e-b8f9ffe57aa8",
+      "name": "Move file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JxMGjX2Q5RFojEnn",
+          "name": "Google Drive Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        544,
+        336
+      ],
+      "id": "cb76e5a1-3010-4546-9557-36684482f4e1",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "069f3c82-0956-4e79-bb82-1f8208199195",
+              "name": "Cidade",
+              "value": "={{ $json.nome.toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "6fe77400-e37f-48e6-9f6e-0ad491cf65da",
+              "name": "UF_sigla",
+              "value": "={{ $json.microrregiao.mesorregiao.UF.sigla }}",
+              "type": "string"
+            },
+            {
+              "id": "b27ffab9-0029-468d-9ace-486e1b7aeabc",
+              "name": "UF_nome",
+              "value": "={{ $json.microrregiao.mesorregiao.UF.nome }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        592
+      ],
+      "id": "b14e28c0-e9eb-4546-ac3b-f3b70b708668",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        592
+      ],
+      "id": "db8e5065-836e-4479-abd0-09f2a609ff8f",
+      "name": "HTTP Request",
+      "executeOnce": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "Cidade",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1312,
+        432
+      ],
+      "id": "835a33c6-59b3-46a4-a0df-44b0b7427795",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter pdf": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Filter pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 660,
+    "saveDataSuccessExecution": "all"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-08-29T16:32:52.004-03:00",
+          "Readable date": "August 29th 2025, 4:32:52 pm",
+          "Readable time": "4:32:52 pm",
+          "Day of week": "Friday",
+          "Year": "2025",
+          "Month": "August",
+          "Day of month": "29",
+          "Hour": "16",
+          "Minute": "32",
+          "Second": "52",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ]
+  },
+  "versionId": "b78971b6-a120-48bd-a51b-203c975913fa",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-22T15:11:02.457Z",
+      "createdAt": "2025-08-22T15:11:02.457Z",
+      "role": "workflow:owner",
+      "workflowId": "DO9yeTdP8vEl4YzR",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

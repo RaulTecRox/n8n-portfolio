@@ -1,0 +1,1597 @@
+{
+  "updatedAt": "2025-05-06T12:18:08.675Z",
+  "createdAt": "2025-03-28T17:51:46.941Z",
+  "id": "W5zkO531RjPRkw9E",
+  "name": "IA - Pos Vendas",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -600,
+        200
+      ],
+      "id": "c12af40a-1ed1-46e4-bcb4-78e6a315b86d",
+      "name": "When chat message received",
+      "webhookId": "2d683939-8559-48ba-a2d1-2bcc33fee6f7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=### ✅ **Agente de Pós-Vendas – Emma**\n\n**Objetivo:**\nFortalecer a reputação da **MDG Intermediações de Negócios** ao criar uma experiência pós-venda excepcional. Isso inclui coletar feedbacks genuínos, incentivar avaliações positivas no Google e resolver insatisfações de forma proativa, evitando que se transformem em reclamações públicas. Cada interação será registrada em um relatório detalhado e enviada automaticamente via **Google Chat**, após o retorno do cliente.\n\n---\n\n<Personagem>  \n- Nome: **Emma**  \n- Personalidade: Amigável, empática, acolhedora, moderna e educada.  \n- Estilo: Conversa leve e acessível, com uso moderado de emojis e tom humano.  \n- Em situações delicadas ou negativas, Emma é objetiva, respeitosa e foca em resolver de forma rápida.  \n</Personagem>\n\n---\n\n\\<Instruções Gerais>\n\n**Passo 1: Consulta inicial no Google Sheets**\n\n* Use o número de telefone do cliente (`remoteJid`) para buscar os seguintes dados no Google Sheets:\n\n  * Nome do Cliente\n  * Banco\n  * Nome do Vendedor\n  * Nome do Superior\n  * Número da AF\n  * Telefone do Cliente\n\n**Passo 2: Extração e personalização**\n\n* Se os dados forem encontrados:\n\n  * Extraia o **primeiro nome** do campo \"NomeCliente\".\n  * Salve as variáveis para compor a conversa e o relatório final.\n\n**Passo 3: Dados não encontrados**\n\n* Caso os dados não estejam disponíveis, solicite diretamente ao cliente:\n\n  * Nome\n  * Banco\n  * Como foi o atendimento\n\n**Passo 4: Feedback negativo – Coleta e Encaminhamento**\n\n* Se o cliente responder \"Insatisfeito(a)\", faça uma **única pergunta direta** sobre o motivo.\n* Após a resposta, gere o relatório de forma automática e encaminhe via Google Chat.\n\n---\n\n<Fluxo de Conversa>\n\n<mensagem abertura_com_dados>  \nOlá, <primeiroNome>! 😊 Aqui é a **Emma**, da **MDG Intermediações de Negócios**.  \nVi que você foi atendido(a) pelo(a) <nomeVendedor> referente ao seu cartão do banco <banco>. 💳  \nQueremos garantir que sua experiência conosco tenha sido incrível! 🌟 Por isso, gostaria de saber: como você avalia nosso atendimento?  \n- **🤩 Satisfeito(a)**  \n- **😐 Neutro(a)**  \n- **😕 Insatisfeito(a)**  \n</mensagem>\n\n<mensagem abertura_sem_dados>  \nOlá! 😊 Sou a **Emma**, da **MDG Intermediações de Negócios**.  \nEstou aqui para entender como foi sua experiência com nosso atendimento. Sua opinião é muito importante para nós! ❤️  \n\nPara te ajudar melhor, pode me informar:\n\n* Seu primeiro nome?\n* O banco relacionado ao atendimento?\n* Como foi sua experiência geral?\n\n  </mensagem>\n\n---\n\n<mensagem satisfeito>  \nQue ótimo ouvir isso, <primeiroNome>! 🥳  \nFicamos MUITO felizes em saber que tudo correu bem pra você!  \n\nSe possível, seria incrível se você pudesse compartilhar sua experiência no Google. Suas palavras fazem toda a diferença para nós e ajudam outros clientes a confiarem ainda mais na MDG. 🚀\n👉 Link para avaliar: [http://bit.ly/447cCNJ](http://bit.ly/447cCNJ) </mensagem>\n\n<mensagem neutro>  \nEntendi, <primeiroNome>. Agradeço muito por compartilhar sua opinião. 🙏  \nExiste algo que poderíamos ter feito diferente para tornar sua experiência ainda melhor? Estamos sempre abertos a evoluir com nossos clientes. 💙  \n</mensagem>\n\n---\n\n### 🔧 Fluxo Compacto para Feedback Negativo\n\n<mensagem insatisfeito>  \nPoxa, <primeiroNome>, sinto muito que sua experiência não tenha sido como esperava. 😞  \nVocê pode me explicar rapidinho o que aconteceu? Só com suas palavras mesmo, tá? 💬\n\nNão precisa enviar prints nem documentos. Assim que você me contar, eu registro e passo direto pro nosso time de atendimento (SAC), que vai te responder em até 24h. 📩 </mensagem>\n\n<mensagem pos_detalhamento>  \nObrigado por explicar, <primeiroNome>! 🙏  \nJá vou registrar seu feedback e acionar nosso time de atendimento.  \nSe lembrar de mais algum detalhe depois, é só me chamar. 💙  \n</mensagem>\n\n---\n\n<mensagem redes_sociais>  \nAh, e aproveitando: já conhece nosso Instagram? 💙  \nLá postamos novidades, benefícios e dicas exclusivas pra você.  \n👉 [@mdgpromotora](https://www.instagram.com/mdgpromotora/)  \nQuer que eu te envie o link direto?  \n</mensagem>\n\n<mensagem final_avaliou>  \nMuito obrigada pela sua avaliação, <primeiroNome>! Isso faz toda a diferença pra gente. 💙  \nQualquer coisa, estou por aqui. Até mais! 😊  \n</mensagem>\n\n<mensagem final_nao_avaliou>  \nAqui está o link para a avaliação no Google: [http://bit.ly/447cCNJ](http://bit.ly/447cCNJ)  \nSua opinião nos ajuda a crescer e melhorar cada vez mais. Contamos com você! 🙏  \n</mensagem>\n\n---\n\n### 📄 Relatório Final via Google Chat\n\n\\<Relatório Final via Google Chat>\n\n📢 **Relatório de Pós-Venda – <NomeCliente>**\n\n**📌 Dados do atendimento:**\n📢 *Relatório de Pós-Venda*\n🆔 AF: {{ NumeroAF }}\n🏦 Banco: {{ Banco }}\n📞 Cliente: {{ TelefoneCliente }}\n📝 Feedback: {{ feedbackCategoria }}\n📣 Relato: \"{{ resumoFeedbackCliente }}\"\n\n\\</Relatório Final via Google Chat>\n\n---\n\n### ⚙️ Instruções Técnicas Internas\n\n* Nunca mencionar nomes de superiores, gerentes ou coordenadores ao cliente.\n* Nunca solicitar imagens ou documentos.\n* Após o cliente relatar o motivo da insatisfação, gere o relatório com os campos obrigatórios:\n\n  * `NumeroAF`\n  * `Banco`\n  * `NomeVendedor`\n  * `NomeSuperior`\n  * `NomeCliente`\n  * `TelefoneCliente`\n  * `Feedback`\n  * `resumoFeedbackCliente`\n* Use a integração com Google Chat (via n8n) para enviar o relatório automaticamente ao canal/responsável.\n* O tom da Emma deve ser sempre leve, claro, respeitoso e objetivo.\n\n---",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        60,
+        200
+      ],
+      "id": "4073e224-38f7-4880-a6d6-0160c28ed36e",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "qwen-qwq-32b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        500
+      ],
+      "id": "63a3a05f-94ef-4fa3-9683-3319c0c669c1",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "zlpv9tK7gIWYTnYj",
+          "name": "Groq Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT  \n    af.af_codigo AS 'Número da AF',\n    ban.bcolib_descricao AS 'Banco',\n    rep.rep_nome AS 'Nome do Vendedor',\n    rep_sup.rep_nome AS 'Nome do Superior',\n    conv.Con_nome AS 'Nome do Cliente',\n    conv.Con_telefone AS 'Telefone do Cliente'\nFROM dbo.af af\nLEFT JOIN dbo.bancolib ban ON af.Bcolib_codigo = ban.Bcolib_codigo\nLEFT JOIN dbo.representante rep ON af.Rep_codigo = rep.Rep_codigo\nLEFT JOIN dbo.representante rep_sup ON rep.Rep_superior = rep_sup.Rep_codigo\nLEFT JOIN dbo.convenio conv ON af.Con_codigo = conv.Con_codigo\nWHERE \n    af.faf_codigo = 3\n    AND CAST(af.af_data_liberacao_banco AS DATE) = CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)\nORDER BY af.af_codigo;\n\n"
+      },
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        -380,
+        -520
+      ],
+      "id": "7dc2d63f-66d8-427b-afd0-aa3a19431bcc",
+      "name": "Microsoft SQL",
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        -520
+      ],
+      "id": "bdf90b4a-6a7c-48df-8e0a-ae013c6f3a04",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b9da9967-809d-4a36-93f4-d64c46d65e03",
+              "name": "NumeroAF",
+              "value": "={{ $json[\"Número da AF\"] }}",
+              "type": "number"
+            },
+            {
+              "id": "5cd7d054-07a7-4357-9d69-d9e66d09e279",
+              "name": "Banco",
+              "value": "={{ $json.Banco }}",
+              "type": "string"
+            },
+            {
+              "id": "7497f533-e052-45f9-9b93-1770325142f0",
+              "name": "NomeVendedor",
+              "value": "={{ $json[\"Nome do Vendedor\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "f79b5fd4-53a4-468a-b8f3-58c48c89a7b7",
+              "name": "NomeSuperior",
+              "value": "={{ $json[\"Nome do Superior\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "e0c99990-9593-4ba8-950e-88c529f64a24",
+              "name": "TelefoneCliente",
+              "value": "=55{{ $json[\"Telefone do Cliente\"].replaceAll('(','').replaceAll(')',\"\").replaceAll('-','') }}",
+              "type": "string"
+            },
+            {
+              "id": "a2c76e9d-d793-4374-bfde-6464cf0f6ef3",
+              "name": "Primeiro Nome Cliente",
+              "value": "={{ $json[\"Nome do Cliente\"].split(' ').first() }}",
+              "type": "string"
+            },
+            {
+              "id": "c3ff0137-bdd6-4547-835e-672799fc4c33",
+              "name": "Ultimo Nome Cliente",
+              "value": "={{ $json[\"Nome do Cliente\"].split(' ').last() }}",
+              "type": "string"
+            },
+            {
+              "id": "5a29d78b-2e2e-41e5-bcf6-4837d05259ca",
+              "name": "NomeCliente",
+              "value": "={{ $json[\"Nome do Cliente\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        60,
+        -520
+      ],
+      "id": "5986028e-94c7-4d30-a00f-b27f3b88fd3a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -520
+      ],
+      "id": "1afc8c35-670e-4c16-9847-7603446b1207",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/CL020",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "kqd8awta15phwswkxyylkn"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"{{ $json['Telefone do Cliente'] }}\",\"textMessage\": {\"text\":\"Olá {{ $json['Primeiro Nome Cliente'] }} , tudo bem? Aqui é da MDG intermediações. Vi que você finalizou um contrato com a gente. Está tudo certo com o atendimento e com a contratação?\"}}\n",
+        "options": {}
+      },
+      "id": "a00c10e9-fd19-4461-b208-a78896e031b8",
+      "name": "envia WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        -420
+      ],
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1cc7223b-e0d1-4e1c-b3a4-305bb009baf1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        -160
+      ],
+      "id": "abeeb96d-7d89-4100-b7ab-69f47aaa1925",
+      "name": "Webhook",
+      "webhookId": "1cc7223b-e0d1-4e1c-b3a4-305bb009baf1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/CL020",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "kqd8awta15phwswkxyylkn"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"{{ $('Dados').item.json.remoteJid }}\",\"textMessage\": {\"text\":{{ $json.output }}}}\n",
+        "options": {}
+      },
+      "id": "839ae911-deb7-4d79-bfe0-7a67182bdf1e",
+      "name": "envia WhatsApp1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        200
+      ],
+      "alwaysOutputData": false,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8",
+          "mode": "list",
+          "cachedResultName": "POS-VENDAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Banco": "={{ $('Edit Fields').item.json.Banco }}",
+            "NumeroAF": "={{ $json.NumeroAF }}",
+            "NomeVendedor": "={{ $json.NomeVendedor }}",
+            "NomeSuperior": "={{ $json.NomeSuperior }}",
+            "NomeCliente": "={{ $json.NomeCliente }}",
+            "TelefoneCliente": "={{ $json.TelefoneCliente }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NumeroAF",
+              "displayName": "NumeroAF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Banco",
+              "displayName": "Banco",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NomeVendedor",
+              "displayName": "NomeVendedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NomeSuperior",
+              "displayName": "NomeSuperior",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NomeCliente",
+              "displayName": "NomeCliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TelefoneCliente",
+              "displayName": "TelefoneCliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Feedback ",
+              "displayName": "Feedback ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        280,
+        -620
+      ],
+      "id": "08d94d4b-5c24-41ea-b1ab-d5ac6e3678b8",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "baffb7d1-181e-4327-bc56-d45fc0adc0ab",
+                    "leftValue": "={{ $json.body.event }}",
+                    "rightValue": "messages.upsert",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "messages.upsert"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.event }}",
+                    "rightValue": "send.message",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "239ea911-10aa-41d6-ab30-399f75dc2e71"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "send.message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -380,
+        -160
+      ],
+      "id": "a346ed8f-7d3a-44ac-88df-a935f022c1b2",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "081eca1a-a178-47c5-a311-d328c8de30fa",
+              "name": "output",
+              "value": "={{ $json.output.replaceAll('>','').toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        200
+      ],
+      "id": "654df819-b7bc-45cf-a4a3-9c9b026c1db0",
+      "name": "Edit Fields2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8",
+          "mode": "list",
+          "cachedResultName": "POS-VENDAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Feedback ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Feedback_', `feedback do cliente`, 'string') }}",
+            "TelefoneCliente": "={{ $('Dados_teste').item.json.remoteJid.split(\"@\").first() }}"
+          },
+          "matchingColumns": [
+            "TelefoneCliente"
+          ],
+          "schema": [
+            {
+              "id": "NumeroAF",
+              "displayName": "NumeroAF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Banco",
+              "displayName": "Banco",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "NomeVendedor",
+              "displayName": "NomeVendedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "NomeSuperior",
+              "displayName": "NomeSuperior",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "NomeCliente",
+              "displayName": "NomeCliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TelefoneCliente",
+              "displayName": "TelefoneCliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Feedback ",
+              "displayName": "Feedback ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        100,
+        500
+      ],
+      "id": "fa5912f0-6da0-459b-9a65-11ed8c3ee60c",
+      "name": "Feedback ",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8",
+          "mode": "list",
+          "cachedResultName": "POS-VENDAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w4hrW4a3WcMZbmMdcbMvMl47CCWWo3tzrOd0JOYmLO8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "TelefoneCliente",
+              "lookupValue": "={{ $('Dados_teste').item.json.remoteJid.split(\"@\").first() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        340,
+        500
+      ],
+      "id": "fb8c9ee7-5b77-466a-b823-4c89170e506e",
+      "name": "Dados cliente",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Dados_teste').item.json.sessionId }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -20,
+        500
+      ],
+      "id": "614b172e-4214-41d1-9ce4-08203945cc24",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d01c43e8-d742-4c59-a339-1c2219220a80",
+              "name": "chatInput",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "c3d633e6-6c0a-4759-856f-966a5ad9c1ea",
+              "name": "remoteJid",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        -180
+      ],
+      "id": "659e8256-06eb-419b-a34e-7af0c57b8a7a",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d01c43e8-d742-4c59-a339-1c2219220a80",
+              "name": "chatInput",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "c3d633e6-6c0a-4759-856f-966a5ad9c1ea",
+              "name": "remoteJid",
+              "value": "=5519993418990@s.whatsapp.net",
+              "type": "string"
+            },
+            {
+              "id": "033d0483-f04e-4a35-a4ce-45453e88bbe0",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        200
+      ],
+      "id": "682b8bab-8a9a-4d00-b2e2-0f74ff015fd7",
+      "name": "Dados_teste"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        200
+      ],
+      "id": "89cc4614-ff47-4e49-8e09-58aa0178430d",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "spaceId": "spaces/AAQAELbFiLk",
+        "jsonParameters": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON_Parameters', ``, 'boolean') }}",
+        "messageUi": {},
+        "messageJson": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message__JSON_', ``, 'json') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleChatTool",
+      "typeVersion": 1,
+      "position": [
+        220,
+        500
+      ],
+      "id": "29d72ad6-6ee6-44f5-a0e1-090ad5f15613",
+      "name": "Google Chat",
+      "webhookId": "a91394b2-8e38-47d2-b33a-14e1fcdfb93c",
+      "credentials": {
+        "googleChatOAuth2Api": {
+          "id": "bZ3Uw0MR5VFeM4CJ",
+          "name": "Chat Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:14b-instruct-q4_K_M",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        500
+      ],
+      "id": "077c7549-0d49-4ba7-a14d-f32d4577ca5e",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pOegylLBwaHAjzk2",
+          "name": "Ollama account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Dados_teste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SQL": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "envia WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "envia WhatsApp": {
+      "main": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "envia WhatsApp1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feedback ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados cliente": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        []
+      ]
+    },
+    "Dados_teste": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia WhatsApp1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Chat": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Microsoft SQL": [
+      {
+        "json": {
+          "Número da AF": 237114,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ISABELLE BARBOSA FRANCA SILVERIO",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "JOSE LUIZ DA SILVA",
+          "Telefone do Cliente": "(17)99637-3949"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237115,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ISABELLE BARBOSA FRANCA SILVERIO",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "JOSE LUIZ DA SILVA",
+          "Telefone do Cliente": "(17)99637-3949"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237624,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "BEATRIZ BRAUER",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "PEDRO PAULO MOURA GONCALVES",
+          "Telefone do Cliente": "(34)99948-6336"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237625,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "BEATRIZ BRAUER",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "PEDRO PAULO MOURA GONCALVES",
+          "Telefone do Cliente": "(34)99948-6336"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237644,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "KELLY FERNANDA RODRIGUES DAS NEVES",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "GILMAR VENANCIO DE MAGALHAES",
+          "Telefone do Cliente": "(16)99448-9584"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237755,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "GIOVANNA JENILY DA SILVA LOPES GOMES",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "CLAUDIA GONCALVES GOUVEIA",
+          "Telefone do Cliente": "(67)99995-8889"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237756,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "GIOVANNA JENILY DA SILVA LOPES GOMES",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "CLAUDIA GONCALVES GOUVEIA",
+          "Telefone do Cliente": "(67)99995-8889"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237761,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "MARIA LUIZA MARTINS ALEXANDRE",
+          "Nome do Superior": "KELLY.LIDER",
+          "Nome do Cliente": "LUSINETE MARIA DOS SANTOS",
+          "Telefone do Cliente": "(11)98692-5450"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237763,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "MARIA LUIZA MARTINS ALEXANDRE",
+          "Nome do Superior": "KELLY.LIDER",
+          "Nome do Cliente": "LUSINETE MARIA DOS SANTOS",
+          "Telefone do Cliente": "(11)98692-5450"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237767,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ANA LUIZA MESCHIATI DA SILVA",
+          "Nome do Superior": "FRANCIELI.LIDER",
+          "Nome do Cliente": "NIVIO GUIBERTO",
+          "Telefone do Cliente": "(13)99773-9005"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237768,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ANA LUIZA MESCHIATI DA SILVA",
+          "Nome do Superior": "FRANCIELI.LIDER",
+          "Nome do Cliente": "NIVIO GUIBERTO",
+          "Telefone do Cliente": "(13)99773-9005"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237778,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "DARLLEY RANIELLY PEREIRA SILVA",
+          "Nome do Superior": "FRANCIELI.LIDER",
+          "Nome do Cliente": "MARIA IZABEL MEDEIROS DE SOUZA",
+          "Telefone do Cliente": "(21)99502-7018"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237779,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "DARLLEY RANIELLY PEREIRA SILVA",
+          "Nome do Superior": "FRANCIELI.LIDER",
+          "Nome do Cliente": "MARIA IZABEL MEDEIROS DE SOUZA",
+          "Telefone do Cliente": "(21)99502-7018"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237781,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "TATIANA REIS FERNANDES DE ALMEIDA",
+          "Nome do Superior": "FRANCIELI.LIDER",
+          "Nome do Cliente": "MARIA DE FATIMA R DE SIQUEIRA GUTIERRES",
+          "Telefone do Cliente": "(11)99620-2085"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237786,
+          "Banco": "BMG",
+          "Nome do Vendedor": "GIOVANA DE BRITO",
+          "Nome do Superior": "TAICY.LIDER",
+          "Nome do Cliente": "ISABEL ALVES MONTEIRO DA SILVA",
+          "Telefone do Cliente": "(11) 9986-4183"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237789,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "IASMIN MARQUES LEOPOLDINO",
+          "Nome do Superior": "DAIANE.LIDER",
+          "Nome do Cliente": "SERGIO HENRIQUE FERREIRA",
+          "Telefone do Cliente": "(31)99920-5047"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237794,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "STEFANNI FERNANDES DO NASCIMENTO",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "MAURO SERGIO RESTANI",
+          "Telefone do Cliente": "(35)99871-1052"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237796,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "JESSICA CRISTINA DOS SANTOS",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "APARECIDA ASSUNTA BARBATO",
+          "Telefone do Cliente": "(11)97544-6068"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237797,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "EVELLIN GOMES PEREIRA",
+          "Nome do Superior": "FRANCIELI.LIDER",
+          "Nome do Cliente": "MARGARET CORDEIRO RODRIGUES",
+          "Telefone do Cliente": "(31)99226-2775"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237803,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "ANA BEATRIZ DE ALMEIDA DOS SANTOS SOUZA",
+          "Nome do Superior": "MARCELA.LIDER",
+          "Nome do Cliente": "VALQUIRIA SOLANGE SILVA",
+          "Telefone do Cliente": "(11)98661-9618"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237804,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "ANA BEATRIZ DE ALMEIDA DOS SANTOS SOUZA",
+          "Nome do Superior": "MARCELA.LIDER",
+          "Nome do Cliente": "VALQUIRIA SOLANGE SILVA",
+          "Telefone do Cliente": "(11)98661-9618"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237806,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "LAIANE LETICIA NUNES DOS SANTOS",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "MARIA DE FATIMA DE SIQUEIRA",
+          "Telefone do Cliente": "(51)99590-5905"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237808,
+          "Banco": "BANCO MASTER",
+          "Nome do Vendedor": "THAIS CRISTINA SANTOS TEIXEIRA BORGES",
+          "Nome do Superior": "LIDER.COSMO",
+          "Nome do Cliente": "EDUARDO ALOIZIO SOARES",
+          "Telefone do Cliente": "(31)98893-4416"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237810,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "STHEFANY DE JESUS LIMA",
+          "Nome do Superior": "MARINA.LIDER",
+          "Nome do Cliente": "MARCIO GONZAGA DA SILVA",
+          "Telefone do Cliente": "(31)97300-5331"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237812,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "LAIANE LETICIA NUNES DOS SANTOS",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "MARIA DE FATIMA DE SIQUEIRA",
+          "Telefone do Cliente": "(51)99590-5905"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237819,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "SAMIRA BIANCA DA SILVA ASSIS",
+          "Nome do Superior": "DAIANE.LIDER",
+          "Nome do Cliente": "JOAO MORENO TEODORO",
+          "Telefone do Cliente": "(83)98187-5505"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237833,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "BEATRIZ BRAUER",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "OSMIR APARECIDO LAZARO",
+          "Telefone do Cliente": "(19)99399-8672"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237835,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "BEATRIZ BRAUER",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "OSMIR APARECIDO LAZARO",
+          "Telefone do Cliente": "(19)99399-8672"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237838,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "GIOVANNA JENILY DA SILVA LOPES GOMES",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "CLAUDIONICE FERREIRA RODRIGUES",
+          "Telefone do Cliente": "(31)99240-9336"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237839,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "MIRELLA SANTOS SOARES",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "ERNOCH DOS SANTOS NUNES",
+          "Telefone do Cliente": "(19)99821-1094"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237840,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "MIRELLA SANTOS SOARES",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "ERNOCH DOS SANTOS NUNES",
+          "Telefone do Cliente": "(19)99821-1094"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237844,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ANA JULIA SILVA",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "ROBERTO DOMINGUES MARTINS",
+          "Telefone do Cliente": "(16)99293-1941"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237845,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ANA JULIA SILVA",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "ROBERTO DOMINGUES MARTINS",
+          "Telefone do Cliente": "(16)99293-1941"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237850,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "SOLANGE DE OLIVEIRA MORAIS DO NASCIMENTO",
+          "Nome do Superior": "LIDER.COSMO",
+          "Nome do Cliente": "LILIAN SALETE RIBEIRO LEITE LOPES",
+          "Telefone do Cliente": "(11)99829-1901"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237851,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "SOLANGE DE OLIVEIRA MORAIS DO NASCIMENTO",
+          "Nome do Superior": "LIDER.COSMO",
+          "Nome do Cliente": "LILIAN SALETE RIBEIRO LEITE LOPES",
+          "Telefone do Cliente": "(11)99829-1901"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237853,
+          "Banco": "FOX",
+          "Nome do Vendedor": "SOLANGE DE OLIVEIRA MORAIS DO NASCIMENTO",
+          "Nome do Superior": "LIDER.COSMO",
+          "Nome do Cliente": "LILIAN SALETE RIBEIRO LEITE LOPES",
+          "Telefone do Cliente": "(11)99829-1901"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237861,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "DEUMARA LIMA SOUZA",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "JOSEFA ALVES DOS SANTOS COSTA",
+          "Telefone do Cliente": "(79)99656-6721"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237862,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "DEUMARA LIMA SOUZA",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "JOSEFA ALVES DOS SANTOS COSTA",
+          "Telefone do Cliente": "(79)99656-6721"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237863,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "SHARON SANTOS DE LIMA",
+          "Nome do Superior": "TAICY.LIDER",
+          "Nome do Cliente": "APARECIDO DE CASSIO RODRIGUES DE SOUZA",
+          "Telefone do Cliente": "(11)98653-5921"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237867,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "SHARON SANTOS DE LIMA",
+          "Nome do Superior": "TAICY.LIDER",
+          "Nome do Cliente": "APARECIDO DE CASSIO RODRIGUES DE SOUZA",
+          "Telefone do Cliente": "(11)98653-5921"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237870,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ANA JULIA SILVA",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "JOSE BENEDITO MENDES",
+          "Telefone do Cliente": "(44)99938-1976"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237871,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ANA JULIA SILVA",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "JOSE BENEDITO MENDES",
+          "Telefone do Cliente": "(44)99938-1976"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237872,
+          "Banco": "BMG",
+          "Nome do Vendedor": "VITORIA HELENA SILVA",
+          "Nome do Superior": "KELLY.LIDER",
+          "Nome do Cliente": "SEBASTIAO ROBERTO DE ALMEIDA",
+          "Telefone do Cliente": "(11)96326-0139"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237875,
+          "Banco": "QUERO MAIS CREDITO",
+          "Nome do Vendedor": "SAMIRA BIANCA DA SILVA ASSIS",
+          "Nome do Superior": "DAIANE.LIDER",
+          "Nome do Cliente": "MARIA IONISE GARCIA MACHADO",
+          "Telefone do Cliente": "(51)99832-0120"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237876,
+          "Banco": "BMG",
+          "Nome do Vendedor": "PAMELA FARIAS SILVA",
+          "Nome do Superior": "LEONEL.LIDER",
+          "Nome do Cliente": "LUISA CRISTINA CARDOSO",
+          "Telefone do Cliente": "(51)98260-2000"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237894,
+          "Banco": "C6 BANK",
+          "Nome do Vendedor": "JESSICA CRISTINA DOS SANTOS",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "EDILSON PEREIRA NANTES",
+          "Telefone do Cliente": "(14)99613-0358"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237895,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ISABELLE BARBOSA FRANCA SILVERIO",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "TANIA MARA AYUB ZAMBON",
+          "Telefone do Cliente": "(17)99757-6183"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237896,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "ISABELLE BARBOSA FRANCA SILVERIO",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "TANIA MARA AYUB ZAMBON",
+          "Telefone do Cliente": "(17)99757-6183"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237905,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "LORENA DA SILVA FERREIRA",
+          "Nome do Superior": "LARISSA.LIDER",
+          "Nome do Cliente": "VALDECI CAVALCANTE SOARES",
+          "Telefone do Cliente": "(21)96771-8121"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237911,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "MANUELA LAUANY MARTINS RAMOS",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "RICARDO IURASSEK",
+          "Telefone do Cliente": "(61) 9185-9029"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237914,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "KAREN REGINA DO NASCIMENTO",
+          "Nome do Superior": "KELLY.LIDER",
+          "Nome do Cliente": "TEOFILO OLIVEIRA FILHO",
+          "Telefone do Cliente": "(31)98467-0051"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237916,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "MANUELA LAUANY MARTINS RAMOS",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "RICARDO IURASSEK",
+          "Telefone do Cliente": "(61) 9185-9029"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237927,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "NILCEIA ALINE DE PAULA PAIXAO",
+          "Nome do Superior": "NILCEIA.LIDER",
+          "Nome do Cliente": "LANDERLEI GONCALVES DE SOUZA",
+          "Telefone do Cliente": "( 9)29917-2724"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237932,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "STEFANNI FERNANDES DO NASCIMENTO",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "MAURO ADRIANO FERREIRA",
+          "Telefone do Cliente": "(19)99615-3061"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237933,
+          "Banco": "AMIGOZ",
+          "Nome do Vendedor": "STEFANNI FERNANDES DO NASCIMENTO",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "MAURO ADRIANO FERREIRA",
+          "Telefone do Cliente": "(19)99615-3061"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237934,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "STEFANNI FERNANDES DO NASCIMENTO",
+          "Nome do Superior": "DEUMARA.LIDER",
+          "Nome do Cliente": "MAURO ADRIANO FERREIRA",
+          "Telefone do Cliente": "(19)99615-3061"
+        }
+      },
+      {
+        "json": {
+          "Número da AF": 237935,
+          "Banco": "FINANTO",
+          "Nome do Vendedor": "ANA JULIA SILVA",
+          "Nome do Superior": "TAINA.LIDER",
+          "Nome do Cliente": "MARCO ANTONIO FERRO MOREIRA",
+          "Telefone do Cliente": "(81)98783-8453"
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "connection": "upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "http",
+            "x-forwarded-for": "10.3.60.19, 10.3.60.26",
+            "host": "n8napp",
+            "content-length": "930",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "user-agent": "axios/1.7.7",
+            "accept-encoding": "gzip, compress, deflate, br"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "CL020",
+            "data": {
+              "key": {
+                "remoteJid": "5519993418990@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB0AC43E150079D4355D0"
+              },
+              "pushName": "Raul😎🤘",
+              "message": {
+                "conversation": "a  mocinha me atendeu bem",
+                "messageContextInfo": {
+                  "deviceListMetadata": {
+                    "senderKeyHash": "RP+dlvnRyE4vKA==",
+                    "senderTimestamp": "1744159159",
+                    "senderAccountType": "E2EE",
+                    "receiverAccountType": "E2EE",
+                    "recipientKeyHash": "0AifzoLPbbfYgQ==",
+                    "recipientTimestamp": "1744288823"
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": "tbjHjlLHZQ+zqRH4YRUKT+diNN1MlkyzJ2Lf30LjMfI="
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1744307778,
+              "owner": "CL020",
+              "source": "web"
+            },
+            "destination": "https://n8n.mdgintermediacoes.com.br/webhook/1cc7223b-e0d1-4e1c-b3a4-305bb009baf1",
+            "date_time": "2025-04-10T14:56:18.379Z",
+            "sender": "5519981152848@s.whatsapp.net",
+            "server_url": "http://evolutionapi-dev.mdgintermediacoes.com.br",
+            "apikey": "kqd8awta15phwswkxyylkn"
+          },
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/1cc7223b-e0d1-4e1c-b3a4-305bb009baf1",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "7dea77c8-99b5-4ac3-896f-3240d3b26ba9",
+  "activeVersionId": null,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2025-03-28T17:51:46.941Z",
+      "createdAt": "2025-03-28T17:51:46.941Z",
+      "role": "workflow:owner",
+      "workflowId": "W5zkO531RjPRkw9E",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

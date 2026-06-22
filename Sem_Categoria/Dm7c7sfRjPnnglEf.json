@@ -1,0 +1,411 @@
+{
+  "updatedAt": "2026-06-18T18:40:39.738Z",
+  "createdAt": "2025-02-26T16:49:48.662Z",
+  "id": "Dm7c7sfRjPnnglEf",
+  "name": "Inventario - atualiza glpi",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "glpi_computers",
+          "mode": "name"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "serial",
+        "valueToMatchOn": "={{ $json.codigo_barras }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "otherserial",
+              "value": "={{ $json.patrimonio }}"
+            },
+            {
+              "column": "comment",
+              "value": "={{ $json.lote }}\n{{ $json.valor }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1a26c1b-b930-4c0b-a84b-3cdd410bc34f",
+      "name": "glpi_computers",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        1712,
+        -16
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "MZJ4ZTqeywo2Oo5M",
+          "name": "MySQL GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -240
+      ],
+      "id": "44d085df-1168-4ff4-a485-222ad79f07a4",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1uKMSuuB3o93yv57MeCdb1zZlj8607F4T",
+            "mode": "list",
+            "cachedResultName": "Suporte",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1uKMSuuB3o93yv57MeCdb1zZlj8607F4T"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        128,
+        -240
+      ],
+      "id": "0af15c0c-3fa5-4a06-8591-f592750a9fbf",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vtAyj3CGNXcJFoMZ",
+          "name": "Google Drive Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        352,
+        -240
+      ],
+      "id": "d3bf112f-419a-441e-81ec-a1fdd9b7617d",
+      "name": "Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vtAyj3CGNXcJFoMZ",
+          "name": "Google Drive Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "data0",
+        "options": {
+          "keepSource": "json"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -16
+      ],
+      "id": "e5e8c462-9a6d-4de7-8ddd-fbe64f13d9e8",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c699b87e-662b-47f2-b92c-07830220a185",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "dotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        -16
+      ],
+      "id": "ea0ecc53-8523-4697-97ee-f2eeef34e40a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6aac3386-3943-485b-9d6d-c4a8b613fbdd",
+              "name": "codigo_barras",
+              "value": "={{ $json.codigo_barras }}",
+              "type": "string"
+            },
+            {
+              "id": "89eb893d-284d-4d1d-8a2d-78a0d891d981",
+              "name": "patrimonio",
+              "value": "={{ $json.patrimonio }}",
+              "type": "string"
+            },
+            {
+              "id": "34b98a48-ef00-483d-a209-1ce3f29e976a",
+              "name": "lote",
+              "value": "=Contrato Onloc: {{ $json.lote }}",
+              "type": "string"
+            },
+            {
+              "id": "1efde823-e218-42e6-9b1f-43d3e18f535f",
+              "name": "valor",
+              "value": "=Parcela: R${{ $json.valor }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -16
+      ],
+      "id": "fffa6c8b-70dc-4b85-b9fb-1be41a111d37",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const lines = $input.first().json.text.split(\"\\n\");\nconst items = [];\n\nfor (let line of lines) {\n    // Regex corrigida para aceitar letras minúsculas, R$ no final e valores zerados/com hífen\n    const match = line.match(/^(.+?)\\s+([a-zA-Z0-9]+)\\s+([a-zA-Z0-9]+)\\s+([a-zA-Z0-9\\/]+)\\s+([\\d,.-]+)R\\$/);\n    \n    if (match) {\n        items.push({\n            produto: match[1].trim(),\n            codigo_barras: match[2].trim(),\n            patrimonio: match[3].trim(),\n            lote: match[4].trim(),\n            valor: match[5].trim()\n        });\n    }\n}\n\nreturn items.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -16
+      ],
+      "id": "ac80dd6a-7b00-4a8f-bbab-e074e2c5d633",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "glpi_monitors",
+          "mode": "name"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "serial",
+        "valueToMatchOn": "={{ $json.codigo_barras }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "otherserial",
+              "value": "={{ $json.patrimonio }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "74044872-1936-403f-9dca-1498c6649071",
+      "name": "glpi_monitors",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        1712,
+        192
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "MZJ4ZTqeywo2Oo5M",
+          "name": "MySQL GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "glpi_computers",
+          "mode": "name"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "serial",
+        "valueToMatchOn": "L1CALX5",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "comment",
+              "value": "=Contrato Onloc: 799N/1\nParcela R$75,13"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5ad9677f-8f70-4d74-854e-d3f50d2bee76",
+      "name": "glpi_computers1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        800,
+        320
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "MZJ4ZTqeywo2Oo5M",
+          "name": "MySQL GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        368,
+        -16
+      ],
+      "id": "3c5a4c9f-1533-47a5-9568-4f0c3fdb92b8",
+      "name": "When chat message received",
+      "webhookId": "6abbc882-d6c6-4ed1-b559-6eb5d24c9de1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive1": {
+      "main": [
+        []
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "glpi_computers",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "glpi_monitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a476c10c-c0d3-4cc8-98db-9e5b76ced210",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-02-26T16:49:48.662Z",
+      "createdAt": "2025-02-26T16:49:48.662Z",
+      "role": "workflow:owner",
+      "workflowId": "Dm7c7sfRjPnnglEf",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

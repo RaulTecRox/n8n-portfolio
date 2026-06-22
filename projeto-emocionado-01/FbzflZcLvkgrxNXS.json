@@ -1,0 +1,736 @@
+{
+  "updatedAt": "2025-09-24T11:49:32.233Z",
+  "createdAt": "2025-01-06T11:13:05.614Z",
+  "id": "FbzflZcLvkgrxNXS",
+  "name": "1-DownAgilus copy",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COALESCE(MAX(clt_codigo), 0) AS max_clt_codigo\nFROM agilus;\n",
+        "options": {}
+      },
+      "id": "60d9b07a-7028-4124-90ac-4463d09959a3",
+      "name": "GetMaxId",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -880,
+        -220
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "yXCqmzb5SFMt7iX4",
+          "name": "rpa_margemlus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH CTE_UniqueCPFs AS (\nSELECT TOP {{ $('Scheduler').first().json.size }}\n        clt_codigo,\n        clt_cpf,\n        clt_matricula,\n        clt_especie,\n        clt_nome,\n        ROW_NUMBER() OVER (PARTITION BY clt_cpf ORDER BY clt_codigo) AS RowNum\n    FROM \n      dbo.cliente_televenda\n   WHERE\n   \tclt_cpf IS NOT NULL AND\n   \tclt_codigo >= {{ $('GetMaxId').first().json.max_clt_codigo }}\n  ORDER BY\n    clt_codigo ASC\n)\nSELECT *\nFROM CTE_UniqueCPFs\nWHERE RowNum = 1;"
+      },
+      "id": "5a6f6739-e2b4-4456-a28a-4c63a26971cc",
+      "name": "Agilus",
+      "type": "n8n-nodes-base.microsoftSql",
+      "typeVersion": 1.1,
+      "position": [
+        -680,
+        -220
+      ],
+      "credentials": {
+        "microsoftSql": {
+          "id": "Eck1dwqEQjiv5hCV",
+          "name": "dboAgilus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const completeData = $('Agilus').all();\n\nfunction keepOnlyLettersAndSpaces(input) {\n    if (!input) {\n        return \"\"; \n    }\n    return input.replace(/[^a-zA-Z\\s]/g, \"\");\n}\n\nfunction keepOnlyLettersAndNumbers(input) {\n    if (!input) {\n        return \"\"; // Retorna string vazia se for nulo ou vazio\n    }\n    return input.replace(/[^a-zA-Z0-9]/g, \"\"); // Remove tudo que não for letra ou número\n}\n\nfunction cleanString(input) {\n    if (!input) {\n        return \"\"; // Retorna string vazia se for nulo ou vazio\n    }\n    return input.replace(/[.,\\-\\s]/g, \"\"); // Remove ponto, traço, vírgula e espaço\n}\n\nconst normatized = completeData.map((data) => {\n  return {\n    \"clf_cpf\" : data.json.clt_cpf.trim(),\n    \"clt_codigo\" : data.json.clt_codigo,\n    \"clt_matricula\" : data.json.clt_matricula ? keepOnlyLettersAndNumbers(data.json.clt_matricula.trim()) : \"\",\n    \"clt_especie\" : data.json.clt_especie ? keepOnlyLettersAndNumbers(data.json.clt_especie): \"\",\n    \"clt_nome\" : data.json.clt_nome ? keepOnlyLettersAndSpaces(data.json.clt_nome.trim()) : \"\",\n  }\n})\n\nreturn {normatized};"
+      },
+      "id": "879eb7e9-6a13-4724-9337-5464ec9d1b76",
+      "name": "Normatize agilus",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Normatize agilus').first().json.normatized;\n\nfunction nuuabled(item) {\n  if (!item) {\n    return \"NULL\"; \n  }\n  \n  if (typeof(item) == \"string\") {\n      if (item != \"\") {\n          return `'${item}'`;\n      }\n      return \"NULL\";\n  }\n\n  if (typeof(item) == \"undefined\") {\n      return \"NULL\";\n  }\n  return item;\n}\n\n\n\nconst result = data.map(obj => {\n  const values = Object.values(obj).map((value) => nuuabled(value));\n  return `(${values.join(', ')})`;\n}).join(', ');\n\nreturn {result};"
+      },
+      "id": "a9bd7384-7dc0-4058-8c4f-5a0e7017a7ca",
+      "name": "Mount partial insert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1200,
+        -20
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "7a173d93-f3d7-4ad9-91de-76cb0158d6a1",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        680,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT IGNORE INTO agilus (clt_cpf, clt_codigo, clt_matricula, clt_especie, clt_nome)\nVALUES {{ $('Mount partial insert').first().json.result }};",
+        "options": {}
+      },
+      "id": "6d30f9e9-dc2b-4df7-b3df-4b1ca8aa0c86",
+      "name": "SaveBdAgilus",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -980,
+        -20
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "yXCqmzb5SFMt7iX4",
+          "name": "rpa_margemlus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "758245b4-5b63-456c-8ce2-e011282ff86f",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1420,
+        -420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const startTime = 8;\nconst finishTime = 17;\nconst operationDays = [1,2,3,4,5,6];\n`\n0 representa domingo,\n1 representa segunda-feira,\n2 representa terça-feira,\n3 representa quarta-feira,\n4 representa quinta-feira,\n5 representa sexta-feira,\n6 representa sábado.\n`\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && operationDays.includes(nowDay)) {\n      return {size: 50000}\n    }\n\n return {size: 100000}"
+      },
+      "id": "bb54afd5-e889-4481-bdc2-59940d173505",
+      "name": "Scheduler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1080,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eab85f28-54e7-449f-903e-9cab179ab8e1",
+              "leftValue": "={{ $('Count').first().json.quantity}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "dd0a93bb-ed99-490d-a56b-f377b93ca433",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -260,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Agilus').all();\nconst quantity = data.length;\n\nreturn {quantity};"
+      },
+      "id": "37fcaad2-a36c-4ebf-8293-4cb096c0d46d",
+      "name": "Count",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        -220
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1420,
+        -240
+      ],
+      "id": "7a269a08-ddec-42fb-ac7e-e1470645f64a",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FbzflZcLvkgrxNXS",
+          "mode": "list",
+          "cachedResultName": "1-DownAgilus copy"
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        380,
+        40
+      ],
+      "id": "f557685c-feac-47d3-bcfa-06669939a67d",
+      "name": "Execute Workflow"
+    }
+  ],
+  "connections": {
+    "GetMaxId": {
+      "main": [
+        [
+          {
+            "node": "Agilus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agilus": {
+      "main": [
+        [
+          {
+            "node": "Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normatize agilus": {
+      "main": [
+        [
+          {
+            "node": "Mount partial insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mount partial insert": {
+      "main": [
+        [
+          {
+            "node": "SaveBdAgilus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveBdAgilus": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduler": {
+      "main": [
+        [
+          {
+            "node": "GetMaxId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Normatize agilus",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Count": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 30
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6495345a-d044-4336-ba33-4826c0ffd798",
+  "activeVersionId": "6495345a-d044-4336-ba33-4826c0ffd798",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-01-06T11:13:05.614Z",
+      "createdAt": "2025-01-06T11:13:05.614Z",
+      "role": "workflow:owner",
+      "workflowId": "FbzflZcLvkgrxNXS",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "6495345a-d044-4336-ba33-4826c0ffd798",
+    "workflowId": "FbzflZcLvkgrxNXS",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT COALESCE(MAX(clt_codigo), 0) AS max_clt_codigo\nFROM agilus;\n",
+          "options": {}
+        },
+        "id": "60d9b07a-7028-4124-90ac-4463d09959a3",
+        "name": "GetMaxId",
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          -880,
+          -220
+        ],
+        "credentials": {
+          "mySql": {
+            "id": "yXCqmzb5SFMt7iX4",
+            "name": "rpa_margemlus"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH CTE_UniqueCPFs AS (\nSELECT TOP {{ $('Scheduler').first().json.size }}\n        clt_codigo,\n        clt_cpf,\n        clt_matricula,\n        clt_especie,\n        clt_nome,\n        ROW_NUMBER() OVER (PARTITION BY clt_cpf ORDER BY clt_codigo) AS RowNum\n    FROM \n      dbo.cliente_televenda\n   WHERE\n   \tclt_cpf IS NOT NULL AND\n   \tclt_codigo >= {{ $('GetMaxId').first().json.max_clt_codigo }}\n  ORDER BY\n    clt_codigo ASC\n)\nSELECT *\nFROM CTE_UniqueCPFs\nWHERE RowNum = 1;"
+        },
+        "id": "5a6f6739-e2b4-4456-a28a-4c63a26971cc",
+        "name": "Agilus",
+        "type": "n8n-nodes-base.microsoftSql",
+        "typeVersion": 1.1,
+        "position": [
+          -680,
+          -220
+        ],
+        "credentials": {
+          "microsoftSql": {
+            "id": "Eck1dwqEQjiv5hCV",
+            "name": "dboAgilus"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const completeData = $('Agilus').all();\n\nfunction keepOnlyLettersAndSpaces(input) {\n    if (!input) {\n        return \"\"; \n    }\n    return input.replace(/[^a-zA-Z\\s]/g, \"\");\n}\n\nfunction keepOnlyLettersAndNumbers(input) {\n    if (!input) {\n        return \"\"; // Retorna string vazia se for nulo ou vazio\n    }\n    return input.replace(/[^a-zA-Z0-9]/g, \"\"); // Remove tudo que não for letra ou número\n}\n\nfunction cleanString(input) {\n    if (!input) {\n        return \"\"; // Retorna string vazia se for nulo ou vazio\n    }\n    return input.replace(/[.,\\-\\s]/g, \"\"); // Remove ponto, traço, vírgula e espaço\n}\n\nconst normatized = completeData.map((data) => {\n  return {\n    \"clf_cpf\" : data.json.clt_cpf.trim(),\n    \"clt_codigo\" : data.json.clt_codigo,\n    \"clt_matricula\" : data.json.clt_matricula ? keepOnlyLettersAndNumbers(data.json.clt_matricula.trim()) : \"\",\n    \"clt_especie\" : data.json.clt_especie ? keepOnlyLettersAndNumbers(data.json.clt_especie): \"\",\n    \"clt_nome\" : data.json.clt_nome ? keepOnlyLettersAndSpaces(data.json.clt_nome.trim()) : \"\",\n  }\n})\n\nreturn {normatized};"
+        },
+        "id": "879eb7e9-6a13-4724-9337-5464ec9d1b76",
+        "name": "Normatize agilus",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          220,
+          -240
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $('Normatize agilus').first().json.normatized;\n\nfunction nuuabled(item) {\n  if (!item) {\n    return \"NULL\"; \n  }\n  \n  if (typeof(item) == \"string\") {\n      if (item != \"\") {\n          return `'${item}'`;\n      }\n      return \"NULL\";\n  }\n\n  if (typeof(item) == \"undefined\") {\n      return \"NULL\";\n  }\n  return item;\n}\n\n\n\nconst result = data.map(obj => {\n  const values = Object.values(obj).map((value) => nuuabled(value));\n  return `(${values.join(', ')})`;\n}).join(', ');\n\nreturn {result};"
+        },
+        "id": "a9bd7384-7dc0-4058-8c4f-5a0e7017a7ca",
+        "name": "Mount partial insert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1200,
+          -20
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "7a173d93-f3d7-4ad9-91de-76cb0158d6a1",
+        "name": "No Operation, do nothing",
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          680,
+          40
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "INSERT IGNORE INTO agilus (clt_cpf, clt_codigo, clt_matricula, clt_especie, clt_nome)\nVALUES {{ $('Mount partial insert').first().json.result }};",
+          "options": {}
+        },
+        "id": "6d30f9e9-dc2b-4df7-b3df-4b1ca8aa0c86",
+        "name": "SaveBdAgilus",
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          -980,
+          -20
+        ],
+        "credentials": {
+          "mySql": {
+            "id": "yXCqmzb5SFMt7iX4",
+            "name": "rpa_margemlus"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 8
+              }
+            ]
+          }
+        },
+        "id": "758245b4-5b63-456c-8ce2-e011282ff86f",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -1420,
+          -420
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const startTime = 8;\nconst finishTime = 17;\nconst operationDays = [1,2,3,4,5,6];\n`\n0 representa domingo,\n1 representa segunda-feira,\n2 representa terça-feira,\n3 representa quarta-feira,\n4 representa quinta-feira,\n5 representa sexta-feira,\n6 representa sábado.\n`\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && operationDays.includes(nowDay)) {\n      return {size: 50000}\n    }\n\n return {size: 100000}"
+        },
+        "id": "bb54afd5-e889-4481-bdc2-59940d173505",
+        "name": "Scheduler",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1080,
+          -220
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "eab85f28-54e7-449f-903e-9cab179ab8e1",
+                "leftValue": "={{ $('Count').first().json.quantity}}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "dd0a93bb-ed99-490d-a56b-f377b93ca433",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -260,
+          -220
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $('Agilus').all();\nconst quantity = data.length;\n\nreturn {quantity};"
+        },
+        "id": "37fcaad2-a36c-4ebf-8293-4cb096c0d46d",
+        "name": "Count",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -460,
+          -220
+        ]
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1420,
+          -240
+        ],
+        "id": "7a269a08-ddec-42fb-ac7e-e1470645f64a",
+        "name": "Execute Workflow Trigger"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "FbzflZcLvkgrxNXS",
+            "mode": "list",
+            "cachedResultName": "1-DownAgilus copy"
+          },
+          "options": {
+            "waitForSubWorkflow": false
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.1,
+        "position": [
+          380,
+          40
+        ],
+        "id": "f557685c-feac-47d3-bcfa-06669939a67d",
+        "name": "Execute Workflow"
+      }
+    ],
+    "connections": {
+      "GetMaxId": {
+        "main": [
+          [
+            {
+              "node": "Agilus",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agilus": {
+        "main": [
+          [
+            {
+              "node": "Count",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normatize agilus": {
+        "main": [
+          [
+            {
+              "node": "Mount partial insert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mount partial insert": {
+        "main": [
+          [
+            {
+              "node": "SaveBdAgilus",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SaveBdAgilus": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Scheduler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scheduler": {
+        "main": [
+          [
+            {
+              "node": "GetMaxId",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Normatize agilus",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Count": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "node": "Scheduler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2024-11-29T03:33:19.043Z",
+      "createdAt": "2024-11-29T03:33:19.043Z",
+      "id": "dUa6vMZCm6XkgP1j",
+      "name": "projeto-emocionado-01"
+    }
+  ]
+}

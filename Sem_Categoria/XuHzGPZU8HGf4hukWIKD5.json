@@ -1,0 +1,2400 @@
+{
+  "updatedAt": "2026-06-03T14:12:47.047Z",
+  "createdAt": "2026-02-02T19:05:05.249Z",
+  "id": "XuHzGPZU8HGf4hukWIKD5",
+  "name": "Relatorio - financeiro safetech",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/users?customerId=mdgintermediacoes.com.br\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken }}"
+            }
+          }
+        }
+      },
+      "id": "d51a0d40-0ce5-404c-b3d6-2fc26d831000",
+      "name": "Google Workspace Business Standard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        800
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        800
+      ],
+      "id": "56a8b50e-f4ea-479e-882c-11ef64b15423",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        992
+      ],
+      "id": "807adb60-9818-4beb-a1b0-980fa2c6e1c4",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        608
+      ],
+      "id": "961c2478-1479-440d-baa0-2c460fd5bcbd",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/users?customerId=mdgintermediacoes.com.br\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken }}"
+            }
+          }
+        }
+      },
+      "id": "165b5b29-ecd8-4266-98d9-57b016935152",
+      "name": "Google Workspace Frontline Starter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        608
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020025/users?customerId=mdgintermediacoes.com.br",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken }}"
+            }
+          }
+        }
+      },
+      "id": "f6775082-71f8-4b66-841e-a720c9cd8a2e",
+      "name": "Google Workspace Business Plus",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        992
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -64,
+        784
+      ],
+      "id": "fb9dbf16-06ee-4270-8c7a-d14acac3359c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2da84705-dcc7-4b74-bdf3-f55ead0fe8d7",
+              "name": "userId",
+              "value": "={{ $json.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "01a9a4d5-7054-40b9-beb5-e0db03216aa1",
+              "name": "skuName",
+              "value": "={{ $json.skuName }}",
+              "type": "string"
+            },
+            {
+              "id": "c4fc0bad-8ba2-4c10-bb81-d4393958d5e6",
+              "name": "orgUnitPath",
+              "value": "={{ $json.orgUnitPath.toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "1667a6ec-f702-4a88-9649-526397cab4a5",
+              "name": "fullName",
+              "value": "={{ $json.fullName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        960
+      ],
+      "id": "334039f6-6b51-4c4d-897e-7df519545c20",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "c1ec35b7-1316-4074-96e3-af08ade5eb4b",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        624,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "500c7621-5f82-4d73-91fb-39e009d4bf6c",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        400,
+        720
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "f60dc7f9-985d-406d-b0ef-737b65acf7bf",
+              "name": "ATIVO",
+              "value": "={{ $json.ATIVO }}",
+              "type": "string"
+            },
+            {
+              "id": "55cc6903-d94d-4310-a568-1679f529d348",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json[\"E-MAIL/USUARIO\"].trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "aaa65e97-c964-4dd8-87ff-d9a6fb8f5722",
+              "name": "SITE",
+              "value": "={{ $json.SITE }}",
+              "type": "string"
+            },
+            {
+              "id": "5ae96449-580a-4189-90d0-2a629068d9c3",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7c355b00-f05f-4ff9-bb51-61b168bae0ed",
+      "name": "Edit Fields7",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "E-MAIL/USUARIO",
+              "field2": "userId"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1296,
+        720
+      ],
+      "id": "83842bc8-844e-4fe7-bec7-5e2955a4829d",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3101d247-6da0-43b0-b90a-c3686bcf141d",
+              "leftValue": "={{ $json.ATIVO.toUpperCase() }}",
+              "rightValue": "SIM",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "cd66baa6-3211-49cf-862c-1b95545ab727",
+              "leftValue": "={{ $json.EMPRESA }}",
+              "rightValue": "OTIMO CREDITO",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "75280e90-f731-4ab0-a093-5525dc7e747c",
+              "leftValue": "={{ $json.EMPRESA }}",
+              "rightValue": "RECOLETA",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1072,
+        720
+      ],
+      "id": "26aa5b04-4b93-4414-bc27-cf5c56ba8c2c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4c38177-90c7-464e-89d2-1075754ecd5c",
+              "name": "fullName",
+              "value": "={{ $json.name.fullName.toUpperCase().trim().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "c6ca8f69-d682-4421-8178-1c3ec4732c1f",
+              "name": "userId",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "78db216a-5af4-41e8-b2b9-a8f3e6778b76",
+              "name": "orgUnitPath",
+              "value": "={{ $json.orgUnitPath }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        1184
+      ],
+      "id": "4493d412-fa44-40fe-8b1e-a871a01bfa20",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst rawData = items.map(item => item.json);\n\n// 1. Tabela de Preços\nconst precos = {\n  \"Google Workspace Frontline Starter\": 30.00,\n  \"Google Workspace Business Starter\": 41.00,\n  \"Google Workspace Business Plus\": 81.80,\n  \"SEM LICENÇA\": 0\n};\n\n// Função de limpeza padrão ultra segura\nconst limpar = (t) => {\n  if (!t) return \"\";\n  return t\n    .toString()\n    .toLowerCase()\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .trim();\n};\n\n// 2. Unificação de Dados\nconst masterMap = {};\n\nrawData.forEach(item => {\n  const emailBruto = item.userId || item[\"E-MAIL/USUARIO\"];\n  const email = limpar(emailBruto);\n\n  if (!email || email === \"sem e-mail\") return;\n\n  if (!masterMap[email]) {\n    masterMap[email] = {\n      email,\n      nome: null,\n      cargo: null,\n      empresa: null,\n      site: null,\n      skuName: null,\n      orgUnitPath: null,\n      orgUnitPathClean: null\n    };\n  }\n\n  if (item.NOME) masterMap[email].nome = item.NOME;\n  if (item.CARGO) masterMap[email].cargo = item.CARGO;\n  if (item.EMPRESA) masterMap[email].empresa = item.EMPRESA;\n  if (item.SITE) masterMap[email].site = item.SITE;\n  if (item.skuName) masterMap[email].skuName = item.skuName;\n\n  if (item.orgUnitPath) {\n    masterMap[email].orgUnitPath = item.orgUnitPath;\n    masterMap[email].orgUnitPathClean = limpar(item.orgUnitPath);\n  }\n});\n\n// 3. Identificação de Departamento\nconst identificarDepto = (m) => {\n  const p = m.orgUnitPathClean || \"\";\n  const c = limpar(m.cargo);\n  const e = m.email || \"\";\n\n  if (\n    e === \"suporte@acgconsultoria.com.br\" ||\n    p.includes(\"precatorio\") ||\n    c.includes(\"precatorio\")\n  ) return \"PRECATORIO\";\n\n  if (p.includes(\"marketing\") || c.includes(\"marketing\"))\n    return \"MARKETING\";\n\n  if (\n    p.includes(\"tecnologia\") ||\n    p.includes(\"data science\") ||\n    p.includes(\"ti\") ||\n    c.includes(\"ti\")\n  ) return \"TI\";\n\n  if (p.includes(\"financeiro\") || c.includes(\"financeiro\"))\n    return \"FINANCEIRO\";\n\n  if (\n    p.includes(\"recursos humanos\") ||\n    p.includes(\"treinamento\") ||\n    c.includes(\"rh\")\n  ) return \"RH / ADM\";\n\n  if (p.includes(\"backoffice\") || p.includes(\"bko\"))\n    return \"OPERACIONAL\";\n\n  if (\n    p.includes(\"vendas\") ||\n    p.includes(\"consignado\") ||\n    p.includes(\"coordenador\") ||\n    p.includes(\"gerente\") ||\n    p.includes(\"lider comercial\") ||\n    p.includes(\"assistente comercial\") ||\n    p.includes(\"diretoria\") ||\n    c.includes(\"vendas\") ||\n    c.includes(\"coordenador\") ||\n    c.includes(\"gerente\")\n  ) return \"COMERCIAL / VENDAS\";\n\n  // Fallback seguro\n  if (m.orgUnitPath) {\n    const partes = m.orgUnitPath\n      .split(\"/\")\n      .map(p => p.trim())\n      .filter(p => p.length > 0);\n\n    if (partes.length > 0) {\n      return partes[partes.length - 1].toUpperCase();\n    }\n  }\n\n  return \"OUTROS\";\n};\n\n// 4. Identificação de Empresa / Rateio\nconst identificarEmpresaRateio = (m, depto) => {\n  const email = m.email || \"\";\n  const dominio = email.includes(\"@\") ? email.split(\"@\")[1] : \"\";\n  const site = limpar(m.site);\n  const empOrig = limpar(m.empresa);\n\n  if (dominio.includes(\"niu\") || empOrig.includes(\"niu\"))\n    return \"NIU\";\n\n  if (depto === \"PRECATORIO\")\n    return \"A.C.G. PRECATORIO\";\n\n  const isComercial = depto === \"COMERCIAL / VENDAS\";\n\n  if (isComercial) {\n    if (site.includes(\"cosmopolis\"))\n      return \"GASPAR ASSESSORIA EMPRESARIAL LTDA\";\n\n    if (site.includes(\"paulinia\"))\n      return \"MDG INTERMEDIACOES DE NEGOCIOS EIRELI\";\n\n    if (dominio.includes(\"acgconsultoria\"))\n      return \"A.C.G. CONSULTORIA EM GESTAO EMPRESARIAL LTDA\";\n\n    return \"MDG INTERMEDIACOES DE NEGOCIOS EIRELI\";\n  }\n\n  const setoresApoio = [\"TI\", \"FINANCEIRO\", \"RH / ADM\", \"OPERACIONAL\", \"MARKETING\"];\n  if (setoresApoio.includes(depto))\n    return \"RATEIO\";\n\n  return \"RATEIO\";\n};\n\n// 5. Mapeamento Final\nreturn Object.values(masterMap).map(m => {\n\n  const depto = identificarDepto(m);\n  const empresa = identificarEmpresaRateio(m, depto);\n\n  const nomeSeguro = m.nome\n    ? m.nome\n    : (m.email && m.email.includes(\"@\")\n        ? m.email.split(\"@\")[0].toUpperCase()\n        : \"SEM NOME\");\n\n  const valor = precos[m.skuName] ?? 0;\n\n  return {\n    json: {\n      nome: nomeSeguro,\n      empresa_rateio: empresa,\n      departamento_rateio: depto,\n      email: m.email,\n      valor_estimado: valor,\n      sku: m.skuName || \"SEM LICENÇA\",\n      path: m.orgUnitPath || \"N/A\",\n      site: m.site || \"N/A\"\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        816
+      ],
+      "id": "accae25d-b9fc-42f0-a4c0-c03bb5d7257c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "output": "raw",
+        "projection": "full",
+        "filter": {},
+        "sort": {
+          "sortRules": {
+            "orderBy": "givenName"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        1184
+      ],
+      "id": "a7cf6d1a-04f5-4fbf-9533-a5b8a7d1cb4d",
+      "name": "Get many users",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "userId"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        800,
+        960
+      ],
+      "id": "92282a91-a998-41a8-95ff-014384d2b82e",
+      "name": "Sort1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst resumo = {};\n\n// 1. Agrupar e Somar os valores conforme as regras processadas no nó anterior\nfor (const item of items) {\n  const d = item.json;\n  \n  // Consideramos apenas licenças que geram custo (valor > 0)\n  if (d.valor_estimado && d.valor_estimado > 0) {\n    const empresa = d.empresa_rateio || \"OUTROS\";\n    const depto = d.departamento_rateio || \"DIVERSOS\";\n    const valor = d.valor_estimado;\n\n    // Criamos uma chave única combinando Empresa e Setor\n    const chave = `${empresa} | ${depto}`;\n\n    if (!resumo[chave]) {\n      resumo[chave] = {\n        empresa: empresa,\n        departamento: depto,\n        valor_total: 0,\n        quantidade_licencas: 0\n      };\n    }\n\n    resumo[chave].valor_total += valor;\n    resumo[chave].quantidade_licencas += 1;\n  }\n}\n\n// 2. Converter o objeto de agrupamento em uma lista para o n8n\nconst resultadoFinal = Object.values(resumo).map(r => {\n  return {\n    json: {\n      empresa: r.empresa,\n      departamento: r.departamento,\n      valor_total: parseFloat(r.valor_total.toFixed(2)), // Formata para 2 casas decimais\n      quantidade_licencas: r.quantidade_licencas\n    }\n  };\n});\n\n// 3. Ordenar por Empresa para facilitar a leitura no relatório\nreturn resultadoFinal.sort((a, b) => \n  a.json.empresa.localeCompare(b.json.empresa) || \n  a.json.departamento.localeCompare(b.json.departamento)\n);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        816
+      ],
+      "id": "467ab602-4d91-4cb9-8804-8518bdfb8281",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1984,
+        1008
+      ],
+      "id": "c2b870ed-3780-45c5-b989-28b6e9dffa97",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "userId",
+              "field2": "userId"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        128,
+        816
+      ],
+      "id": "bb7e91c0-e0d1-4282-9262-0a0003b17925",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "E-MAIL/USUARIO",
+              "field2": "userId"
+            }
+          ]
+        },
+        "joinMode": "keepNonMatches",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1184,
+        944
+      ],
+      "id": "752f7c0f-bee3-4c8a-bac1-434d51d00d75",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1520,
+        816
+      ],
+      "id": "049651cb-7dcd-490a-a4ca-5cfb374851b8",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d0152b90-7fc1-41e2-b6bb-3d9093b2835a",
+              "leftValue": "={{ $json.skuName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        944
+      ],
+      "id": "b2838c24-0449-4570-bc57-9b19f825b3df",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2256,
+        832
+      ],
+      "id": "209eb48c-7999-4682-8d85-3f0dcb037726",
+      "name": "Merge5"
+    },
+    {
+      "parameters": {
+        "sendTo": "financeiro@mdgintermediacoes.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+        "subject": "=Relatório Licenças Google - {{ $now.format('MM/yyyy') }}",
+        "message": "=<div style=\"font-family: Arial, sans-serif; background:#f4f6f9; padding:20px;\">\n  <div style=\"background:#ffffff; padding:25px; border-radius:10px;\">\n\n    <h2 style=\"color:#2c3e50; margin-bottom:5px;\">\n      📊 Relatório de Licenças Google\n    </h2>\n\n    <p style=\"color:#555;\">\n      Segue abaixo o resumo consolidado das licenças ativas.\n    </p>\n\n    <hr style=\"border:none; border-top:1px solid #eee; margin:20px 0;\">\n\n    <h3 style=\"color:#34495e;\">📌 Resumo Geral</h3>\n\n    <p style=\"font-size:16px;\">\n      <strong>Total de Licenças:</strong>\n      {{\n        $input.first().json.dados\n          .reduce((acc, item) => acc + Number(item.quantidade_licencas || 0), 0)\n      }}\n    </p>\n\n    <p style=\"font-size:16px;\">\n      <strong>Valor Total:</strong>\n      R$ {{\n        $input.first().json.dados\n          .reduce((acc, item) => acc + Number(item.valor_total || 0), 0)\n          .toFixed(2)\n      }}\n    </p>\n\n    <hr style=\"border:none; border-top:1px solid #eee; margin:20px 0;\">\n\n    <h3 style=\"color:#34495e;\">🏢 Distribuição por Empresa / Departamento</h3>\n\n    <table width=\"100%\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse; margin-top:10px;\">\n      <thead>\n        <tr style=\"background:#2c3e50; color:#fff;\">\n          <th align=\"left\">Empresa</th>\n          <th align=\"left\">Departamento</th>\n          <th align=\"center\">Licenças</th>\n          <th align=\"right\">Valor (R$)</th>\n        </tr>\n      </thead>\n      <tbody>\n        {{\n          $input.first().json.dados\n            .filter(item => item.empresa)\n            .map(item => `\n              <tr style=\"border-bottom:1px solid #eee;\">\n                <td>${item.empresa}</td>\n                <td>${item.departamento}</td>\n                <td align=\"center\">${item.quantidade_licencas}</td>\n                <td align=\"right\">${Number(item.valor_total).toFixed(2)}</td>\n              </tr>\n            `).join('')\n        }}\n      </tbody>\n    </table>\n\n    <p style=\"margin-top:20px; font-size:13px; color:#888;\">\n      O relatório detalhado segue em anexo.\n    </p>\n\n    <hr style=\"border:none; border-top:1px solid #eee; margin:30px 0;\">\n\n    <p style=\"margin-bottom:10px; font-size:15px; color:#444;\">\n      Atenciosamente,\n    </p>\n\n    <div style=\"margin-top:10px; text-align:left;\">\n      <img \n        src=\"https://drive.google.com/uc?export=view&id=1PxDpYA9hItRyK_y9ksCTQgEJ0yJ2QR7H\" \n        alt=\"Assinatura\" \n        style=\"max-width:350px; height:auto;\"\n      >\n    </div>\n\n  </div>\n</div>",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2672,
+        832
+      ],
+      "id": "81f08bc6-0df5-4824-b9be-94976f15a7b4",
+      "name": "Send a message",
+      "webhookId": "8b1f9365-f51b-4383-b9cc-0afb165184aa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "f0aqJFTVg22WKz8g",
+          "name": "Gmail account Raul Guimarães "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "dados",
+        "options": {
+          "includeBinaries": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        832
+      ],
+      "id": "5e7bdc88-77b0-4f73-b697-c416d9fa5c4b",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "content": "##  Obtem usuário e Licenças \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 1024,
+        "width": 1056,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        384
+      ],
+      "typeVersion": 1,
+      "id": "afc7d9c2-932f-43c3-ac62-bff625e41de8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Consolida contas\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 816,
+        "width": 1344,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        288,
+        448
+      ],
+      "typeVersion": 1,
+      "id": "40eb45f1-6665-4fba-9d0b-851cf2861f26",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## valor licencas",
+        "height": 224,
+        "width": 160,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1952,
+        736
+      ],
+      "typeVersion": 1,
+      "id": "c8290535-b9d4-4a4f-9eb6-92e22b8f9387",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## MONTA RELATORIO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 656,
+        "width": 704,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1664,
+        528
+      ],
+      "typeVersion": 1,
+      "id": "d2fd2c2f-6c94-43cb-89ef-0774475c399e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 25,
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1040,
+        912
+      ],
+      "id": "ef9cc7f9-63b4-4899-b9c3-a8b0bf7f2c8c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "height": 1728,
+        "width": 4656,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1552,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "28bb1f3a-b549-4480-a215-20e33d3b5003",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2880,
+        832
+      ],
+      "id": "f82e874f-7068-46bb-860e-0e83636ce1e9",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users?customer=my_customer&maxResults=1&fields=users(id)",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken }}"
+            }
+          }
+        }
+      },
+      "id": "6408e0e4-c1fa-4227-bfee-4134943b3b73",
+      "name": "Google Workspace Business Plus1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -800,
+        1424
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users?customer=my_customer&maxResults=500&fields=users(id)",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken }}"
+            }
+          }
+        }
+      },
+      "id": "8e1f5518-1d8e-420a-be3d-db98bcdc9016",
+      "name": "Google Workspace Business Plus2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        1440
+      ],
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "7aoKGewORhB7eOzC",
+          "name": "Google Workspace Admin account - Suporte"
+        },
+        "googleApi": {
+          "id": "o9ItTOw3d5Eii0Cv",
+          "name": "Google Service Account account"
+        },
+        "googleOAuth2Api": {
+          "id": "MfB9D5XyQy1iatmj",
+          "name": "Google account Gestao de acessos "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega a lista de usuários que o Google retornou\nconst usuarios = $input.first().json.users || [];\n\n// Conta quantos usuários existem (Licenças em uso)\nconst licencasEmUso = usuarios.length;\n\n// Define o total de licenças que você paga no contrato\nconst totalLicencas = 150; \n\n// Calcula as licenças disponíveis\nconst licencasLivres = totalLicencas - licencasEmUso;\n\n// Retorna o resultado limpo e organizado para o n8n\nreturn {\n  total_contratado: totalLicencas,\n  licencas_em_uso: licencasEmUso,\n  licencas_livres: licencasLivres\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        1456
+      ],
+      "id": "bc602cdc-604a-4f9d-bcfd-8cfe35fa0433",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "connections": {
+    "Google Workspace Business Standard": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Frontline Starter": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Business Plus": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Sort1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many users": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many users",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Workspace Business Plus",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Workspace Business Standard",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Workspace Frontline Starter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Workspace Business Plus2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "846c47e5-66c4-4f62-b532-f7d9d57259f2",
+  "activeVersionId": "540fd91e-42bd-454c-9728-d99aa99b35a3",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-25T13:58:02.860Z",
+      "createdAt": "2026-02-25T13:58:02.860Z",
+      "role": "workflow:owner",
+      "workflowId": "XuHzGPZU8HGf4hukWIKD5",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-26T12:26:36.207Z",
+    "createdAt": "2026-02-26T12:26:33.287Z",
+    "versionId": "540fd91e-42bd-454c-9728-d99aa99b35a3",
+    "workflowId": "XuHzGPZU8HGf4hukWIKD5",
+    "nodes": [
+      {
+        "parameters": {
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020027/users?customerId=mdgintermediacoes.com.br\n",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "options": {
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "pageToken",
+                      "value": "={{ $response.body.nextPageToken }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ !$response.body.nextPageToken }}"
+              }
+            }
+          }
+        },
+        "id": "d51a0d40-0ce5-404c-b3d6-2fc26d831000",
+        "name": "Google Workspace Business Standard",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -576,
+          800
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "items",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -352,
+          800
+        ],
+        "id": "56a8b50e-f4ea-479e-882c-11ef64b15423",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "items",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -352,
+          992
+        ],
+        "id": "807adb60-9818-4beb-a1b0-980fa2c6e1c4",
+        "name": "Split Out1"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "items",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -352,
+          608
+        ],
+        "id": "961c2478-1479-440d-baa0-2c460fd5bcbd",
+        "name": "Split Out2"
+      },
+      {
+        "parameters": {
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020030/users?customerId=mdgintermediacoes.com.br\n",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "options": {
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "pageToken",
+                      "value": "={{ $response.body.nextPageToken }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ !$response.body.nextPageToken }}"
+              }
+            }
+          }
+        },
+        "id": "165b5b29-ecd8-4266-98d9-57b016935152",
+        "name": "Google Workspace Frontline Starter",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -576,
+          608
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://licensing.googleapis.com/apps/licensing/v1/product/Google-Apps/sku/1010020025/users?customerId=mdgintermediacoes.com.br",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleOAuth2Api",
+          "options": {
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "pageToken",
+                      "value": "={{ $response.body.nextPageToken }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ !$response.body.nextPageToken }}"
+              }
+            }
+          }
+        },
+        "id": "f6775082-71f8-4b66-841e-a720c9cd8a2e",
+        "name": "Google Workspace Business Plus",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -576,
+          992
+        ],
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          },
+          "googleApi": {
+            "id": "o9ItTOw3d5Eii0Cv",
+            "name": "Google Service Account account"
+          },
+          "googleOAuth2Api": {
+            "id": "MfB9D5XyQy1iatmj",
+            "name": "Google account Gestao de acessos "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "numberInputs": 3
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -64,
+          784
+        ],
+        "id": "fb9dbf16-06ee-4270-8c7a-d14acac3359c",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2da84705-dcc7-4b74-bdf3-f55ead0fe8d7",
+                "name": "userId",
+                "value": "={{ $json.userId }}",
+                "type": "string"
+              },
+              {
+                "id": "01a9a4d5-7054-40b9-beb5-e0db03216aa1",
+                "name": "skuName",
+                "value": "={{ $json.skuName }}",
+                "type": "string"
+              },
+              {
+                "id": "c4fc0bad-8ba2-4c10-bb81-d4393958d5e6",
+                "name": "orgUnitPath",
+                "value": "={{ $json.orgUnitPath.toUpperCase().replaceSpecialChars() }}",
+                "type": "string"
+              },
+              {
+                "id": "1667a6ec-f702-4a88-9649-526397cab4a5",
+                "name": "fullName",
+                "value": "={{ $json.fullName }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          432,
+          960
+        ],
+        "id": "334039f6-6b51-4c4d-897e-7df519545c20",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "options": {
+            "headerRow": true,
+            "sheetName": "Base"
+          }
+        },
+        "id": "c1ec35b7-1316-4074-96e3-af08ade5eb4b",
+        "name": "Extract from File",
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          624,
+          720
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "download",
+          "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+          "options": {}
+        },
+        "id": "500c7621-5f82-4d73-91fb-39e009d4bf6c",
+        "name": "SSH",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          400,
+          720
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "sshPassword": {
+            "id": "ycQRi5glz56987vv",
+            "name": "SSH Password account SRV01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+                "name": "NOME",
+                "value": "={{ $json.NOME.trim().toUpperCase().replaceSpecialChars() }}",
+                "type": "string"
+              },
+              {
+                "id": "f60dc7f9-985d-406d-b0ef-737b65acf7bf",
+                "name": "ATIVO",
+                "value": "={{ $json.ATIVO }}",
+                "type": "string"
+              },
+              {
+                "id": "55cc6903-d94d-4310-a568-1679f529d348",
+                "name": "E-MAIL/USUARIO",
+                "value": "={{ $json[\"E-MAIL/USUARIO\"].trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "aaa65e97-c964-4dd8-87ff-d9a6fb8f5722",
+                "name": "SITE",
+                "value": "={{ $json.SITE }}",
+                "type": "string"
+              },
+              {
+                "id": "5ae96449-580a-4189-90d0-2a629068d9c3",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "7c355b00-f05f-4ff9-bb51-61b168bae0ed",
+        "name": "Edit Fields7",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          848,
+          720
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "E-MAIL/USUARIO",
+                "field2": "userId"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1296,
+          720
+        ],
+        "id": "83842bc8-844e-4fe7-bec7-5e2955a4829d",
+        "name": "Merge2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "3101d247-6da0-43b0-b90a-c3686bcf141d",
+                "leftValue": "={{ $json.ATIVO.toUpperCase() }}",
+                "rightValue": "SIM",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "cd66baa6-3211-49cf-862c-1b95545ab727",
+                "leftValue": "={{ $json.EMPRESA }}",
+                "rightValue": "OTIMO CREDITO",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                }
+              },
+              {
+                "id": "75280e90-f731-4ab0-a093-5525dc7e747c",
+                "leftValue": "={{ $json.EMPRESA }}",
+                "rightValue": "RECOLETA",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          1072,
+          720
+        ],
+        "id": "26aa5b04-4b93-4414-bc27-cf5c56ba8c2c",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b4c38177-90c7-464e-89d2-1075754ecd5c",
+                "name": "fullName",
+                "value": "={{ $json.name.fullName.toUpperCase().trim().replaceSpecialChars() }}",
+                "type": "string"
+              },
+              {
+                "id": "c6ca8f69-d682-4421-8178-1c3ec4732c1f",
+                "name": "userId",
+                "value": "={{ $json.primaryEmail }}",
+                "type": "string"
+              },
+              {
+                "id": "78db216a-5af4-41e8-b2b9-a8f3e6778b76",
+                "name": "orgUnitPath",
+                "value": "={{ $json.orgUnitPath }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -352,
+          1184
+        ],
+        "id": "4493d412-fa44-40fe-8b1e-a871a01bfa20",
+        "name": "Edit Fields4"
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst rawData = items.map(item => item.json);\n\n// 1. Tabela de Preços\nconst precos = {\n  \"Google Workspace Frontline Starter\": 30.00,\n  \"Google Workspace Business Starter\": 41.00,\n  \"Google Workspace Business Plus\": 81.80,\n  \"SEM LICENÇA\": 0\n};\n\n// Função de limpeza padrão ultra segura\nconst limpar = (t) => {\n  if (!t) return \"\";\n  return t\n    .toString()\n    .toLowerCase()\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .trim();\n};\n\n// 2. Unificação de Dados\nconst masterMap = {};\n\nrawData.forEach(item => {\n  const emailBruto = item.userId || item[\"E-MAIL/USUARIO\"];\n  const email = limpar(emailBruto);\n\n  if (!email || email === \"sem e-mail\") return;\n\n  if (!masterMap[email]) {\n    masterMap[email] = {\n      email,\n      nome: null,\n      cargo: null,\n      empresa: null,\n      site: null,\n      skuName: null,\n      orgUnitPath: null,\n      orgUnitPathClean: null\n    };\n  }\n\n  if (item.NOME) masterMap[email].nome = item.NOME;\n  if (item.CARGO) masterMap[email].cargo = item.CARGO;\n  if (item.EMPRESA) masterMap[email].empresa = item.EMPRESA;\n  if (item.SITE) masterMap[email].site = item.SITE;\n  if (item.skuName) masterMap[email].skuName = item.skuName;\n\n  if (item.orgUnitPath) {\n    masterMap[email].orgUnitPath = item.orgUnitPath;\n    masterMap[email].orgUnitPathClean = limpar(item.orgUnitPath);\n  }\n});\n\n// 3. Identificação de Departamento\nconst identificarDepto = (m) => {\n  const p = m.orgUnitPathClean || \"\";\n  const c = limpar(m.cargo);\n  const e = m.email || \"\";\n\n  if (\n    e === \"suporte@acgconsultoria.com.br\" ||\n    p.includes(\"precatorio\") ||\n    c.includes(\"precatorio\")\n  ) return \"PRECATORIO\";\n\n  if (p.includes(\"marketing\") || c.includes(\"marketing\"))\n    return \"MARKETING\";\n\n  if (\n    p.includes(\"tecnologia\") ||\n    p.includes(\"data science\") ||\n    p.includes(\"ti\") ||\n    c.includes(\"ti\")\n  ) return \"TI\";\n\n  if (p.includes(\"financeiro\") || c.includes(\"financeiro\"))\n    return \"FINANCEIRO\";\n\n  if (\n    p.includes(\"recursos humanos\") ||\n    p.includes(\"treinamento\") ||\n    c.includes(\"rh\")\n  ) return \"RH / ADM\";\n\n  if (p.includes(\"backoffice\") || p.includes(\"bko\"))\n    return \"OPERACIONAL\";\n\n  if (\n    p.includes(\"vendas\") ||\n    p.includes(\"consignado\") ||\n    p.includes(\"coordenador\") ||\n    p.includes(\"gerente\") ||\n    p.includes(\"lider comercial\") ||\n    p.includes(\"assistente comercial\") ||\n    p.includes(\"diretoria\") ||\n    c.includes(\"vendas\") ||\n    c.includes(\"coordenador\") ||\n    c.includes(\"gerente\")\n  ) return \"COMERCIAL / VENDAS\";\n\n  // Fallback seguro\n  if (m.orgUnitPath) {\n    const partes = m.orgUnitPath\n      .split(\"/\")\n      .map(p => p.trim())\n      .filter(p => p.length > 0);\n\n    if (partes.length > 0) {\n      return partes[partes.length - 1].toUpperCase();\n    }\n  }\n\n  return \"OUTROS\";\n};\n\n// 4. Identificação de Empresa / Rateio\nconst identificarEmpresaRateio = (m, depto) => {\n  const email = m.email || \"\";\n  const dominio = email.includes(\"@\") ? email.split(\"@\")[1] : \"\";\n  const site = limpar(m.site);\n  const empOrig = limpar(m.empresa);\n\n  if (dominio.includes(\"niu\") || empOrig.includes(\"niu\"))\n    return \"NIU\";\n\n  if (depto === \"PRECATORIO\")\n    return \"A.C.G. PRECATORIO\";\n\n  const isComercial = depto === \"COMERCIAL / VENDAS\";\n\n  if (isComercial) {\n    if (site.includes(\"cosmopolis\"))\n      return \"GASPAR ASSESSORIA EMPRESARIAL LTDA\";\n\n    if (site.includes(\"paulinia\"))\n      return \"MDG INTERMEDIACOES DE NEGOCIOS EIRELI\";\n\n    if (dominio.includes(\"acgconsultoria\"))\n      return \"A.C.G. CONSULTORIA EM GESTAO EMPRESARIAL LTDA\";\n\n    return \"MDG INTERMEDIACOES DE NEGOCIOS EIRELI\";\n  }\n\n  const setoresApoio = [\"TI\", \"FINANCEIRO\", \"RH / ADM\", \"OPERACIONAL\", \"MARKETING\"];\n  if (setoresApoio.includes(depto))\n    return \"RATEIO\";\n\n  return \"RATEIO\";\n};\n\n// 5. Mapeamento Final\nreturn Object.values(masterMap).map(m => {\n\n  const depto = identificarDepto(m);\n  const empresa = identificarEmpresaRateio(m, depto);\n\n  const nomeSeguro = m.nome\n    ? m.nome\n    : (m.email && m.email.includes(\"@\")\n        ? m.email.split(\"@\")[0].toUpperCase()\n        : \"SEM NOME\");\n\n  const valor = precos[m.skuName] ?? 0;\n\n  return {\n    json: {\n      nome: nomeSeguro,\n      empresa_rateio: empresa,\n      departamento_rateio: depto,\n      email: m.email,\n      valor_estimado: valor,\n      sku: m.skuName || \"SEM LICENÇA\",\n      path: m.orgUnitPath || \"N/A\",\n      site: m.site || \"N/A\"\n    }\n  };\n});\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1744,
+          816
+        ],
+        "id": "accae25d-b9fc-42f0-a4c0-c03bb5d7257c",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "returnAll": true,
+          "output": "raw",
+          "projection": "full",
+          "filter": {},
+          "sort": {
+            "sortRules": {
+              "orderBy": "givenName"
+            }
+          }
+        },
+        "type": "n8n-nodes-base.gSuiteAdmin",
+        "typeVersion": 1,
+        "position": [
+          -592,
+          1184
+        ],
+        "id": "a7cf6d1a-04f5-4fbf-9533-a5b8a7d1cb4d",
+        "name": "Get many users",
+        "credentials": {
+          "gSuiteAdminOAuth2Api": {
+            "id": "7aoKGewORhB7eOzC",
+            "name": "Google Workspace Admin account - Suporte"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sortFieldsUi": {
+            "sortField": [
+              {
+                "fieldName": "userId"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.sort",
+        "typeVersion": 1,
+        "position": [
+          800,
+          960
+        ],
+        "id": "92282a91-a998-41a8-95ff-014384d2b82e",
+        "name": "Sort1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst resumo = {};\n\n// 1. Agrupar e Somar os valores conforme as regras processadas no nó anterior\nfor (const item of items) {\n  const d = item.json;\n  \n  // Consideramos apenas licenças que geram custo (valor > 0)\n  if (d.valor_estimado && d.valor_estimado > 0) {\n    const empresa = d.empresa_rateio || \"OUTROS\";\n    const depto = d.departamento_rateio || \"DIVERSOS\";\n    const valor = d.valor_estimado;\n\n    // Criamos uma chave única combinando Empresa e Setor\n    const chave = `${empresa} | ${depto}`;\n\n    if (!resumo[chave]) {\n      resumo[chave] = {\n        empresa: empresa,\n        departamento: depto,\n        valor_total: 0,\n        quantidade_licencas: 0\n      };\n    }\n\n    resumo[chave].valor_total += valor;\n    resumo[chave].quantidade_licencas += 1;\n  }\n}\n\n// 2. Converter o objeto de agrupamento em uma lista para o n8n\nconst resultadoFinal = Object.values(resumo).map(r => {\n  return {\n    json: {\n      empresa: r.empresa,\n      departamento: r.departamento,\n      valor_total: parseFloat(r.valor_total.toFixed(2)), // Formata para 2 casas decimais\n      quantidade_licencas: r.quantidade_licencas\n    }\n  };\n});\n\n// 3. Ordenar por Empresa para facilitar a leitura no relatório\nreturn resultadoFinal.sort((a, b) => \n  a.json.empresa.localeCompare(b.json.empresa) || \n  a.json.departamento.localeCompare(b.json.departamento)\n);"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1984,
+          816
+        ],
+        "id": "467ab602-4d91-4cb9-8804-8518bdfb8281",
+        "name": "Code in JavaScript1"
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          1984,
+          1008
+        ],
+        "id": "c2b870ed-3780-45c5-b989-28b6e9dffa97",
+        "name": "Convert to File"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "userId",
+                "field2": "userId"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          128,
+          816
+        ],
+        "id": "bb7e91c0-e0d1-4282-9262-0a0003b17925",
+        "name": "Merge1"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "E-MAIL/USUARIO",
+                "field2": "userId"
+              }
+            ]
+          },
+          "joinMode": "keepNonMatches",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1184,
+          944
+        ],
+        "id": "752f7c0f-bee3-4c8a-bac1-434d51d00d75",
+        "name": "Merge3"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1520,
+          816
+        ],
+        "id": "049651cb-7dcd-490a-a4ca-5cfb374851b8",
+        "name": "Merge4"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "d0152b90-7fc1-41e2-b6bb-3d9093b2835a",
+                "leftValue": "={{ $json.skuName }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          1344,
+          944
+        ],
+        "id": "b2838c24-0449-4570-bc57-9b19f825b3df",
+        "name": "Filter1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          2256,
+          832
+        ],
+        "id": "209eb48c-7999-4682-8d85-3f0dcb037726",
+        "name": "Merge5"
+      },
+      {
+        "parameters": {
+          "sendTo": "financeiro@mdgintermediacoes.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+          "subject": "=Relatório Licenças Google - {{ $now.format('MM/yyyy') }}",
+          "message": "=<div style=\"font-family: Arial, sans-serif; background:#f4f6f9; padding:20px;\">\n  <div style=\"background:#ffffff; padding:25px; border-radius:10px;\">\n\n    <h2 style=\"color:#2c3e50; margin-bottom:5px;\">\n      📊 Relatório de Licenças Google\n    </h2>\n\n    <p style=\"color:#555;\">\n      Segue abaixo o resumo consolidado das licenças ativas.\n    </p>\n\n    <hr style=\"border:none; border-top:1px solid #eee; margin:20px 0;\">\n\n    <h3 style=\"color:#34495e;\">📌 Resumo Geral</h3>\n\n    <p style=\"font-size:16px;\">\n      <strong>Total de Licenças:</strong>\n      {{\n        $input.first().json.dados\n          .reduce((acc, item) => acc + Number(item.quantidade_licencas || 0), 0)\n      }}\n    </p>\n\n    <p style=\"font-size:16px;\">\n      <strong>Valor Total:</strong>\n      R$ {{\n        $input.first().json.dados\n          .reduce((acc, item) => acc + Number(item.valor_total || 0), 0)\n          .toFixed(2)\n      }}\n    </p>\n\n    <hr style=\"border:none; border-top:1px solid #eee; margin:20px 0;\">\n\n    <h3 style=\"color:#34495e;\">🏢 Distribuição por Empresa / Departamento</h3>\n\n    <table width=\"100%\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse; margin-top:10px;\">\n      <thead>\n        <tr style=\"background:#2c3e50; color:#fff;\">\n          <th align=\"left\">Empresa</th>\n          <th align=\"left\">Departamento</th>\n          <th align=\"center\">Licenças</th>\n          <th align=\"right\">Valor (R$)</th>\n        </tr>\n      </thead>\n      <tbody>\n        {{\n          $input.first().json.dados\n            .filter(item => item.empresa)\n            .map(item => `\n              <tr style=\"border-bottom:1px solid #eee;\">\n                <td>${item.empresa}</td>\n                <td>${item.departamento}</td>\n                <td align=\"center\">${item.quantidade_licencas}</td>\n                <td align=\"right\">${Number(item.valor_total).toFixed(2)}</td>\n              </tr>\n            `).join('')\n        }}\n      </tbody>\n    </table>\n\n    <p style=\"margin-top:20px; font-size:13px; color:#888;\">\n      O relatório detalhado segue em anexo.\n    </p>\n\n    <hr style=\"border:none; border-top:1px solid #eee; margin:30px 0;\">\n\n    <p style=\"margin-bottom:10px; font-size:15px; color:#444;\">\n      Atenciosamente,\n    </p>\n\n    <div style=\"margin-top:10px; text-align:left;\">\n      <img \n        src=\"https://drive.google.com/uc?export=view&id=1PxDpYA9hItRyK_y9ksCTQgEJ0yJ2QR7H\" \n        alt=\"Assinatura\" \n        style=\"max-width:350px; height:auto;\"\n      >\n    </div>\n\n  </div>\n</div>",
+          "options": {
+            "attachmentsUi": {
+              "attachmentsBinary": [
+                {}
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          2672,
+          832
+        ],
+        "id": "81f08bc6-0df5-4824-b9be-94976f15a7b4",
+        "name": "Send a message",
+        "webhookId": "8b1f9365-f51b-4383-b9cc-0afb165184aa",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "f0aqJFTVg22WKz8g",
+            "name": "Gmail account Raul Guimarães "
+          }
+        }
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "dados",
+          "options": {
+            "includeBinaries": true
+          }
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          2464,
+          832
+        ],
+        "id": "5e7bdc88-77b0-4f73-b697-c416d9fa5c4b",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "content": "##  Obtem usuário e Licenças \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 1024,
+          "width": 1056,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -800,
+          384
+        ],
+        "typeVersion": 1,
+        "id": "afc7d9c2-932f-43c3-ac62-bff625e41de8",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "## Consolida contas\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 816,
+          "width": 1344,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          288,
+          448
+        ],
+        "typeVersion": 1,
+        "id": "40eb45f1-6665-4fba-9d0b-851cf2861f26",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "## valor licencas",
+          "height": 224,
+          "width": 160,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1952,
+          736
+        ],
+        "typeVersion": 1,
+        "id": "c8290535-b9d4-4a4f-9eb6-92e22b8f9387",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## MONTA RELATORIO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 656,
+          "width": 704,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1664,
+          528
+        ],
+        "typeVersion": 1,
+        "id": "d2fd2c2f-6c94-43cb-89ef-0774475c399e",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "months",
+                "triggerAtDayOfMonth": 25,
+                "triggerAtHour": 8
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -1040,
+          912
+        ],
+        "id": "ef9cc7f9-63b4-4899-b9c3-a8b0bf7f2c8c",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "height": 1728,
+          "width": 4656,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1552,
+          -112
+        ],
+        "typeVersion": 1,
+        "id": "28bb1f3a-b549-4480-a215-20e33d3b5003",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2880,
+          832
+        ],
+        "id": "f82e874f-7068-46bb-860e-0e83636ce1e9",
+        "name": "No Operation, do nothing"
+      }
+    ],
+    "connections": {
+      "Google Workspace Business Standard": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Frontline Starter": {
+        "main": [
+          [
+            {
+              "node": "Split Out2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Workspace Business Plus": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out2": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Sort1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SSH": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "node": "Merge4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields7": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields4": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many users": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sort1": {
+        "main": [
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 1
+            },
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript1": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "SSH",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "node": "Filter1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge4": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter1": {
+        "main": [
+          [
+            {
+              "node": "Merge4",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge5": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get many users",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Google Workspace Business Plus",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Google Workspace Business Standard",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Google Workspace Frontline Starter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send a message": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 540fd91e",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

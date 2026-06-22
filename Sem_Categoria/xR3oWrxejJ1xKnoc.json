@@ -1,0 +1,6290 @@
+{
+  "updatedAt": "2026-05-29T12:38:34.910Z",
+  "createdAt": "2024-11-11T11:08:21.231Z",
+  "id": "xR3oWrxejJ1xKnoc",
+  "name": "Notificação - Chamados GLPI v2",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2689df49-e18d-4228-b84b-774d0b11c290",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -96
+      ],
+      "id": "eaee28f6-071a-4704-8c5a-bfc4952f6226",
+      "name": "Webhook",
+      "webhookId": "c803f2fa-10a5-44f8-9415-78b068dde27f"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('Switch')\nconst chamados = $('MergePendente').all();\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados e monta a mensagem\nif (chamados && chamados.length > 0 && chamados[0].json) {\n  const chamado = chamados[0].json; // Pega o primeiro item no formato correto\n  const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n  // Cria a mensagem com os dados do chamado\n  const mensagem = `${saudacao}, ${chamado.NOME.split(\" \")[0]}.\\n\\n` +\n    `Seu chamado de número ${chamado.ID}, com o título \"${chamado.TITULO}\", está atualmente com o status \"${chamado.STATUS}\".\\n\\n` +\n    `Para mais detalhes, acesse o chamado no GLPI: ${chamado.URL}\\n\\n` +\n    `Atenciosamente,\\nTecnologia da Informação.`;\n\n  // Retorna a mensagem formatada como string JSON\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n} else {\n  // Retorna uma mensagem padrão caso não haja dados\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados do chamado para informar o solicitante.\")\n    }\n  };\n}\n"
+      },
+      "id": "06408148-df6e-4e45-b390-3f8576b0f3e3",
+      "name": "MontaMensagemPendente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "REQUERENTE",
+              "field2": "E-MAIL/USUARIO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        784,
+        -288
+      ],
+      "id": "b184bf33-02ac-47c5-b9da-0783121ba505",
+      "name": "PENDENTE",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "E-MAIL/USUARIO",
+              "field2": "REQUERENTE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        784,
+        -112
+      ],
+      "id": "d545ae7f-0b25-44fa-8e76-fe626d482a1f",
+      "name": "PENDENTE1",
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1136,
+        -208
+      ],
+      "id": "19d294fe-e5b2-4f7e-96d3-af1893db89f1",
+      "name": "MergePendente"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        -208
+      ],
+      "id": "04c5f09b-ac24-401d-9875-6dae83b7ac50",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados direto do input atual (Filter2)\nconst chamados = $input.all();\n\n// Função para determinar a saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Formata username tipo raul.guimaraes → Raul Guimaraes\nfunction formatarUsername(username) {\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nif (chamados && chamados.length > 0 && chamados[0].json) {\n\n  const chamado = chamados[0].json;\n  const saudacao = obterSaudacao();\n  const nomeRequerente = formatarUsername(chamado.REQUERENTE);\n\n  const mensagem =\n`${saudacao}! 👨‍💻\n\nPassando aqui pra avisar que tem chamado te esperando 👀\n\n🎫 Nº ${chamado.ID} — *${chamado.TITULO}*\n🗂️ Categoria: ${chamado.categoryName}\n👤 Solicitante: ${nomeRequerente}\n📌 Status: ${chamado.STATUS}\n\nDá uma olhada quando puder:\n${chamado.URL}\n\nValeu! 🚀`;\n\n   return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n\n} else {\n\n  return {\n    textMessage: {\n      msg: \"Nada novo por aqui... por enquanto 😄\"\n    }\n  };\n\n}"
+      },
+      "id": "7aa14054-99b9-43eb-ba8d-9ba5a096b53e",
+      "name": "MontaAprovação1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -880
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "c5777b2e-c58e-4376-a9ea-161ac2d78c87",
+      "name": "Extract from File1",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        960,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "5c429e8a-ab2d-4f29-b343-a0e4be10e118",
+      "name": "SSH1",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        784,
+        48
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "id": "d054386e-7fb7-4db1-9fd5-d9e6582276a0",
+      "name": "Formata campos1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        48
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+              "name": "textMessage",
+              "value": "={{ $json.textMessage.msg }}",
+              "type": "string"
+            },
+            {
+              "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+              "name": "Instancias",
+              "value": "SUPORTE",
+              "type": "string"
+            },
+            {
+              "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+              "name": "phone",
+              "value": "=55{{ $('MergePendente').item.json.TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+              "name": "REQUERENTE",
+              "value": "={{ $('Filter1').item.json.REQUERENTE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        -208
+      ],
+      "id": "11d11cee-b872-4038-a9a1-4d6e59e451e2",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "notifications_exchange",
+        "exchangeType": "direct",
+        "routingKey": "whatsApp.suporte",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        -208
+      ],
+      "id": "ec147286-cbee-4adc-9f04-fc733461c5ce",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "6NVyHI8GsuRN8ROo",
+          "name": "RabbitMQ notifications"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+              "name": "textMessage",
+              "value": "={{ $json.textMessage.msg }}",
+              "type": "string"
+            },
+            {
+              "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+              "name": "Instancias",
+              "value": "SUPORTE",
+              "type": "string"
+            },
+            {
+              "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+              "name": "phone",
+              "value": "=5519981746254",
+              "type": "string"
+            },
+            {
+              "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+              "name": "REQUERENTE",
+              "value": "={{ $('dados2').item.json.REQUERENTE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        -880
+      ],
+      "id": "7d588785-6341-4557-b248-22ca1d675fe7",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "notifications_exchange",
+        "exchangeType": "direct",
+        "routingKey": "whatsApp.suporte",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        -880
+      ],
+      "id": "24a1a33d-1fb9-4e56-9497-4d12dd2183e4",
+      "name": "RabbitMQ2",
+      "credentials": {
+        "rabbitmq": {
+          "id": "6NVyHI8GsuRN8ROo",
+          "name": "RabbitMQ notifications"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1bd5f098-a960-40d7-be91-724dae195554",
+              "name": "ID",
+              "value": "={{ $json.data.parent_item.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9b308025-d39b-4ee2-ad23-2976224fef7d",
+              "name": "TITULO",
+              "value": "={{ $json.data.parent_item.name }}",
+              "type": "string"
+            },
+            {
+              "id": "7a0c062c-66b2-4097-bde0-7c011b402d3c",
+              "name": "STATUS",
+              "value": "={{ $json.data.parent_item.status.name }}",
+              "type": "string"
+            },
+            {
+              "id": "c42bba14-0e27-4d62-99fd-8cf28366f135",
+              "name": "REQUERENTE",
+              "value": "={{ $json.data.parent_item.user_recipient.name.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "af5b3a15-477a-4ece-b625-519b3b6de734",
+              "name": "DESCRICÃO",
+              "value": "={{ $json.data.parent_item.content }}",
+              "type": "string"
+            },
+            {
+              "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+              "name": "URL",
+              "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $json.data.item.items_id }}&",
+              "type": "string"
+            },
+            {
+              "id": "b6526f08-01be-4f85-8e93-b5df770edb8a",
+              "name": "ATENDENTE",
+              "value": "={{ $json.data.parent_item.user_editor.name.trim().toUpperCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        -96
+      ],
+      "id": "84494961-3860-48c4-b395-c3f53afa4c45",
+      "name": "dados"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "41b7c752-7fcf-4cfd-b862-24c1dbef2d3a",
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "4349bc78-f84d-4444-a28d-b9655de03636",
+      "name": "Extract from File3",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "cdb8817c-b611-457b-8702-e9e9b23dfa25",
+      "name": "SSH2",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        1168
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "2f737709-62e5-445d-9070-28750dfcb741",
+              "name": "CPF",
+              "value": "={{ $json.CPF.toString().replace(/\\D/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "id": "5d823482-ab90-4bcb-b485-febe18585266",
+      "name": "Formata campos2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        1168
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó MergeAprovador1\nconst chamados = $('MergeAprovador1').all();\n\n// Função para determinar a saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Função para formatar nome (Primeira letra maiúscula)\nfunction formatarNome(nome) {\n  return nome\n    .toLowerCase()\n    .split(\" \")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\n// Função para formatar username tipo nicholas.amaral → Nicholas Amaral\nfunction formatarUsername(username) {\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nif (chamados && chamados.length > 0 && chamados[0].json) {\n\n  const dado = chamados[0].json;\n  const saudacao = obterSaudacao();\n\n  // Primeiro nome do aprovador formatado\n  const primeiroNome = formatarNome(\n    dado.firstname ? dado.firstname.split(\" \")[0] : dado.NOME.split(\" \")[0]\n  );\n\n  // Nome do solicitante formatado\n  const nomeSolicitante = formatarUsername(dado.requesterName);\n\n  const mensagem =\n`${primeiroNome}, ${saudacao}!\n\nVocê possui um chamado aguardando aprovação.\n\n🔹 Número do chamado: ${dado.tickets_id}\n🔹 Categoria: ${dado.categoryName}\n🔹 Solicitante: ${nomeSolicitante}\n\nAcesse para validar:\n${dado.link}\n\nAtenciosamente,\nTecnologia da Informação.`;\n\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n\n} else {\n\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados chamados aguardando aprovação.\")\n    }\n  };\n\n}"
+      },
+      "id": "11abcdb8-65b9-48bd-99b0-24aa924a26a3",
+      "name": "MontaAprovação2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1936,
+        960
+      ],
+      "id": "730e05fc-6db0-4bcb-9ad7-24cff8d70548",
+      "name": "MergeAprovador1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        960
+      ],
+      "id": "f6a3bdda-0281-40d9-a002-6a96d2933c1a",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+              "name": "textMessage",
+              "value": "={{ $json.textMessage.msg }}",
+              "type": "string"
+            },
+            {
+              "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+              "name": "Instancias",
+              "value": "SUPORTE",
+              "type": "string"
+            },
+            {
+              "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+              "name": "phone",
+              "value": "=55{{ $('MergeAprovador1').item.json.TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+              "name": "REQUERENTE",
+              "value": "={{ $('Edit Fields').item.json.requesterName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2400,
+        960
+      ],
+      "id": "42c818c2-dae1-4329-9fc1-521471a86cbe",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "notifications_exchange",
+        "exchangeType": "direct",
+        "routingKey": "whatsApp.suporte",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        2624,
+        960
+      ],
+      "id": "cd005b82-c179-4bec-8ddd-b004e939864c",
+      "name": "RabbitMQ4",
+      "credentials": {
+        "rabbitmq": {
+          "id": "6NVyHI8GsuRN8ROo",
+          "name": "RabbitMQ notifications"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b937499-bc99-42ba-87be-a8d132e650aa",
+              "name": "requesterId",
+              "value": "={{ $json.data.item.requester.id }}",
+              "type": "string"
+            },
+            {
+              "id": "b5682432-5c8e-4291-9bba-1c060dd28adc",
+              "name": "requesterName",
+              "value": "={{ $json.data.item.requester.name }}",
+              "type": "string"
+            },
+            {
+              "id": "1308eb21-5b6a-4e10-85af-ff0906b32e5a",
+              "name": "requested_approver_id",
+              "value": "={{ $json.data.item.requested_approver_id }}",
+              "type": "string"
+            },
+            {
+              "id": "80ffcb94-70c7-48b8-846d-9a4fb19f683b",
+              "name": "status",
+              "value": "={{ $json.data.item.status }}",
+              "type": "string"
+            },
+            {
+              "id": "d18ca486-4624-45d7-89e2-b76e6499eadc",
+              "name": "tickets_id",
+              "value": "={{ $json.data.item.tickets_id }}",
+              "type": "string"
+            },
+            {
+              "id": "32628138-9bd6-4175-b24a-d12c43565d65",
+              "name": "link",
+              "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $json.data.item.tickets_id }}&",
+              "type": "string"
+            },
+            {
+              "id": "6519c121-4f78-47ae-b65b-ec6db9bed0db",
+              "name": "client_secret",
+              "value": "81dd7fcba15be7e5adbdf47f9ce8fc3bbd5b8abbefe14689ca50902d80ac6226",
+              "type": "string"
+            },
+            {
+              "id": "a67ffa83-10e2-4ceb-a16d-b2905bf6d55c",
+              "name": "client_id",
+              "value": "866a5e549e4cd68e166d52dda37731e0f3ebc282337ba76a3f9d3dd4c8d5699f",
+              "type": "string"
+            },
+            {
+              "id": "8229abdf-f89f-4afb-9735-053b797a9ecb",
+              "name": "password",
+              "value": "Mudar@1234",
+              "type": "string"
+            },
+            {
+              "id": "b1974b7d-995b-40c5-a21e-7ff30c9bc555",
+              "name": "username",
+              "value": "n8n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        944
+      ],
+      "id": "3ee13834-153b-4874-89e1-ad7e76c2b9b4",
+      "name": "dados1"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        944
+      ],
+      "id": "4df92baa-d82a-4634-9199-693af4d35b4d",
+      "name": "Extract from File5"
+    },
+    {
+      "parameters": {
+        "content": "## APROVACAO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 992,
+        "width": 3636,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "077e8e2b-9caa-464a-88e6-cb31a2c280d3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "0065aeeb-69f3-4d53-b95e-e905f4660b99",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        944
+      ],
+      "id": "636b660f-4243-46ab-83af-e0219f1f6055",
+      "name": "Webhook1",
+      "webhookId": "0065aeeb-69f3-4d53-b95e-e905f4660b99"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f6f748fc-e3ba-49cd-849b-8276803f5260",
+              "leftValue": "={{ $json.category.name }}",
+              "rightValue": "Aprovação de Pagamento",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "df842fb2-bfc1-4ffd-9171-777e9a4c0fef",
+              "leftValue": "={{ $json.category.name }}",
+              "rightValue": "Solicitação de Compra",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        944
+      ],
+      "id": "a969f166-e3ed-482b-94ac-0ad266e31740",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8cc85cb9-b90e-4333-84d8-6609062c6b7c",
+              "name": "username",
+              "value": "={{ $json.username.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "06fbb0f6-5543-41a5-8540-e2c90c45b805",
+              "name": "firstname",
+              "value": "={{ $json.firstname.toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "e9d44356-4d9b-41ce-9be9-2d678d7e3574",
+              "name": "CPF",
+              "value": "={{ $json.comment }}",
+              "type": "string"
+            },
+            {
+              "id": "17aa02da-dcb9-4115-b73e-fc831fccd963",
+              "name": "requesterName",
+              "value": "={{ $('dados1').item.json.requesterName }}",
+              "type": "string"
+            },
+            {
+              "id": "9baf0894-9c75-4782-911b-0bb5fc0dac6a",
+              "name": "tickets_id",
+              "value": "={{ $('dados1').item.json.tickets_id }}",
+              "type": "string"
+            },
+            {
+              "id": "1fa7f529-81ab-42da-9216-44a3c2bad294",
+              "name": "link",
+              "value": "={{ $('dados1').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "094ec5b1-80d3-407b-a484-832e588da94b",
+              "name": "categoryName",
+              "value": "={{ $('AssistanceTicket').item.json.category.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        944
+      ],
+      "id": "c656b0b8-2b51-4117-a9a2-1c2d00897ced",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $('dados1').item.json.tickets_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $json.token_type }} {{ $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        384,
+        944
+      ],
+      "id": "d2cc2c74-0b17-479e-8544-128ac05d1461",
+      "name": "AssistanceTicket"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Administration/User/{{ $('dados1').item.json.requested_approver_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $('GET TOKEM').item.json.token_type }} {{ $('GET TOKEM').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        768,
+        944
+      ],
+      "id": "72e051ed-6ec4-4ca0-b0ca-d2cbc8b3cf3c",
+      "name": "AdministrationUser",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "content": "## Dados do Chamado\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 496,
+        "width": 1536,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        736
+      ],
+      "typeVersion": 1,
+      "id": "c4af09c5-d043-4bdd-b57b-53547528b056",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## DADOS TELEFONE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 288,
+        "width": 496,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1376,
+        1056
+      ],
+      "typeVersion": 1,
+      "id": "c2242dee-8794-411a-8173-4995b98f2813",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## MENSAGEM\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 384,
+        "width": 832,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1920,
+        784
+      ],
+      "typeVersion": 1,
+      "id": "d5b9414e-6646-46b0-a7d1-174a0b896b98",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "576da72d-e224-4be0-868c-9316db731956",
+              "leftValue": "={{ $json.STATUS }}",
+              "rightValue": "Pendente",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        464,
+        -96
+      ],
+      "id": "2cf4d66f-d0c9-4728-983a-6ca915f1ebe1",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1bd5f098-a960-40d7-be91-724dae195554",
+              "name": "ID",
+              "value": "={{ $json.data.item.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9b308025-d39b-4ee2-ad23-2976224fef7d",
+              "name": "TITULO",
+              "value": "={{ $json.data.item.name }}",
+              "type": "string"
+            },
+            {
+              "id": "7a0c062c-66b2-4097-bde0-7c011b402d3c",
+              "name": "STATUS",
+              "value": "={{ $json.data.item.status.name }}",
+              "type": "string"
+            },
+            {
+              "id": "c42bba14-0e27-4d62-99fd-8cf28366f135",
+              "name": "REQUERENTE",
+              "value": "={{ $json.data.item.user_recipient.name }}",
+              "type": "string"
+            },
+            {
+              "id": "af5b3a15-477a-4ece-b625-519b3b6de734",
+              "name": "DESCRICÃO",
+              "value": "={{ $json.data.item.content }}",
+              "type": "string"
+            },
+            {
+              "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+              "name": "URL",
+              "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $json.data.item.id }}&",
+              "type": "string"
+            },
+            {
+              "id": "113d7005-075a-40eb-9f46-ac6d694debd5",
+              "name": "categoryName",
+              "value": "={{ $json.data.item.category.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f58913b4-e091-4c7c-a2b8-7bc0c5c77072",
+              "name": "teamName",
+              "value": "={{ $json.data.item.team[0].name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        -880
+      ],
+      "id": "586d679e-4c1b-4da6-992f-8e91a104f41f",
+      "name": "dados2"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -880
+      ],
+      "id": "e4cf5d98-b5de-4b12-9f04-ce8a489a5a27",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "576da72d-e224-4be0-868c-9316db731956",
+              "leftValue": "={{ $json.teamName }}",
+              "rightValue": "Desenvolvimento",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        -880
+      ],
+      "id": "96105048-cf77-4db6-a0a3-e0d39ef2da77",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1710af9b-d8c8-4f26-b207-8ff83b5fcc42",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        -880
+      ],
+      "id": "cb665324-f933-4ae7-a5d8-48c998e4c152",
+      "name": "Webhook2",
+      "webhookId": "1710af9b-d8c8-4f26-b207-8ff83b5fcc42"
+    },
+    {
+      "parameters": {
+        "content": "## NOTIFICA DEVS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 480,
+        "width": 1744,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        -1104
+      ],
+      "typeVersion": 1,
+      "id": "9fbaf235-7dc6-426c-b1c7-b0a9dc6d8f34",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        -880
+      ],
+      "id": "c4dd3f48-2a80-45b6-8c68-684018bcd518",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1bd5f098-a960-40d7-be91-724dae195554",
+              "name": "ID",
+              "value": "={{ $('Extract from File6').item.json.data.item.id }}",
+              "type": "string"
+            },
+            {
+              "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+              "name": "URL",
+              "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $('Extract from File6').item.json.data.item.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        1888
+      ],
+      "id": "88be9f46-54cc-4acd-8535-9f4e4e18fe3c",
+      "name": "dados3"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {
+          "encoding": "utf8",
+          "keepSource": "json"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -288,
+        1904
+      ],
+      "id": "7181128e-c554-44a1-b927-2f0c2fe428bc",
+      "name": "Extract from File6"
+    },
+    {
+      "parameters": {
+        "content": "## APROVACAO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 784,
+        "width": 3652,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        1568
+      ],
+      "typeVersion": 1,
+      "id": "843bbab7-df26-45e1-aac0-98af4835b918",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5cdf0f24-44c6-4792-971f-235ba30c3582",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -512,
+        1904
+      ],
+      "id": "1e248b70-820c-499f-af3e-dd18096f9094",
+      "name": "Webhook3",
+      "webhookId": "5cdf0f24-44c6-4792-971f-235ba30c3582"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $json.ID }}/Timeline/Validation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        640,
+        1888
+      ],
+      "id": "0fde03a4-666e-4fcf-8106-63cbd0eb042c",
+      "name": "AssistanceTicket2"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Administration/User/{{ $json.item.requested_approver_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        1888
+      ],
+      "id": "37671252-6086-4e10-95a1-3ebf8bb6ea31",
+      "name": "AdministrationUser1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8cc85cb9-b90e-4333-84d8-6609062c6b7c",
+              "name": "username",
+              "value": "={{ $json.username.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "06fbb0f6-5543-41a5-8540-e2c90c45b805",
+              "name": "firstname",
+              "value": "={{ $json.firstname.toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "e9d44356-4d9b-41ce-9be9-2d678d7e3574",
+              "name": "CPF",
+              "value": "={{ $json.comment }}",
+              "type": "string"
+            },
+            {
+              "id": "17aa02da-dcb9-4115-b73e-fc831fccd963",
+              "name": "requesterName",
+              "value": "={{ $('AssistanceTicket2').item.json.item.requester.name }}",
+              "type": "string"
+            },
+            {
+              "id": "9baf0894-9c75-4782-911b-0bb5fc0dac6a",
+              "name": "tickets_id",
+              "value": "={{ $('dados3').item.json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "094ec5b1-80d3-407b-a484-832e588da94b",
+              "name": "categoryName",
+              "value": "={{ $('AssistanceTicket2').item.json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "f766b4fb-643e-49df-b966-a3221eb39d22",
+              "name": "link",
+              "value": "={{ $('dados3').item.json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        1888
+      ],
+      "id": "227d2dcf-4985-41b1-9957-d3f86bcc336f",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "b6c39315-d3e7-4d61-825d-089d204e8f6e",
+      "name": "Extract from File4",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        2112
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "3bbb2f45-e1bf-47e8-a05e-10728ba9aa48",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        2112
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "2f737709-62e5-445d-9070-28750dfcb741",
+              "name": "CPF",
+              "value": "={{ $json.CPF.toString().replace(/\\D/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "id": "2dde7a2e-ec45-4edf-b66d-36351816cd7d",
+      "name": "Formata campos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        2112
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const chamados = $input.all();\n\n// Função para saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Formatar nome\nfunction formatarNome(nome) {\n  if (!nome) return \"Usuário\";\n\n  return nome\n    .toLowerCase()\n    .split(\" \")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\n// Formatar username\nfunction formatarUsername(username) {\n  if (!username) return \"Não informado\";\n\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nreturn chamados.map(item => {\n\n  const dado = item.json;\n  const saudacao = obterSaudacao();\n\n  const primeiroNome = formatarNome(\n    dado.firstname \n      ? dado.firstname.split(\" \")[0] \n      : (dado.NOME ? dado.NOME.split(\" \")[0] : null)\n  );\n\n  const nomeSolicitante = formatarUsername(dado.requesterName);\n\n  const mensagem =\n`${primeiroNome}, ${saudacao}!\n\nVocê possui um chamado aguardando aprovação.\n\n🔹 Número do chamado: ${dado.tickets_id}\n🔹 Categoria: ${dado.categoryName || \"Não informada\"}\n🔹 Solicitante: ${nomeSolicitante}\n\nAcesse para validar:\n${dado.link}\n\nAtenciosamente,\nTecnologia da Informação.`;\n\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n});"
+      },
+      "id": "6bc5a1ad-b9aa-4398-993d-f73ee13c9f38",
+      "name": "MontaAprovação",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        1904
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2048,
+        1904
+      ],
+      "id": "0c54dd2e-375a-4ca5-b34b-6fd3c0649aa1",
+      "name": "MergeAprovador"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+              "name": "textMessage",
+              "value": "={{ $json.textMessage.msg }}",
+              "type": "string"
+            },
+            {
+              "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+              "name": "Instancias",
+              "value": "SUPORTE",
+              "type": "string"
+            },
+            {
+              "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+              "name": "phone",
+              "value": "=55{{ $('MergeAprovador').item.json.TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+              "name": "REQUERENTE",
+              "value": "={{ $('MergeAprovador').item.json.requesterName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2512,
+        1904
+      ],
+      "id": "7e38ee89-c30f-41c4-9ed1-db91359305b8",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "notifications_exchange",
+        "exchangeType": "direct",
+        "routingKey": "whatsApp.suporte",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        2736,
+        1904
+      ],
+      "id": "9218a3ab-4e86-42ac-8df7-76878d4b82f1",
+      "name": "RabbitMQ5",
+      "credentials": {
+        "rabbitmq": {
+          "id": "6NVyHI8GsuRN8ROo",
+          "name": "RabbitMQ notifications"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## DADOS TELEFONE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 288,
+        "width": 496,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1424,
+        2000
+      ],
+      "typeVersion": 1,
+      "id": "89975c21-81b7-4e8f-8bdc-3b08e759a3b7",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## MENSAGEM\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 384,
+        "width": 832,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2032,
+        1728
+      ],
+      "typeVersion": 1,
+      "id": "16e3249e-d019-4ef9-b98f-d4a810732d96",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## Dados do Chamado\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 496,
+        "width": 1652,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        1696
+      ],
+      "typeVersion": 1,
+      "id": "017b59a4-cec5-4d08-bed8-023ff37589ef",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        1904
+      ],
+      "id": "70dcc2c5-4524-4336-aae5-a19042b958c5",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "content": "## PENDENTE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 1072,
+        "width": 2852,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -528,
+        -576
+      ],
+      "typeVersion": 1,
+      "id": "6e60d42e-acb4-40a1-a06f-552875356a6b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1bd5f098-a960-40d7-be91-724dae195554",
+              "name": "ID",
+              "value": "={{ $('SenhaPadrao').item.json.items_id }}",
+              "type": "string"
+            },
+            {
+              "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+              "name": "URL",
+              "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $('SenhaPadrao').item.json.items_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        2752
+      ],
+      "id": "f19f6dfa-baee-4683-b8f8-6d80fbd3fb0d",
+      "name": "dados4"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Administration/User/{{ $json.item.requested_approver_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        768,
+        2752
+      ],
+      "id": "c70e4253-cd69-4334-aa82-1ecaed7b6c44",
+      "name": "AdministrationUser2",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8cc85cb9-b90e-4333-84d8-6609062c6b7c",
+              "name": "username",
+              "value": "={{ $json.username.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "06fbb0f6-5543-41a5-8540-e2c90c45b805",
+              "name": "firstname",
+              "value": "={{ $json.firstname.toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "e9d44356-4d9b-41ce-9be9-2d678d7e3574",
+              "name": "CPF",
+              "value": "={{ $json.comment }}",
+              "type": "string"
+            },
+            {
+              "id": "17aa02da-dcb9-4115-b73e-fc831fccd963",
+              "name": "requesterName",
+              "value": "={{ $('AssistanceTicket1').item.json.user_recipient.name }}",
+              "type": "string"
+            },
+            {
+              "id": "9baf0894-9c75-4782-911b-0bb5fc0dac6a",
+              "name": "tickets_id",
+              "value": "={{ $('dados4').item.json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "094ec5b1-80d3-407b-a484-832e588da94b",
+              "name": "categoryName",
+              "value": "={{ $('AssistanceTicket1').item.json.category.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f766b4fb-643e-49df-b966-a3221eb39d22",
+              "name": "link",
+              "value": "={{ $('dados4').item.json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1008,
+        2752
+      ],
+      "id": "207299ab-2abe-44d7-bf8c-15080a7ccf8a",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "9ecb0aeb-fcf2-442a-ba06-18fb31158435",
+      "name": "Extract from File7",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        2992
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "a1fc66e4-6aba-4462-9da0-7125f91a9053",
+      "name": "SSH3",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        2992
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+              "name": "TELEFONE",
+              "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "2f737709-62e5-445d-9070-28750dfcb741",
+              "name": "CPF",
+              "value": "={{ $json.CPF.toString().replace(/\\D/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "id": "dc6014e0-1dc3-4865-8e9e-41e2a1a5e9f3",
+      "name": "Formata campos3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        2992
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const chamados = $input.all();\n\n// Função para saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Formatar nome\nfunction formatarNome(nome) {\n  if (!nome) return \"Usuário\";\n\n  return nome\n    .toLowerCase()\n    .split(\" \")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\n// Formatar username\nfunction formatarUsername(username) {\n  if (!username) return \"Não informado\";\n\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nreturn chamados.map(item => {\n\n  const dado = item.json;\n  const saudacao = obterSaudacao();\n\n  const primeiroNome = formatarNome(\n    dado.firstname \n      ? dado.firstname.split(\" \")[0] \n      : (dado.NOME ? dado.NOME.split(\" \")[0] : null)\n  );\n\n  const nomeSolicitante = formatarUsername(dado.requesterName);\n\n  const mensagem =\n`${primeiroNome}, ${saudacao}!\n\nVocê possui um chamado aguardando aprovação.\n\n🔹 Número do chamado: ${dado.tickets_id}\n🔹 Categoria: ${dado.categoryName || \"Não informada\"}\n🔹 Solicitante: ${nomeSolicitante}\n\nAcesse para validar:\n${dado.link}\n\nAtenciosamente,\nTecnologia da Informação.`;\n\n   return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n});"
+      },
+      "id": "69d5e81c-bf20-4955-8f0b-7a2d1ab717b5",
+      "name": "MontaAprovação3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1952,
+        2768
+      ],
+      "id": "757b79be-879b-4573-ac3a-3138687fba63",
+      "name": "MergeAprovador2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+              "name": "textMessage",
+              "value": "={{ $json.textMessage.msg }}",
+              "type": "string"
+            },
+            {
+              "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+              "name": "Instancias",
+              "value": "SUPORTE",
+              "type": "string"
+            },
+            {
+              "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+              "name": "phone",
+              "value": "=55{{ $('MergeAprovador2').item.json.TELEFONE }}",
+              "type": "string"
+            },
+            {
+              "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+              "name": "REQUERENTE",
+              "value": "={{ $('MergeAprovador2').item.json.requesterName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2368,
+        2768
+      ],
+      "id": "1cc97cba-088c-4cd7-8bf6-b5345877f972",
+      "name": "Edit Fields7"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "notifications_exchange",
+        "exchangeType": "direct",
+        "routingKey": "whatsApp.suporte",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        2592,
+        2768
+      ],
+      "id": "c97f5b82-5fd0-4b27-a554-c4e253923744",
+      "name": "RabbitMQ6",
+      "credentials": {
+        "rabbitmq": {
+          "id": "6NVyHI8GsuRN8ROo",
+          "name": "RabbitMQ notifications"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## DADOS TELEFONE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 288,
+        "width": 496,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1280,
+        2880
+      ],
+      "typeVersion": 1,
+      "id": "0d3baedd-857e-44c2-8f5f-e3b0343f6c75",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## MENSAGEM\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 384,
+        "width": 912,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1888,
+        2608
+      ],
+      "typeVersion": 1,
+      "id": "864fcbcb-4624-4600-bd58-bd993b4ca37c",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        2768
+      ],
+      "id": "6306223d-7197-4a64-917d-8fdd2ccefa97",
+      "name": "No Operation, do nothing4"
+    },
+    {
+      "parameters": {
+        "content": "## Dados do Chamado\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 496,
+        "width": 1380,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -176,
+        2576
+      ],
+      "typeVersion": 1,
+      "id": "a018d5bb-1ba9-478e-b43f-a64fb95c6a65",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $('dados4').item.json.ID }}/Timeline/Validation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        368,
+        2752
+      ],
+      "id": "5390b4d1-1e5e-4da4-9af5-de9680946442",
+      "name": "ValidationTicket"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $json.ID }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $('If').item.json.token_type }} {{ $('If').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        2752
+      ],
+      "id": "05ef78a1-b737-4690-bb25-8182fcc4dd6f",
+      "name": "AssistanceTicket1"
+    },
+    {
+      "parameters": {
+        "content": "## APROVACAO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 784,
+        "width": 3652,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        2448
+      ],
+      "typeVersion": 1,
+      "id": "84f10cac-addf-4f32-ad49-bd78656ba92c",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acd331e7-c771-458b-a918-dc6dc5f764f7",
+              "name": "id",
+              "value": "={{ $json.data.item.id }}",
+              "type": "string"
+            },
+            {
+              "id": "c45142f8-cfe4-4fda-998a-8c25e18292f8",
+              "name": "items_id",
+              "value": "={{ $json.data.item.items_id }}",
+              "type": "number"
+            },
+            {
+              "id": "1df9d735-b419-4d31-bff4-167d93ec325b",
+              "name": "username",
+              "value": "n8n",
+              "type": "string"
+            },
+            {
+              "id": "8f0eba08-48ef-43ff-ad92-87f37343a630",
+              "name": "password",
+              "value": "Mudar@1234",
+              "type": "string"
+            },
+            {
+              "id": "23a5acdf-61a5-456b-a886-612c946a14f1",
+              "name": "client_id",
+              "value": "866a5e549e4cd68e166d52dda37731e0f3ebc282337ba76a3f9d3dd4c8d5699f",
+              "type": "string"
+            },
+            {
+              "id": "898ce6b4-fa38-479d-9721-e8c6d7c61885",
+              "name": "client_secret",
+              "value": "81dd7fcba15be7e5adbdf47f9ce8fc3bbd5b8abbefe14689ca50902d80ac6226",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        1904
+      ],
+      "id": "57314361-1f54-48f2-86db-ececce91fc02",
+      "name": "SenhaPadrao"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "865a3a15-2cff-4a81-bed0-94df5a3ebf86",
+              "leftValue": "={{ $('SenhaPadrao').item.json.items_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        192,
+        1904
+      ],
+      "id": "b7913888-97e5-436c-934e-581b6222e5bc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3de247a5-39a4-4144-a1c6-b666ea59ac40",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        2752
+      ],
+      "id": "b6ee7b77-b855-4e77-af1a-c698894316d3",
+      "name": "Filter3"
+    },
+    {
+      "parameters": {
+        "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $json.ID }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en_GB"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        2912
+      ],
+      "id": "15abb784-5b19-4600-9f18-0fa19d13c984",
+      "name": "AssistanceTicket3",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "0kLFaGeiiKFQNMAV",
+          "name": "GLPI_V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ACESSOS",
+        "height": 224,
+        "width": 150,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        1840
+      ],
+      "typeVersion": 1,
+      "id": "c5b18882-b914-4045-b2a5-554280420ac9",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://glpi.mdgintermediacoes.com.br/api.php/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "password"
+            },
+            {
+              "name": "scope",
+              "value": "api"
+            },
+            {
+              "name": "username",
+              "value": "={{ $json.username }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $json.password }}"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $json.client_id }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $json.client_secret }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        944
+      ],
+      "id": "4301a75c-84ee-4a2d-bf15-6bd66ed55262",
+      "name": "GET TOKEM"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://glpi.mdgintermediacoes.com.br/api.php/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "password"
+            },
+            {
+              "name": "scope",
+              "value": "api"
+            },
+            {
+              "name": "username",
+              "value": "={{ $json.username }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $json.password }}"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $json.client_id }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $json.client_secret }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        1904
+      ],
+      "id": "5860af42-c0c8-4ad4-8493-f28a03e0119e",
+      "name": "GET TOKEM1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaMensagemPendente": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PENDENTE": {
+      "main": [
+        [
+          {
+            "node": "MergePendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PENDENTE1": {
+      "main": [
+        [
+          {
+            "node": "MergePendente",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MergePendente": {
+      "main": [
+        [
+          {
+            "node": "MontaMensagemPendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaAprovação1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Formata campos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata campos1": {
+      "main": [
+        [
+          {
+            "node": "PENDENTE",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "PENDENTE1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File3": {
+      "main": [
+        [
+          {
+            "node": "Formata campos2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata campos2": {
+      "main": [
+        [
+          {
+            "node": "MergeAprovador1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MontaAprovação2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeAprovador1": {
+      "main": [
+        [
+          {
+            "node": "MontaAprovação2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ4": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados1": {
+      "main": [
+        [
+          {
+            "node": "GET TOKEM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File5": {
+      "main": [
+        [
+          {
+            "node": "dados1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "AdministrationUser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "SSH2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeAprovador1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AssistanceTicket": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AdministrationUser": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "PENDENTE",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PENDENTE1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "SSH1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados2": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "dados2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "MontaAprovação1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados3": {
+      "main": [
+        [
+          {
+            "node": "AssistanceTicket2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File6": {
+      "main": [
+        [
+          {
+            "node": "SenhaPadrao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "Extract from File6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AssistanceTicket2": {
+      "main": [
+        [
+          {
+            "node": "AdministrationUser1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AdministrationUser1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File4": {
+      "main": [
+        [
+          {
+            "node": "Formata campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Extract from File4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata campos": {
+      "main": [
+        [
+          {
+            "node": "MergeAprovador",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MontaAprovação": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeAprovador": {
+      "main": [
+        [
+          {
+            "node": "MontaAprovação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeAprovador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ5": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados4": {
+      "main": [
+        [
+          {
+            "node": "AssistanceTicket1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AdministrationUser2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "SSH3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MergeAprovador2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File7": {
+      "main": [
+        [
+          {
+            "node": "Formata campos3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH3": {
+      "main": [
+        [
+          {
+            "node": "Extract from File7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata campos3": {
+      "main": [
+        [
+          {
+            "node": "MergeAprovador2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MontaAprovação3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeAprovador2": {
+      "main": [
+        [
+          {
+            "node": "MontaAprovação3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ6": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ValidationTicket": {
+      "main": [
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AssistanceTicket1": {
+      "main": [
+        [
+          {
+            "node": "ValidationTicket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SenhaPadrao": {
+      "main": [
+        [
+          {
+            "node": "GET TOKEM1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "dados3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "dados4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter3": {
+      "main": [
+        [
+          {
+            "node": "AdministrationUser2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET TOKEM": {
+      "main": [
+        [
+          {
+            "node": "AssistanceTicket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET TOKEM1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 300,
+    "availableInMCP": false,
+    "timeSavedMode": "dynamic",
+    "binaryMode": "separate",
+    "saveDataSuccessExecution": "all"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook4": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "510",
+            "user-agent": "GuzzleHttp/7",
+            "x-glpi-signature": "ec1a6dd22a185241a68309d522f3a2a48297dad4a85124b5f78095be0ed2f6de",
+            "x-glpi-timestamp": "1773663606"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/0065aeeb-69f3-4d53-b95e-e905f4660b99",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Extract from File8": [
+      {
+        "json": {
+          "data": {
+            "event": "new",
+            "item": {
+              "id": "10293",
+              "requester": {
+                "id": "",
+                "name": ""
+              },
+              "approver": {
+                "id": "",
+                "name": ""
+              },
+              "requested_approver_type": "",
+              "requested_approver_id": "",
+              "submission_comment": "",
+              "approval_comment": "",
+              "status": "Array",
+              "submission_date": "",
+              "approval_date": "",
+              "timeline_position": "",
+              "tickets_id": ""
+            }
+          }
+        }
+      }
+    ],
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "513",
+            "user-agent": "GuzzleHttp/7",
+            "x-glpi-signature": "294e86afad2c34f456d649b17b85cbc1280d22845c982824190bbb03ce43ac95",
+            "x-glpi-timestamp": "1773847733"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/0065aeeb-69f3-4d53-b95e-e905f4660b99",
+          "executionMode": "production"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "application/octet-stream",
+            "fileExtension": "bin",
+            "data": "database",
+            "fileName": "8233cdc5-d36d-46ca-9743-9b4be84c839c",
+            "id": "database:0073a63f-8df1-4b98-847c-f1c36bd01b36",
+            "fileSize": "513 B",
+            "bytes": 513
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "dados1": [
+      {
+        "json": {
+          "requesterId": "",
+          "requesterName": "",
+          "requested_approver_id": "",
+          "status": "Array",
+          "tickets_id": "10311",
+          "link": "https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id=&",
+          "client_secret": "81dd7fcba15be7e5adbdf47f9ce8fc3bbd5b8abbefe14689ca50902d80ac6226",
+          "client_id": "866a5e549e4cd68e166d52dda37731e0f3ebc282337ba76a3f9d3dd4c8d5699f",
+          "password": "Mudar@1234",
+          "username": "n8n"
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "3050",
+            "user-agent": "GuzzleHttp/7",
+            "x-glpi-signature": "ff2be1abfa45805032c549834011c40ed11f749ca8e90ce54f23c7d9c3a713bd",
+            "x-glpi-timestamp": "1777909475"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/2689df49-e18d-4228-b84b-774d0b11c290",
+          "executionMode": "production"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "application/octet-stream",
+            "fileExtension": "bin",
+            "data": "database",
+            "fileName": "d830dd1b-44bb-4ad6-955f-2a5dc01bd02b",
+            "id": "database:09f702ab-5386-4b9d-806b-4181b119253c",
+            "fileSize": "3.05 kB",
+            "bytes": 3050
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook3": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "513",
+            "user-agent": "GuzzleHttp/7",
+            "x-glpi-signature": "295779bc24638cf955427139f5c5e8294fc900b820ba58dd8357c3583314d639",
+            "x-glpi-timestamp": "1780057740"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/5cdf0f24-44c6-4792-971f-235ba30c3582",
+          "executionMode": "production"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "application/octet-stream",
+            "fileExtension": "bin",
+            "data": "database",
+            "fileName": "326c6c33-273d-4c02-ae15-98a32145da9c",
+            "id": "database:39f560f2-89cf-4da9-be88-addfcf35006f",
+            "fileSize": "513 B",
+            "bytes": 513
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "147ee84f-0ba9-4e9d-9094-bc3140258041",
+  "activeVersionId": "147ee84f-0ba9-4e9d-9094-bc3140258041",
+  "triggerCount": 4,
+  "shared": [
+    {
+      "updatedAt": "2024-11-11T11:08:21.231Z",
+      "createdAt": "2024-11-11T11:08:21.231Z",
+      "role": "workflow:owner",
+      "workflowId": "xR3oWrxejJ1xKnoc",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-05-29T12:38:37.338Z",
+    "createdAt": "2026-05-29T12:38:34.912Z",
+    "versionId": "147ee84f-0ba9-4e9d-9094-bc3140258041",
+    "workflowId": "xR3oWrxejJ1xKnoc",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "2689df49-e18d-4228-b84b-774d0b11c290",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -208,
+          -96
+        ],
+        "id": "eaee28f6-071a-4704-8c5a-bfc4952f6226",
+        "name": "Webhook",
+        "webhookId": "c803f2fa-10a5-44f8-9415-78b068dde27f"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Coleta os dados do nó $('Switch')\nconst chamados = $('MergePendente').all();\n\n// Função para determinar a saudação com base no horário atual\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) {\n    return \"Bom dia\";\n  } else if (hora >= 12 && hora < 18) {\n    return \"Boa tarde\";\n  } else {\n    return \"Boa noite\";\n  }\n}\n\n// Verifica se há dados e monta a mensagem\nif (chamados && chamados.length > 0 && chamados[0].json) {\n  const chamado = chamados[0].json; // Pega o primeiro item no formato correto\n  const saudacao = obterSaudacao(); // Obtém a saudação adequada\n\n  // Cria a mensagem com os dados do chamado\n  const mensagem = `${saudacao}, ${chamado.NOME.split(\" \")[0]}.\\n\\n` +\n    `Seu chamado de número ${chamado.ID}, com o título \"${chamado.TITULO}\", está atualmente com o status \"${chamado.STATUS}\".\\n\\n` +\n    `Para mais detalhes, acesse o chamado no GLPI: ${chamado.URL}\\n\\n` +\n    `Atenciosamente,\\nTecnologia da Informação.`;\n\n  // Retorna a mensagem formatada como string JSON\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n} else {\n  // Retorna uma mensagem padrão caso não haja dados\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados dados do chamado para informar o solicitante.\")\n    }\n  };\n}\n"
+        },
+        "id": "06408148-df6e-4e45-b390-3f8576b0f3e3",
+        "name": "MontaMensagemPendente",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1344,
+          -208
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "REQUERENTE",
+                "field2": "E-MAIL/USUARIO"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          784,
+          -288
+        ],
+        "id": "b184bf33-02ac-47c5-b9da-0783121ba505",
+        "name": "PENDENTE",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "E-MAIL/USUARIO",
+                "field2": "REQUERENTE"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          784,
+          -112
+        ],
+        "id": "d545ae7f-0b25-44fa-8e76-fe626d482a1f",
+        "name": "PENDENTE1",
+        "alwaysOutputData": false,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          1136,
+          -208
+        ],
+        "id": "19d294fe-e5b2-4f7e-96d3-af1893db89f1",
+        "name": "MergePendente"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1888,
+          -208
+        ],
+        "id": "04c5f09b-ac24-401d-9875-6dae83b7ac50",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Coleta os dados direto do input atual (Filter2)\nconst chamados = $input.all();\n\n// Função para determinar a saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Formata username tipo raul.guimaraes → Raul Guimaraes\nfunction formatarUsername(username) {\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nif (chamados && chamados.length > 0 && chamados[0].json) {\n\n  const chamado = chamados[0].json;\n  const saudacao = obterSaudacao();\n  const nomeRequerente = formatarUsername(chamado.REQUERENTE);\n\n  const mensagem =\n`${saudacao}! 👨‍💻\n\nPassando aqui pra avisar que tem chamado te esperando 👀\n\n🎫 Nº ${chamado.ID} — *${chamado.TITULO}*\n🗂️ Categoria: ${chamado.categoryName}\n👤 Solicitante: ${nomeRequerente}\n📌 Status: ${chamado.STATUS}\n\nDá uma olhada quando puder:\n${chamado.URL}\n\nValeu! 🚀`;\n\n   return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n\n} else {\n\n  return {\n    textMessage: {\n      msg: \"Nada novo por aqui... por enquanto 😄\"\n    }\n  };\n\n}"
+        },
+        "id": "7aa14054-99b9-43eb-ba8d-9ba5a096b53e",
+        "name": "MontaAprovação1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          -880
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "binaryPropertyName": "=data",
+          "options": {
+            "headerRow": true,
+            "sheetName": "Base"
+          }
+        },
+        "id": "c5777b2e-c58e-4376-a9ea-161ac2d78c87",
+        "name": "Extract from File1",
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          960,
+          48
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "download",
+          "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+          "options": {}
+        },
+        "id": "5c429e8a-ab2d-4f29-b343-a0e4be10e118",
+        "name": "SSH1",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          784,
+          48
+        ],
+        "credentials": {
+          "sshPassword": {
+            "id": "ycQRi5glz56987vv",
+            "name": "SSH Password account SRV01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+                "name": "NOME",
+                "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+                "name": "E-MAIL/USUARIO",
+                "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA }}",
+                "type": "string"
+              },
+              {
+                "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+                "name": "TELEFONE",
+                "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "id": "d054386e-7fb7-4db1-9fd5-d9e6582276a0",
+        "name": "Formata campos1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1136,
+          48
+        ],
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+                "name": "textMessage",
+                "value": "={{ $json.textMessage.msg }}",
+                "type": "string"
+              },
+              {
+                "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+                "name": "Instancias",
+                "value": "SUPORTE",
+                "type": "string"
+              },
+              {
+                "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+                "name": "phone",
+                "value": "=55{{ $('MergePendente').item.json.TELEFONE }}",
+                "type": "string"
+              },
+              {
+                "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+                "name": "REQUERENTE",
+                "value": "={{ $('Filter1').item.json.REQUERENTE }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1520,
+          -208
+        ],
+        "id": "11d11cee-b872-4038-a9a1-4d6e59e451e2",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "mode": "exchange",
+          "exchange": "notifications_exchange",
+          "exchangeType": "direct",
+          "routingKey": "whatsApp.suporte",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.rabbitmq",
+        "typeVersion": 1.1,
+        "position": [
+          1696,
+          -208
+        ],
+        "id": "ec147286-cbee-4adc-9f04-fc733461c5ce",
+        "name": "RabbitMQ",
+        "credentials": {
+          "rabbitmq": {
+            "id": "6NVyHI8GsuRN8ROo",
+            "name": "RabbitMQ notifications"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+                "name": "textMessage",
+                "value": "={{ $json.textMessage.msg }}",
+                "type": "string"
+              },
+              {
+                "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+                "name": "Instancias",
+                "value": "SUPORTE",
+                "type": "string"
+              },
+              {
+                "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+                "name": "phone",
+                "value": "=5519981746254",
+                "type": "string"
+              },
+              {
+                "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+                "name": "REQUERENTE",
+                "value": "={{ $('dados2').item.json.REQUERENTE }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          656,
+          -880
+        ],
+        "id": "7d588785-6341-4557-b248-22ca1d675fe7",
+        "name": "Edit Fields4"
+      },
+      {
+        "parameters": {
+          "mode": "exchange",
+          "exchange": "notifications_exchange",
+          "exchangeType": "direct",
+          "routingKey": "whatsApp.suporte",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.rabbitmq",
+        "typeVersion": 1.1,
+        "position": [
+          848,
+          -880
+        ],
+        "id": "24a1a33d-1fb9-4e56-9497-4d12dd2183e4",
+        "name": "RabbitMQ2",
+        "credentials": {
+          "rabbitmq": {
+            "id": "6NVyHI8GsuRN8ROo",
+            "name": "RabbitMQ notifications"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1bd5f098-a960-40d7-be91-724dae195554",
+                "name": "ID",
+                "value": "={{ $json.data.parent_item.id }}",
+                "type": "string"
+              },
+              {
+                "id": "9b308025-d39b-4ee2-ad23-2976224fef7d",
+                "name": "TITULO",
+                "value": "={{ $json.data.parent_item.name }}",
+                "type": "string"
+              },
+              {
+                "id": "7a0c062c-66b2-4097-bde0-7c011b402d3c",
+                "name": "STATUS",
+                "value": "={{ $json.data.parent_item.status.name }}",
+                "type": "string"
+              },
+              {
+                "id": "c42bba14-0e27-4d62-99fd-8cf28366f135",
+                "name": "REQUERENTE",
+                "value": "={{ $json.data.parent_item.user_recipient.name.toUpperCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "af5b3a15-477a-4ece-b625-519b3b6de734",
+                "name": "DESCRICÃO",
+                "value": "={{ $json.data.parent_item.content }}",
+                "type": "string"
+              },
+              {
+                "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+                "name": "URL",
+                "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $json.data.item.items_id }}&",
+                "type": "string"
+              },
+              {
+                "id": "b6526f08-01be-4f85-8e93-b5df770edb8a",
+                "name": "ATENDENTE",
+                "value": "={{ $json.data.parent_item.user_editor.name.trim().toUpperCase() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          256,
+          -96
+        ],
+        "id": "84494961-3860-48c4-b395-c3f53afa4c45",
+        "name": "dados"
+      },
+      {
+        "parameters": {
+          "operation": "fromJson",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          -96
+        ],
+        "id": "41b7c752-7fcf-4cfd-b862-24c1dbef2d3a",
+        "name": "Extract from File2"
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "binaryPropertyName": "=data",
+          "options": {
+            "headerRow": true,
+            "sheetName": "Base"
+          }
+        },
+        "id": "4349bc78-f84d-4444-a28d-b9655de03636",
+        "name": "Extract from File3",
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          1568,
+          1168
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "download",
+          "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+          "options": {}
+        },
+        "id": "cdb8817c-b611-457b-8702-e9e9b23dfa25",
+        "name": "SSH2",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          1408,
+          1168
+        ],
+        "credentials": {
+          "sshPassword": {
+            "id": "ycQRi5glz56987vv",
+            "name": "SSH Password account SRV01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+                "name": "NOME",
+                "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+                "name": "E-MAIL/USUARIO",
+                "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA }}",
+                "type": "string"
+              },
+              {
+                "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+                "name": "TELEFONE",
+                "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+                "type": "string"
+              },
+              {
+                "id": "2f737709-62e5-445d-9070-28750dfcb741",
+                "name": "CPF",
+                "value": "={{ $json.CPF.toString().replace(/\\D/g, '') }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "id": "5d823482-ab90-4bcb-b485-febe18585266",
+        "name": "Formata campos2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1744,
+          1168
+        ],
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "jsCode": "// Coleta os dados do nó MergeAprovador1\nconst chamados = $('MergeAprovador1').all();\n\n// Função para determinar a saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Função para formatar nome (Primeira letra maiúscula)\nfunction formatarNome(nome) {\n  return nome\n    .toLowerCase()\n    .split(\" \")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\n// Função para formatar username tipo nicholas.amaral → Nicholas Amaral\nfunction formatarUsername(username) {\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nif (chamados && chamados.length > 0 && chamados[0].json) {\n\n  const dado = chamados[0].json;\n  const saudacao = obterSaudacao();\n\n  // Primeiro nome do aprovador formatado\n  const primeiroNome = formatarNome(\n    dado.firstname ? dado.firstname.split(\" \")[0] : dado.NOME.split(\" \")[0]\n  );\n\n  // Nome do solicitante formatado\n  const nomeSolicitante = formatarUsername(dado.requesterName);\n\n  const mensagem =\n`${primeiroNome}, ${saudacao}!\n\nVocê possui um chamado aguardando aprovação.\n\n🔹 Número do chamado: ${dado.tickets_id}\n🔹 Categoria: ${dado.categoryName}\n🔹 Solicitante: ${nomeSolicitante}\n\nAcesse para validar:\n${dado.link}\n\nAtenciosamente,\nTecnologia da Informação.`;\n\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n\n} else {\n\n  return {\n    textMessage: {\n      msg: JSON.stringify(\"Não foram encontrados chamados aguardando aprovação.\")\n    }\n  };\n\n}"
+        },
+        "id": "11abcdb8-65b9-48bd-99b0-24aa924a26a3",
+        "name": "MontaAprovação2",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2176,
+          960
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "CPF",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          1936,
+          960
+        ],
+        "id": "730e05fc-6db0-4bcb-9ad7-24cff8d70548",
+        "name": "MergeAprovador1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2832,
+          960
+        ],
+        "id": "f6a3bdda-0281-40d9-a002-6a96d2933c1a",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+                "name": "textMessage",
+                "value": "={{ $json.textMessage.msg }}",
+                "type": "string"
+              },
+              {
+                "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+                "name": "Instancias",
+                "value": "SUPORTE",
+                "type": "string"
+              },
+              {
+                "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+                "name": "phone",
+                "value": "=55{{ $('MergeAprovador1').item.json.TELEFONE }}",
+                "type": "string"
+              },
+              {
+                "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+                "name": "REQUERENTE",
+                "value": "={{ $('Edit Fields').item.json.requesterName }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2400,
+          960
+        ],
+        "id": "42c818c2-dae1-4329-9fc1-521471a86cbe",
+        "name": "Edit Fields5"
+      },
+      {
+        "parameters": {
+          "mode": "exchange",
+          "exchange": "notifications_exchange",
+          "exchangeType": "direct",
+          "routingKey": "whatsApp.suporte",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.rabbitmq",
+        "typeVersion": 1.1,
+        "position": [
+          2624,
+          960
+        ],
+        "id": "cd005b82-c179-4bec-8ddd-b004e939864c",
+        "name": "RabbitMQ4",
+        "credentials": {
+          "rabbitmq": {
+            "id": "6NVyHI8GsuRN8ROo",
+            "name": "RabbitMQ notifications"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "7b937499-bc99-42ba-87be-a8d132e650aa",
+                "name": "requesterId",
+                "value": "={{ $json.data.item.requester.id }}",
+                "type": "string"
+              },
+              {
+                "id": "b5682432-5c8e-4291-9bba-1c060dd28adc",
+                "name": "requesterName",
+                "value": "={{ $json.data.item.requester.name }}",
+                "type": "string"
+              },
+              {
+                "id": "1308eb21-5b6a-4e10-85af-ff0906b32e5a",
+                "name": "requested_approver_id",
+                "value": "={{ $json.data.item.requested_approver_id }}",
+                "type": "string"
+              },
+              {
+                "id": "80ffcb94-70c7-48b8-846d-9a4fb19f683b",
+                "name": "status",
+                "value": "={{ $json.data.item.status }}",
+                "type": "string"
+              },
+              {
+                "id": "d18ca486-4624-45d7-89e2-b76e6499eadc",
+                "name": "tickets_id",
+                "value": "={{ $json.data.item.tickets_id }}",
+                "type": "string"
+              },
+              {
+                "id": "32628138-9bd6-4175-b24a-d12c43565d65",
+                "name": "link",
+                "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $json.data.item.tickets_id }}&",
+                "type": "string"
+              },
+              {
+                "id": "6519c121-4f78-47ae-b65b-ec6db9bed0db",
+                "name": "client_secret",
+                "value": "81dd7fcba15be7e5adbdf47f9ce8fc3bbd5b8abbefe14689ca50902d80ac6226",
+                "type": "string"
+              },
+              {
+                "id": "a67ffa83-10e2-4ceb-a16d-b2905bf6d55c",
+                "name": "client_id",
+                "value": "866a5e549e4cd68e166d52dda37731e0f3ebc282337ba76a3f9d3dd4c8d5699f",
+                "type": "string"
+              },
+              {
+                "id": "8229abdf-f89f-4afb-9735-053b797a9ecb",
+                "name": "password",
+                "value": "Mudar@1234",
+                "type": "string"
+              },
+              {
+                "id": "b1974b7d-995b-40c5-a21e-7ff30c9bc555",
+                "name": "username",
+                "value": "n8n",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -112,
+          944
+        ],
+        "id": "3ee13834-153b-4874-89e1-ad7e76c2b9b4",
+        "name": "dados1"
+      },
+      {
+        "parameters": {
+          "operation": "fromJson",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1.1,
+        "position": [
+          -352,
+          944
+        ],
+        "id": "4df92baa-d82a-4634-9199-693af4d35b4d",
+        "name": "Extract from File5"
+      },
+      {
+        "parameters": {
+          "content": "## APROVACAO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 992,
+          "width": 3636,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -544,
+          512
+        ],
+        "typeVersion": 1,
+        "id": "077e8e2b-9caa-464a-88e6-cb31a2c280d3",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "0065aeeb-69f3-4d53-b95e-e905f4660b99",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -528,
+          944
+        ],
+        "id": "636b660f-4243-46ab-83af-e0219f1f6055",
+        "name": "Webhook1",
+        "webhookId": "0065aeeb-69f3-4d53-b95e-e905f4660b99"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "f6f748fc-e3ba-49cd-849b-8276803f5260",
+                "leftValue": "={{ $json.category.name }}",
+                "rightValue": "Aprovação de Pagamento",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "df842fb2-bfc1-4ffd-9171-777e9a4c0fef",
+                "leftValue": "={{ $json.category.name }}",
+                "rightValue": "Solicitação de Compra",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          576,
+          944
+        ],
+        "id": "a969f166-e3ed-482b-94ac-0ad266e31740",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8cc85cb9-b90e-4333-84d8-6609062c6b7c",
+                "name": "username",
+                "value": "={{ $json.username.toUpperCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "06fbb0f6-5543-41a5-8540-e2c90c45b805",
+                "name": "firstname",
+                "value": "={{ $json.firstname.toUpperCase().replaceSpecialChars() }}",
+                "type": "string"
+              },
+              {
+                "id": "e9d44356-4d9b-41ce-9be9-2d678d7e3574",
+                "name": "CPF",
+                "value": "={{ $json.comment }}",
+                "type": "string"
+              },
+              {
+                "id": "17aa02da-dcb9-4115-b73e-fc831fccd963",
+                "name": "requesterName",
+                "value": "={{ $('dados1').item.json.requesterName }}",
+                "type": "string"
+              },
+              {
+                "id": "9baf0894-9c75-4782-911b-0bb5fc0dac6a",
+                "name": "tickets_id",
+                "value": "={{ $('dados1').item.json.tickets_id }}",
+                "type": "string"
+              },
+              {
+                "id": "1fa7f529-81ab-42da-9216-44a3c2bad294",
+                "name": "link",
+                "value": "={{ $('dados1').item.json.link }}",
+                "type": "string"
+              },
+              {
+                "id": "094ec5b1-80d3-407b-a484-832e588da94b",
+                "name": "categoryName",
+                "value": "={{ $('AssistanceTicket').item.json.category.name }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          960,
+          944
+        ],
+        "id": "c656b0b8-2b51-4117-a9a2-1c2d00897ced",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $('dados1').item.json.tickets_id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              },
+              {
+                "name": "Authorization",
+                "value": "={{ $json.token_type }} {{ $json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          384,
+          944
+        ],
+        "id": "d2cc2c74-0b17-479e-8544-128ac05d1461",
+        "name": "AssistanceTicket"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Administration/User/{{ $('dados1').item.json.requested_approver_id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              },
+              {
+                "name": "Authorization",
+                "value": "={{ $('GET TOKEM').item.json.token_type }} {{ $('GET TOKEM').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          768,
+          944
+        ],
+        "id": "72e051ed-6ec4-4ca0-b0ca-d2cbc8b3cf3c",
+        "name": "AdministrationUser",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "content": "## Dados do Chamado\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 496,
+          "width": 1536,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -400,
+          736
+        ],
+        "typeVersion": 1,
+        "id": "c4af09c5-d043-4bdd-b57b-53547528b056",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## DADOS TELEFONE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 288,
+          "width": 496,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1376,
+          1056
+        ],
+        "typeVersion": 1,
+        "id": "c2242dee-8794-411a-8173-4995b98f2813",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "content": "## MENSAGEM\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 384,
+          "width": 832,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1920,
+          784
+        ],
+        "typeVersion": 1,
+        "id": "d5b9414e-6646-46b0-a7d1-174a0b896b98",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "576da72d-e224-4be0-868c-9316db731956",
+                "leftValue": "={{ $json.STATUS }}",
+                "rightValue": "Pendente",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          464,
+          -96
+        ],
+        "id": "2cf4d66f-d0c9-4728-983a-6ca915f1ebe1",
+        "name": "Filter1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1bd5f098-a960-40d7-be91-724dae195554",
+                "name": "ID",
+                "value": "={{ $json.data.item.id }}",
+                "type": "string"
+              },
+              {
+                "id": "9b308025-d39b-4ee2-ad23-2976224fef7d",
+                "name": "TITULO",
+                "value": "={{ $json.data.item.name }}",
+                "type": "string"
+              },
+              {
+                "id": "7a0c062c-66b2-4097-bde0-7c011b402d3c",
+                "name": "STATUS",
+                "value": "={{ $json.data.item.status.name }}",
+                "type": "string"
+              },
+              {
+                "id": "c42bba14-0e27-4d62-99fd-8cf28366f135",
+                "name": "REQUERENTE",
+                "value": "={{ $json.data.item.user_recipient.name }}",
+                "type": "string"
+              },
+              {
+                "id": "af5b3a15-477a-4ece-b625-519b3b6de734",
+                "name": "DESCRICÃO",
+                "value": "={{ $json.data.item.content }}",
+                "type": "string"
+              },
+              {
+                "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+                "name": "URL",
+                "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $json.data.item.id }}&",
+                "type": "string"
+              },
+              {
+                "id": "113d7005-075a-40eb-9f46-ac6d694debd5",
+                "name": "categoryName",
+                "value": "={{ $json.data.item.category.name }}",
+                "type": "string"
+              },
+              {
+                "id": "f58913b4-e091-4c7c-a2b8-7bc0c5c77072",
+                "name": "teamName",
+                "value": "={{ $json.data.item.team[0].name }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          32,
+          -880
+        ],
+        "id": "586d679e-4c1b-4da6-992f-8e91a104f41f",
+        "name": "dados2"
+      },
+      {
+        "parameters": {
+          "operation": "fromJson",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1.1,
+        "position": [
+          -160,
+          -880
+        ],
+        "id": "e4cf5d98-b5de-4b12-9f04-ce8a489a5a27",
+        "name": "Extract from File"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "576da72d-e224-4be0-868c-9316db731956",
+                "leftValue": "={{ $json.teamName }}",
+                "rightValue": "Desenvolvimento",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          224,
+          -880
+        ],
+        "id": "96105048-cf77-4db6-a0a3-e0d39ef2da77",
+        "name": "Filter2"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "1710af9b-d8c8-4f26-b207-8ff83b5fcc42",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -384,
+          -880
+        ],
+        "id": "cb665324-f933-4ae7-a5d8-48c998e4c152",
+        "name": "Webhook2",
+        "webhookId": "1710af9b-d8c8-4f26-b207-8ff83b5fcc42"
+      },
+      {
+        "parameters": {
+          "content": "## NOTIFICA DEVS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 480,
+          "width": 1744,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -512,
+          -1104
+        ],
+        "typeVersion": 1,
+        "id": "9fbaf235-7dc6-426c-b1c7-b0a9dc6d8f34",
+        "name": "Sticky Note5"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1056,
+          -880
+        ],
+        "id": "c4dd3f48-2a80-45b6-8c68-684018bcd518",
+        "name": "No Operation, do nothing2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1bd5f098-a960-40d7-be91-724dae195554",
+                "name": "ID",
+                "value": "={{ $('Extract from File6').item.json.data.item.id }}",
+                "type": "string"
+              },
+              {
+                "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+                "name": "URL",
+                "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $('Extract from File6').item.json.data.item.id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          416,
+          1888
+        ],
+        "id": "88be9f46-54cc-4acd-8535-9f4e4e18fe3c",
+        "name": "dados3"
+      },
+      {
+        "parameters": {
+          "operation": "fromJson",
+          "options": {
+            "encoding": "utf8",
+            "keepSource": "json"
+          }
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1.1,
+        "position": [
+          -288,
+          1904
+        ],
+        "id": "7181128e-c554-44a1-b927-2f0c2fe428bc",
+        "name": "Extract from File6"
+      },
+      {
+        "parameters": {
+          "content": "## APROVACAO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 784,
+          "width": 3652,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -544,
+          1568
+        ],
+        "typeVersion": 1,
+        "id": "843bbab7-df26-45e1-aac0-98af4835b918",
+        "name": "Sticky Note6"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "5cdf0f24-44c6-4792-971f-235ba30c3582",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -512,
+          1904
+        ],
+        "id": "1e248b70-820c-499f-af3e-dd18096f9094",
+        "name": "Webhook3",
+        "webhookId": "5cdf0f24-44c6-4792-971f-235ba30c3582"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $json.ID }}/Timeline/Validation",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              },
+              {
+                "name": "Authorization",
+                "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          640,
+          1888
+        ],
+        "id": "0fde03a4-666e-4fcf-8106-63cbd0eb042c",
+        "name": "AssistanceTicket2"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Administration/User/{{ $json.item.requested_approver_id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              },
+              {
+                "name": "Authorization",
+                "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          880,
+          1888
+        ],
+        "id": "37671252-6086-4e10-95a1-3ebf8bb6ea31",
+        "name": "AdministrationUser1",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8cc85cb9-b90e-4333-84d8-6609062c6b7c",
+                "name": "username",
+                "value": "={{ $json.username.toUpperCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "06fbb0f6-5543-41a5-8540-e2c90c45b805",
+                "name": "firstname",
+                "value": "={{ $json.firstname.toUpperCase().replaceSpecialChars() }}",
+                "type": "string"
+              },
+              {
+                "id": "e9d44356-4d9b-41ce-9be9-2d678d7e3574",
+                "name": "CPF",
+                "value": "={{ $json.comment }}",
+                "type": "string"
+              },
+              {
+                "id": "17aa02da-dcb9-4115-b73e-fc831fccd963",
+                "name": "requesterName",
+                "value": "={{ $('AssistanceTicket2').item.json.item.requester.name }}",
+                "type": "string"
+              },
+              {
+                "id": "9baf0894-9c75-4782-911b-0bb5fc0dac6a",
+                "name": "tickets_id",
+                "value": "={{ $('dados3').item.json.ID }}",
+                "type": "string"
+              },
+              {
+                "id": "094ec5b1-80d3-407b-a484-832e588da94b",
+                "name": "categoryName",
+                "value": "={{ $('AssistanceTicket2').item.json.type }}",
+                "type": "string"
+              },
+              {
+                "id": "f766b4fb-643e-49df-b966-a3221eb39d22",
+                "name": "link",
+                "value": "={{ $('dados3').item.json.URL }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1072,
+          1888
+        ],
+        "id": "227d2dcf-4985-41b1-9957-d3f86bcc336f",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "binaryPropertyName": "=data",
+          "options": {
+            "headerRow": true,
+            "sheetName": "Base"
+          }
+        },
+        "id": "b6c39315-d3e7-4d61-825d-089d204e8f6e",
+        "name": "Extract from File4",
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          1616,
+          2112
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "download",
+          "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+          "options": {}
+        },
+        "id": "3bbb2f45-e1bf-47e8-a05e-10728ba9aa48",
+        "name": "SSH",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          1456,
+          2112
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "sshPassword": {
+            "id": "ycQRi5glz56987vv",
+            "name": "SSH Password account SRV01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+                "name": "NOME",
+                "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+                "name": "E-MAIL/USUARIO",
+                "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA }}",
+                "type": "string"
+              },
+              {
+                "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+                "name": "TELEFONE",
+                "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+                "type": "string"
+              },
+              {
+                "id": "2f737709-62e5-445d-9070-28750dfcb741",
+                "name": "CPF",
+                "value": "={{ $json.CPF.toString().replace(/\\D/g, '') }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "id": "2dde7a2e-ec45-4edf-b66d-36351816cd7d",
+        "name": "Formata campos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1792,
+          2112
+        ],
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "jsCode": "const chamados = $input.all();\n\n// Função para saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Formatar nome\nfunction formatarNome(nome) {\n  if (!nome) return \"Usuário\";\n\n  return nome\n    .toLowerCase()\n    .split(\" \")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\n// Formatar username\nfunction formatarUsername(username) {\n  if (!username) return \"Não informado\";\n\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nreturn chamados.map(item => {\n\n  const dado = item.json;\n  const saudacao = obterSaudacao();\n\n  const primeiroNome = formatarNome(\n    dado.firstname \n      ? dado.firstname.split(\" \")[0] \n      : (dado.NOME ? dado.NOME.split(\" \")[0] : null)\n  );\n\n  const nomeSolicitante = formatarUsername(dado.requesterName);\n\n  const mensagem =\n`${primeiroNome}, ${saudacao}!\n\nVocê possui um chamado aguardando aprovação.\n\n🔹 Número do chamado: ${dado.tickets_id}\n🔹 Categoria: ${dado.categoryName || \"Não informada\"}\n🔹 Solicitante: ${nomeSolicitante}\n\nAcesse para validar:\n${dado.link}\n\nAtenciosamente,\nTecnologia da Informação.`;\n\n  return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n});"
+        },
+        "id": "6bc5a1ad-b9aa-4398-993d-f73ee13c9f38",
+        "name": "MontaAprovação",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2288,
+          1904
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "CPF",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          2048,
+          1904
+        ],
+        "id": "0c54dd2e-375a-4ca5-b34b-6fd3c0649aa1",
+        "name": "MergeAprovador"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+                "name": "textMessage",
+                "value": "={{ $json.textMessage.msg }}",
+                "type": "string"
+              },
+              {
+                "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+                "name": "Instancias",
+                "value": "SUPORTE",
+                "type": "string"
+              },
+              {
+                "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+                "name": "phone",
+                "value": "=55{{ $('MergeAprovador').item.json.TELEFONE }}",
+                "type": "string"
+              },
+              {
+                "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+                "name": "REQUERENTE",
+                "value": "={{ $('MergeAprovador').item.json.requesterName }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2512,
+          1904
+        ],
+        "id": "7e38ee89-c30f-41c4-9ed1-db91359305b8",
+        "name": "Edit Fields6"
+      },
+      {
+        "parameters": {
+          "mode": "exchange",
+          "exchange": "notifications_exchange",
+          "exchangeType": "direct",
+          "routingKey": "whatsApp.suporte",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.rabbitmq",
+        "typeVersion": 1.1,
+        "position": [
+          2736,
+          1904
+        ],
+        "id": "9218a3ab-4e86-42ac-8df7-76878d4b82f1",
+        "name": "RabbitMQ5",
+        "credentials": {
+          "rabbitmq": {
+            "id": "6NVyHI8GsuRN8ROo",
+            "name": "RabbitMQ notifications"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## DADOS TELEFONE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 288,
+          "width": 496,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1424,
+          2000
+        ],
+        "typeVersion": 1,
+        "id": "89975c21-81b7-4e8f-8bdc-3b08e759a3b7",
+        "name": "Sticky Note7"
+      },
+      {
+        "parameters": {
+          "content": "## MENSAGEM\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 384,
+          "width": 832,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2032,
+          1728
+        ],
+        "typeVersion": 1,
+        "id": "16e3249e-d019-4ef9-b98f-d4a810732d96",
+        "name": "Sticky Note8"
+      },
+      {
+        "parameters": {
+          "content": "## Dados do Chamado\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 496,
+          "width": 1652,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -320,
+          1696
+        ],
+        "typeVersion": 1,
+        "id": "017b59a4-cec5-4d08-bed8-023ff37589ef",
+        "name": "Sticky Note9"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2944,
+          1904
+        ],
+        "id": "70dcc2c5-4524-4336-aae5-a19042b958c5",
+        "name": "No Operation, do nothing3"
+      },
+      {
+        "parameters": {
+          "content": "## PENDENTE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 1072,
+          "width": 2852,
+          "color": 2
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -528,
+          -576
+        ],
+        "typeVersion": 1,
+        "id": "6e60d42e-acb4-40a1-a06f-552875356a6b",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1bd5f098-a960-40d7-be91-724dae195554",
+                "name": "ID",
+                "value": "={{ $('SenhaPadrao').item.json.items_id }}",
+                "type": "string"
+              },
+              {
+                "id": "1dcc40f7-8c1e-4d4c-824c-6a5095f01067",
+                "name": "URL",
+                "value": "=https://glpi.mdgintermediacoes.com.br/front/ticket.form.php?id={{ $('SenhaPadrao').item.json.items_id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -96,
+          2752
+        ],
+        "id": "f19f6dfa-baee-4683-b8f8-6d80fbd3fb0d",
+        "name": "dados4"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Administration/User/{{ $json.item.requested_approver_id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              },
+              {
+                "name": "Authorization",
+                "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          768,
+          2752
+        ],
+        "id": "c70e4253-cd69-4334-aa82-1ecaed7b6c44",
+        "name": "AdministrationUser2",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8cc85cb9-b90e-4333-84d8-6609062c6b7c",
+                "name": "username",
+                "value": "={{ $json.username.toUpperCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "06fbb0f6-5543-41a5-8540-e2c90c45b805",
+                "name": "firstname",
+                "value": "={{ $json.firstname.toUpperCase().replaceSpecialChars() }}",
+                "type": "string"
+              },
+              {
+                "id": "e9d44356-4d9b-41ce-9be9-2d678d7e3574",
+                "name": "CPF",
+                "value": "={{ $json.comment }}",
+                "type": "string"
+              },
+              {
+                "id": "17aa02da-dcb9-4115-b73e-fc831fccd963",
+                "name": "requesterName",
+                "value": "={{ $('AssistanceTicket1').item.json.user_recipient.name }}",
+                "type": "string"
+              },
+              {
+                "id": "9baf0894-9c75-4782-911b-0bb5fc0dac6a",
+                "name": "tickets_id",
+                "value": "={{ $('dados4').item.json.ID }}",
+                "type": "string"
+              },
+              {
+                "id": "094ec5b1-80d3-407b-a484-832e588da94b",
+                "name": "categoryName",
+                "value": "={{ $('AssistanceTicket1').item.json.category.name }}",
+                "type": "string"
+              },
+              {
+                "id": "f766b4fb-643e-49df-b966-a3221eb39d22",
+                "name": "link",
+                "value": "={{ $('dados4').item.json.URL }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1008,
+          2752
+        ],
+        "id": "207299ab-2abe-44d7-bf8c-15080a7ccf8a",
+        "name": "Edit Fields3"
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "binaryPropertyName": "=data",
+          "options": {
+            "headerRow": true,
+            "sheetName": "Base"
+          }
+        },
+        "id": "9ecb0aeb-fcf2-442a-ba06-18fb31158435",
+        "name": "Extract from File7",
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          1472,
+          2992
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "download",
+          "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+          "options": {}
+        },
+        "id": "a1fc66e4-6aba-4462-9da0-7125f91a9053",
+        "name": "SSH3",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          1312,
+          2992
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "sshPassword": {
+            "id": "ycQRi5glz56987vv",
+            "name": "SSH Password account SRV01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+                "name": "NOME",
+                "value": "={{ $json.NOME.trim().toUpperCase().trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "6898d4d3-a8b3-4ba3-b8ff-42e619e98957",
+                "name": "E-MAIL/USUARIO",
+                "value": "={{ $json['E-MAIL/USUARIO'].toUpperCase().split('@')[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "59336c26-41e1-4f63-a483-58cdbbb041b4",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA }}",
+                "type": "string"
+              },
+              {
+                "id": "c2c81b2c-7d31-476f-bd96-1713f7caaaee",
+                "name": "TELEFONE",
+                "value": "={{ $json.TELEFONE.replace(/\\D/g, '') }}",
+                "type": "string"
+              },
+              {
+                "id": "2f737709-62e5-445d-9070-28750dfcb741",
+                "name": "CPF",
+                "value": "={{ $json.CPF.toString().replace(/\\D/g, '') }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "id": "dc6014e0-1dc3-4865-8e9e-41e2a1a5e9f3",
+        "name": "Formata campos3",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1648,
+          2992
+        ],
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "jsCode": "const chamados = $input.all();\n\n// Função para saudação\nfunction obterSaudacao() {\n  const hora = new Date().getHours();\n  if (hora >= 6 && hora < 12) return \"Bom dia\";\n  if (hora >= 12 && hora < 18) return \"Boa tarde\";\n  return \"Boa noite\";\n}\n\n// Formatar nome\nfunction formatarNome(nome) {\n  if (!nome) return \"Usuário\";\n\n  return nome\n    .toLowerCase()\n    .split(\" \")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\n// Formatar username\nfunction formatarUsername(username) {\n  if (!username) return \"Não informado\";\n\n  return username\n    .toLowerCase()\n    .split(\".\")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n}\n\nreturn chamados.map(item => {\n\n  const dado = item.json;\n  const saudacao = obterSaudacao();\n\n  const primeiroNome = formatarNome(\n    dado.firstname \n      ? dado.firstname.split(\" \")[0] \n      : (dado.NOME ? dado.NOME.split(\" \")[0] : null)\n  );\n\n  const nomeSolicitante = formatarUsername(dado.requesterName);\n\n  const mensagem =\n`${primeiroNome}, ${saudacao}!\n\nVocê possui um chamado aguardando aprovação.\n\n🔹 Número do chamado: ${dado.tickets_id}\n🔹 Categoria: ${dado.categoryName || \"Não informada\"}\n🔹 Solicitante: ${nomeSolicitante}\n\nAcesse para validar:\n${dado.link}\n\nAtenciosamente,\nTecnologia da Informação.`;\n\n   return {\n    textMessage: {\n      msg: JSON.stringify(mensagem.trim())\n    }\n  };\n});"
+        },
+        "id": "69d5e81c-bf20-4955-8f0b-7a2d1ab717b5",
+        "name": "MontaAprovação3",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2144,
+          2768
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "CPF",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          1952,
+          2768
+        ],
+        "id": "757b79be-879b-4573-ac3a-3138687fba63",
+        "name": "MergeAprovador2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "69563584-d03c-4df8-92f7-55c6e92d9756",
+                "name": "textMessage",
+                "value": "={{ $json.textMessage.msg }}",
+                "type": "string"
+              },
+              {
+                "id": "d8b01833-a153-4f13-955b-ae849c703ee4",
+                "name": "Instancias",
+                "value": "SUPORTE",
+                "type": "string"
+              },
+              {
+                "id": "2a115f54-3b26-4e8b-b685-76e2fd66f21c",
+                "name": "phone",
+                "value": "=55{{ $('MergeAprovador2').item.json.TELEFONE }}",
+                "type": "string"
+              },
+              {
+                "id": "16a6d23c-4bea-42cd-b6d2-79eff88c2218",
+                "name": "REQUERENTE",
+                "value": "={{ $('MergeAprovador2').item.json.requesterName }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2368,
+          2768
+        ],
+        "id": "1cc97cba-088c-4cd7-8bf6-b5345877f972",
+        "name": "Edit Fields7"
+      },
+      {
+        "parameters": {
+          "mode": "exchange",
+          "exchange": "notifications_exchange",
+          "exchangeType": "direct",
+          "routingKey": "whatsApp.suporte",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.rabbitmq",
+        "typeVersion": 1.1,
+        "position": [
+          2592,
+          2768
+        ],
+        "id": "c97f5b82-5fd0-4b27-a554-c4e253923744",
+        "name": "RabbitMQ6",
+        "credentials": {
+          "rabbitmq": {
+            "id": "6NVyHI8GsuRN8ROo",
+            "name": "RabbitMQ notifications"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## DADOS TELEFONE \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 288,
+          "width": 496,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1280,
+          2880
+        ],
+        "typeVersion": 1,
+        "id": "0d3baedd-857e-44c2-8f5f-e3b0343f6c75",
+        "name": "Sticky Note10"
+      },
+      {
+        "parameters": {
+          "content": "## MENSAGEM\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 384,
+          "width": 912,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1888,
+          2608
+        ],
+        "typeVersion": 1,
+        "id": "864fcbcb-4624-4600-bd58-bd993b4ca37c",
+        "name": "Sticky Note11"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2800,
+          2768
+        ],
+        "id": "6306223d-7197-4a64-917d-8fdd2ccefa97",
+        "name": "No Operation, do nothing4"
+      },
+      {
+        "parameters": {
+          "content": "## Dados do Chamado\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 496,
+          "width": 1380,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -176,
+          2576
+        ],
+        "typeVersion": 1,
+        "id": "a018d5bb-1ba9-478e-b43f-a64fb95c6a65",
+        "name": "Sticky Note12"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $('dados4').item.json.ID }}/Timeline/Validation",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              },
+              {
+                "name": "Authorization",
+                "value": "={{ $('GET TOKEM1').item.json.token_type }} {{ $('GET TOKEM1').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          368,
+          2752
+        ],
+        "id": "5390b4d1-1e5e-4da4-9af5-de9680946442",
+        "name": "ValidationTicket"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $json.ID }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              },
+              {
+                "name": "Authorization",
+                "value": "={{ $('If').item.json.token_type }} {{ $('If').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          128,
+          2752
+        ],
+        "id": "05ef78a1-b737-4690-bb25-8182fcc4dd6f",
+        "name": "AssistanceTicket1"
+      },
+      {
+        "parameters": {
+          "content": "## APROVACAO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 784,
+          "width": 3652,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -544,
+          2448
+        ],
+        "typeVersion": 1,
+        "id": "84f10cac-addf-4f32-ad49-bd78656ba92c",
+        "name": "Sticky Note13"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "acd331e7-c771-458b-a918-dc6dc5f764f7",
+                "name": "id",
+                "value": "={{ $json.data.item.id }}",
+                "type": "string"
+              },
+              {
+                "id": "c45142f8-cfe4-4fda-998a-8c25e18292f8",
+                "name": "items_id",
+                "value": "={{ $json.data.item.items_id }}",
+                "type": "number"
+              },
+              {
+                "id": "1df9d735-b419-4d31-bff4-167d93ec325b",
+                "name": "username",
+                "value": "n8n",
+                "type": "string"
+              },
+              {
+                "id": "8f0eba08-48ef-43ff-ad92-87f37343a630",
+                "name": "password",
+                "value": "Mudar@1234",
+                "type": "string"
+              },
+              {
+                "id": "23a5acdf-61a5-456b-a886-612c946a14f1",
+                "name": "client_id",
+                "value": "866a5e549e4cd68e166d52dda37731e0f3ebc282337ba76a3f9d3dd4c8d5699f",
+                "type": "string"
+              },
+              {
+                "id": "898ce6b4-fa38-479d-9721-e8c6d7c61885",
+                "name": "client_secret",
+                "value": "81dd7fcba15be7e5adbdf47f9ce8fc3bbd5b8abbefe14689ca50902d80ac6226",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -128,
+          1904
+        ],
+        "id": "57314361-1f54-48f2-86db-ececce91fc02",
+        "name": "SenhaPadrao"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "865a3a15-2cff-4a81-bed0-94df5a3ebf86",
+                "leftValue": "={{ $('SenhaPadrao').item.json.items_id }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "notExists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          192,
+          1904
+        ],
+        "id": "b7913888-97e5-436c-934e-581b6222e5bc",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "3de247a5-39a4-4144-a1c6-b666ea59ac40",
+                "leftValue": "={{ $json.type }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          560,
+          2752
+        ],
+        "id": "b6ee7b77-b855-4e77-af1a-c698894316d3",
+        "name": "Filter3"
+      },
+      {
+        "parameters": {
+          "url": "=https://glpi.mdgintermediacoes.com.br/api.php/Assistance/Ticket/{{ $json.ID }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "en_GB"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          128,
+          2912
+        ],
+        "id": "15abb784-5b19-4600-9f18-0fa19d13c984",
+        "name": "AssistanceTicket3",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "0kLFaGeiiKFQNMAV",
+            "name": "GLPI_V2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## ACESSOS",
+          "height": 224,
+          "width": 150,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -160,
+          1840
+        ],
+        "typeVersion": 1,
+        "id": "c5b18882-b914-4045-b2a5-554280420ac9",
+        "name": "Sticky Note14"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://glpi.mdgintermediacoes.com.br/api.php/token",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "grant_type",
+                "value": "password"
+              },
+              {
+                "name": "scope",
+                "value": "api"
+              },
+              {
+                "name": "username",
+                "value": "={{ $json.username }}"
+              },
+              {
+                "name": "password",
+                "value": "={{ $json.password }}"
+              },
+              {
+                "name": "client_id",
+                "value": "={{ $json.client_id }}"
+              },
+              {
+                "name": "client_secret",
+                "value": "={{ $json.client_secret }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          128,
+          944
+        ],
+        "id": "4301a75c-84ee-4a2d-bf15-6bd66ed55262",
+        "name": "GET TOKEM"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://glpi.mdgintermediacoes.com.br/api.php/token",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {}
+            ]
+          },
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "grant_type",
+                "value": "password"
+              },
+              {
+                "name": "scope",
+                "value": "api"
+              },
+              {
+                "name": "username",
+                "value": "={{ $json.username }}"
+              },
+              {
+                "name": "password",
+                "value": "={{ $json.password }}"
+              },
+              {
+                "name": "client_id",
+                "value": "={{ $json.client_id }}"
+              },
+              {
+                "name": "client_secret",
+                "value": "={{ $json.client_secret }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          32,
+          1904
+        ],
+        "id": "5860af42-c0c8-4ad4-8493-f28a03e0119e",
+        "name": "GET TOKEM1"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Extract from File2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MontaMensagemPendente": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PENDENTE": {
+        "main": [
+          [
+            {
+              "node": "MergePendente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PENDENTE1": {
+        "main": [
+          [
+            {
+              "node": "MergePendente",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "MergePendente": {
+        "main": [
+          [
+            {
+              "node": "MontaMensagemPendente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MontaAprovação1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File1": {
+        "main": [
+          [
+            {
+              "node": "Formata campos1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SSH1": {
+        "main": [
+          [
+            {
+              "node": "Extract from File1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formata campos1": {
+        "main": [
+          [
+            {
+              "node": "PENDENTE",
+              "type": "main",
+              "index": 1
+            },
+            {
+              "node": "PENDENTE1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "RabbitMQ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RabbitMQ": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields4": {
+        "main": [
+          [
+            {
+              "node": "RabbitMQ2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RabbitMQ2": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dados": {
+        "main": [
+          [
+            {
+              "node": "Filter1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File2": {
+        "main": [
+          [
+            {
+              "node": "dados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File3": {
+        "main": [
+          [
+            {
+              "node": "Formata campos2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SSH2": {
+        "main": [
+          [
+            {
+              "node": "Extract from File3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formata campos2": {
+        "main": [
+          [
+            {
+              "node": "MergeAprovador1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "MontaAprovação2": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MergeAprovador1": {
+        "main": [
+          [
+            {
+              "node": "MontaAprovação2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields5": {
+        "main": [
+          [
+            {
+              "node": "RabbitMQ4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RabbitMQ4": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dados1": {
+        "main": [
+          [
+            {
+              "node": "GET TOKEM",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File5": {
+        "main": [
+          [
+            {
+              "node": "dados1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook1": {
+        "main": [
+          [
+            {
+              "node": "Extract from File5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "AdministrationUser",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "SSH2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MergeAprovador1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AssistanceTicket": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AdministrationUser": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter1": {
+        "main": [
+          [
+            {
+              "node": "PENDENTE",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "PENDENTE1",
+              "type": "main",
+              "index": 1
+            },
+            {
+              "node": "SSH1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dados2": {
+        "main": [
+          [
+            {
+              "node": "Filter2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "dados2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter2": {
+        "main": [
+          [
+            {
+              "node": "MontaAprovação1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook2": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dados3": {
+        "main": [
+          [
+            {
+              "node": "AssistanceTicket2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File6": {
+        "main": [
+          [
+            {
+              "node": "SenhaPadrao",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook3": {
+        "main": [
+          [
+            {
+              "node": "Extract from File6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AssistanceTicket2": {
+        "main": [
+          [
+            {
+              "node": "AdministrationUser1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AdministrationUser1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File4": {
+        "main": [
+          [
+            {
+              "node": "Formata campos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SSH": {
+        "main": [
+          [
+            {
+              "node": "Extract from File4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formata campos": {
+        "main": [
+          [
+            {
+              "node": "MergeAprovador",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "MontaAprovação": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MergeAprovador": {
+        "main": [
+          [
+            {
+              "node": "MontaAprovação",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields6": {
+        "main": [
+          [
+            {
+              "node": "RabbitMQ5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "SSH",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MergeAprovador",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RabbitMQ5": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dados4": {
+        "main": [
+          [
+            {
+              "node": "AssistanceTicket1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AdministrationUser2": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "node": "SSH3",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MergeAprovador2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File7": {
+        "main": [
+          [
+            {
+              "node": "Formata campos3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SSH3": {
+        "main": [
+          [
+            {
+              "node": "Extract from File7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formata campos3": {
+        "main": [
+          [
+            {
+              "node": "MergeAprovador2",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "MontaAprovação3": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MergeAprovador2": {
+        "main": [
+          [
+            {
+              "node": "MontaAprovação3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields7": {
+        "main": [
+          [
+            {
+              "node": "RabbitMQ6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RabbitMQ6": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ValidationTicket": {
+        "main": [
+          [
+            {
+              "node": "Filter3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AssistanceTicket1": {
+        "main": [
+          [
+            {
+              "node": "ValidationTicket",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SenhaPadrao": {
+        "main": [
+          [
+            {
+              "node": "GET TOKEM1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "dados3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "dados4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter3": {
+        "main": [
+          [
+            {
+              "node": "AdministrationUser2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GET TOKEM": {
+        "main": [
+          [
+            {
+              "node": "AssistanceTicket",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GET TOKEM1": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 147ee84f",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

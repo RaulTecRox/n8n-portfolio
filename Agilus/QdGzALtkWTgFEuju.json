@@ -1,0 +1,2139 @@
+{
+  "updatedAt": "2025-06-30T15:37:56.269Z",
+  "createdAt": "2025-06-30T12:59:34.995Z",
+  "id": "QdGzALtkWTgFEuju",
+  "name": "Consulta - BMG STATUS CONTRATOS",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f83ab9ac-57d2-471c-9156-fbecd4cca128",
+              "name": "login",
+              "value": "robo.54873",
+              "type": "string"
+            },
+            {
+              "id": "c88f03dd-1f83-42d2-baa2-d3c47d1f3694",
+              "name": "senha",
+              "value": "Cosmo@001",
+              "type": "string"
+            },
+            {
+              "id": "bae96078-ad32-4b68-be2b-5b0aa6285af1",
+              "name": "loginConsig",
+              "value": "MDG54873.DAYANESTE",
+              "type": "string"
+            },
+            {
+              "id": "4724c2b0-7e62-4601-8929-baf611283647",
+              "name": "senhaConsig",
+              "value": "Cosmo@003",
+              "type": "string"
+            },
+            {
+              "id": "c025f066-dbcf-484b-aad9-11547fce83f3",
+              "name": "credilusToken",
+              "value": "kDSgE9KhSkkXk0WQkA0FU1f6VQ6N6g0Olvxl0Byhb1b6280f",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -3180
+      ],
+      "id": "7b716066-fd7b-4778-8d54-863bcebc37dd",
+      "name": "Credentials"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+              "name": "CPF",
+              "value": "={{ $('Merge1').item.json.query.padStart(11, 0) }}",
+              "type": "string"
+            },
+            {
+              "id": "a84db3a6-b122-4ce9-860f-712ca96fe3c6",
+              "name": "numeroAdesao",
+              "value": "98323676",
+              "type": "string"
+            },
+            {
+              "id": "d7df7224-4779-4389-8199-3b08eb90ddb9",
+              "name": "dataInicial",
+              "value": "={{ new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString().slice(0,19) }}",
+              "type": "string"
+            },
+            {
+              "id": "535b283f-1c0e-43e2-a0d0-b510b222f09a",
+              "name": "dataFinal",
+              "value": "={{ new Date().toISOString().slice(0,19) }}",
+              "type": "string"
+            },
+            {
+              "id": "13b46918-4845-48d9-abd2-4ffb8a42ae7e",
+              "name": "login",
+              "value": "={{ $json.login }}",
+              "type": "string"
+            },
+            {
+              "id": "f822c196-aeea-4410-9475-70b24929e1a4",
+              "name": "senha",
+              "value": "={{ $json.senha }}",
+              "type": "string"
+            },
+            {
+              "id": "b0115191-12df-46ae-bb98-0a03091f2457",
+              "name": "loginConsig",
+              "value": "={{ $json.loginConsig }}",
+              "type": "string"
+            },
+            {
+              "id": "5ecc115d-2935-4aa6-9482-e05da263a638",
+              "name": "senhaConsig",
+              "value": "={{ $json.senhaConsig }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        -3180
+      ],
+      "id": "70107d8f-dfd2-4bcd-95ab-1d5bb0760651",
+      "name": "Get Body"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        600,
+        -3200
+      ],
+      "id": "6e9fe418-3a1b-4931-afea-45dca4fe6278",
+      "name": "XML Buscar Cartões Disponíveis"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a083d6b1-b22e-455f-9713-f35c52ca49a8",
+              "name": "cpfImpedidoComissionar",
+              "value": "={{ $json.cpfImpedidoComissionar._ }}",
+              "type": "boolean"
+            },
+            {
+              "id": "69c48e07-1805-4d6e-a2ea-8f3fe54948b7",
+              "name": "entidade",
+              "value": "={{ $json.entidade._ }}",
+              "type": "string"
+            },
+            {
+              "id": "d03bac7e-2501-4390-9b18-4e5c2e68c031",
+              "name": "liberado",
+              "value": "={{ $json.liberado._ }}",
+              "type": "boolean"
+            },
+            {
+              "id": "450b5227-6d9b-4fda-bda5-9666a5a1fdf2",
+              "name": "modalidadeSaque",
+              "value": "={{ $json.modalidadeSaque._ === \"SaqueAutorizado (Rotativo)\" ? 1 : $json.modalidadeSaque._ === \"Parcelado\" ? 2 : 0 }}\n",
+              "type": "number"
+            },
+            {
+              "id": "2adae826-b59a-44cb-93f0-ddd40f8e22a1",
+              "name": "numeroAdesao",
+              "value": "={{ $json.numeroAdesao._ }}",
+              "type": "string"
+            },
+            {
+              "id": "4ee5a041-d573-49c9-9b77-55d08fcb698d",
+              "name": "numeroCartao",
+              "value": "={{ $json.numeroCartao._ }}",
+              "type": "string"
+            },
+            {
+              "id": "c8bb2965-0846-40a6-b8a0-c4a3e8316ba8",
+              "name": "numeroContaInterna",
+              "value": "={{ $json.numeroContaInterna._ }}",
+              "type": "string"
+            },
+            {
+              "id": "b82b942f-8582-446b-a087-6fbe1d9ded98",
+              "name": "mensagemImpedimento",
+              "value": "={{ $json.mensagemImpedimento._ }}",
+              "type": "string"
+            },
+            {
+              "id": "4f3ff8fd-889f-48b9-a7d3-e9c2eba23ea2",
+              "name": "matricula",
+              "value": "={{ $json.matricula._ }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        940,
+        -3200
+      ],
+      "id": "b1fa15ef-c07b-4b07-aad7-5ee372b6326b",
+      "name": "Buscar Cartões Disponíveis Response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "37b5b7bd-8f97-4c45-9c99-a75e8009b90a",
+              "leftValue": "={{ $items('Buscar Cartões Disponíveis Response').length  }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        -3200
+      ],
+      "id": "851bc993-33ac-4cd6-ad98-742609a390a5",
+      "name": "Tem impedimento"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Falha ao realizar digitação\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        -840
+      ],
+      "id": "f8e59e40-41b4-4094-b97f-d6eb8ebfa01f",
+      "name": "Falha na digitação"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f76ea07-3184-4296-a03f-d73b8507d67c",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "39dcf00f-b81a-4e45-a75b-5d2d84401dd7",
+              "name": "step",
+              "value": "Buscar Cartões Disponíveis impedimento",
+              "type": "string"
+            },
+            {
+              "id": "930a948a-480a-4a71-a30d-395d2a29f284",
+              "name": "message",
+              "value": "Há alguns impedimentos nesse item",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -1780
+      ],
+      "id": "117c679f-7261-49d2-8e51-2e5ccc41f09f",
+      "name": "Responde com mensagem de impedimento1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f54023ce-e41d-4af2-99ef-ac1d12bd0f17",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "60a4d955-2c52-4805-9ce8-9dc9a2ff17e0",
+              "name": "step",
+              "value": "Buscar Limite Saque com restrição de saque",
+              "type": "string"
+            },
+            {
+              "id": "d8f6bd24-4b87-4409-8e2b-f0894658019b",
+              "name": "message",
+              "value": "={{ $json.mensagemErro }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -1360
+      ],
+      "id": "f54f6841-812c-4740-a002-a33b2ca43bf7",
+      "name": "Responde se ha restrição no saque1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f0e411ce-e80a-4f13-8c24-fe418e27f670",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "65a91fec-60a1-487e-97bd-535ea293b66c",
+              "name": "step",
+              "value": "Buscar Cartões Disponíveis",
+              "type": "string"
+            },
+            {
+              "id": "6717365f-697d-4670-a00b-b448e9fbc161",
+              "name": "message",
+              "value": "= {{ JSON.stringify($json.error.message) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -1980
+      ],
+      "id": "8d6e3178-f3a5-4bcb-b18f-7d4a4119232a",
+      "name": "On Error Buscar  Cartões Disponíveis1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "48d1788a-bc06-472d-8c7f-948b0d18ff47",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "323b2d87-dcb6-4c45-91e2-03ee1fbc44d4",
+              "name": "step",
+              "value": "Buscar Limite Saque",
+              "type": "string"
+            },
+            {
+              "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+              "name": "message",
+              "value": "={{ JSON.stringify($json.error.message) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -1560
+      ],
+      "id": "c51d1f8e-d4ba-4a14-bf04-4ca1bbf0b135",
+      "name": "On Error Buscar Limite Saque1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ac3a69c-cb65-4a39-b00c-31aab3907557",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "5b2efb96-3df2-4d59-916a-75d6574c01c5",
+              "name": "step",
+              "value": " Buscar Simulação",
+              "type": "string"
+            },
+            {
+              "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+              "name": " message",
+              "value": "={{ JSON.stringify($json.error.message) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -1180
+      ],
+      "id": "d0fa7917-0d55-41f8-b078-4f945d0d1e80",
+      "name": "On Error Buscar Simulação1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "376b7752-d407-461d-a1aa-a128c47bfa80",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "3ff6a849-1c5a-4053-ad24-1053f64569d5",
+              "name": "step",
+              "value": "Sem limite de saque",
+              "type": "string"
+            },
+            {
+              "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+              "name": "message",
+              "value": "Sem limite de saque",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -1040
+      ],
+      "id": "f65bfdfd-fa40-49e1-9ae2-271e03fc6eb0",
+      "name": "Responde sem limite de saque1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 8
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1540,
+        -1740
+      ],
+      "id": "aa617908-8121-4e27-b510-fe173b39a9bb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1948883-42d8-4746-b557-c3731300a492",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "0fe11459-4583-4176-b692-37054bcb8c6c",
+              "name": "step",
+              "value": "Verificação de CPF e type_digitation",
+              "type": "string"
+            },
+            {
+              "id": "4da9d51b-8166-4774-ba46-fc886aeef891",
+              "name": "message",
+              "value": "Favor informar o CPF e type_digitation",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -2140
+      ],
+      "id": "86090f75-58e0-4719-9867-4d3fbd3973d4",
+      "name": "Field Verification1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        -1620
+      ],
+      "id": "8cdcde38-fcb7-4846-8d90-fe9c9ab07fd6",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "message",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1740,
+        -1620
+      ],
+      "id": "8f41e88d-9415-4312-bc65-8afde0662d16",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const caminho = item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:buscarCartoesDisponiveisResponse\"]\n        .buscarCartoesDisponiveisReturn.cartoesRetorno.cartoesRetorno;\n    \n    return Array.isArray(caminho) ? caminho.map(c => ({ json: c })) : [{ json: caminho }];\n}).flat();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        -3200
+      ],
+      "id": "de08b53e-7690-4b51-936a-115e63dbe753",
+      "name": "Dividir Cartões"
+    },
+    {
+      "parameters": {
+        "content": "## ERROS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 1880,
+        "width": 1720,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        920,
+        -2460
+      ],
+      "typeVersion": 1,
+      "id": "3b8a9067-beaf-482d-88f6-045b7bb142aa",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1120,
+        -3080
+      ],
+      "id": "d02d7a14-fa06-487b-9afe-94fdb3d0ea5e",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        2080,
+        -1620
+      ],
+      "id": "4b2d48a4-f1d6-4c03-a205-025d03dae2dd",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4fde0774-5fe3-4a50-af18-5c1d71c1fb2c",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        -3280
+      ],
+      "id": "65847ca6-6d98-4f95-9ffa-d822caff8461",
+      "name": "Webhook",
+      "webhookId": "4fde0774-5fe3-4a50-af18-5c1d71c1fb2c"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -420,
+        -3180
+      ],
+      "id": "94d6a70d-3c3a-4521-a100-b2927f2b2405",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        -1620
+      ],
+      "id": "dc2e8ee1-5698-4c06-a8c1-ac880c32270c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "## VERIFICA SE TEM CARTÃO \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 440,
+        "width": 1080
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        220,
+        -3380
+      ],
+      "typeVersion": 1,
+      "id": "86439e79-ee5d-469a-827a-cdb1676b6635",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega o body como string\nlet raw = items[0].json.body;\n\n// Remove vírgula no final (caso exista)\nraw = raw.replace(/,\\s*}/, '}');\n\n// Converte de string para objeto JSON\nconst parsed = JSON.parse(raw);\n\n// Retorna o objeto limpo\nreturn [{ json: parsed }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        -3280
+      ],
+      "id": "6c9cf849-f04c-4b41-8ab0-098f6b306f54",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "keys": {
+          "key": [
+            {
+              "currentKey": "cpf",
+              "newKey": "query"
+            }
+          ]
+        },
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.renameKeys",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        -3280
+      ],
+      "id": "252a3d66-451f-4adb-a0c6-27886c3f2ab0",
+      "name": "Rename Keys"
+    },
+    {
+      "parameters": {
+        "content": "## RECEBIMENTO DE DADOS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 620,
+        "width": 1220,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1160,
+        -3460
+      ],
+      "typeVersion": 1,
+      "id": "ca0f0cee-f877-4499-8a1b-39986135a7d7",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ws1.bmgconsig.com.br/webservices/ConsultaStatusAde?wsdl",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "SOAPAction",
+              "value": "\\\"http://localhost:8080/webservices/ConsultaStatusAde#consultaStatusAde\\\""
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml;charset=UTF-8",
+        "body": "=<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://localhost:8080/webservices/ConsultaStatusAde\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:consultaStatusAde>\n         <param>\n            <login>{{ $('Credentials').item.json.login }}</login>\n            <senha>{{ $('Credentials').item.json.senha }}</senha>\n            <loginConsig>{{ $('Credentials').item.json.loginConsig }}</loginConsig>\n            <senhaConsig>{{ $('Credentials').item.json.senhaConsig }}</senhaConsig>\n            <dataInicial>{{ new Date(Date.now() - 30 * 86400000).toISOString().slice(0,19) }}</dataInicial>\n            <dataFinal>{{ new Date().toISOString().slice(0,19) }}</dataFinal>\n         </param>\n      </web:consultaStatusAde>\n   </soapenv:Body>\n</soapenv:Envelope>",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        -3180
+      ],
+      "id": "27a6f925-a956-4084-b911-9a3d7b36dbf6",
+      "name": "Consulta Ade",
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ws1.bmgconsig.com.br/webservices/ConsultaStatusAde?wsdl",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "SOAPAction",
+              "value": "\"http://localhost:8080/webservices/ConsultaStatusAde#consultaStatusAde\""
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml;charset=UTF-8",
+        "body": "=<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://localhost:8080/webservices/ConsultaStatusAde\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:consultaStatusAde>\n         <param>\n            <login>{{ $('Credentials').item.json.login }}</login>\n            <senha>{{ $('Credentials').item.json.senha }}</senha>\n            <listaAdes>\n               <string>{{ $json.numeroAdesao }}</string>\n            </listaAdes>\n         </param>\n      </web:consultaStatusAde>\n   </soapenv:Body>\n</soapenv:Envelope>",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        -2920
+      ],
+      "id": "351d6a90-d53f-42f5-a591-0dbb0d440a89",
+      "name": "Consulta Ade1",
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "connections": {
+    "Credentials": {
+      "main": [
+        [
+          {
+            "node": "Get Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Body": {
+      "main": [
+        [
+          {
+            "node": "Consulta Ade",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Consulta Ade1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML Buscar Cartões Disponíveis": {
+      "main": [
+        [
+          {
+            "node": "Dividir Cartões",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cartões Disponíveis Response": {
+      "main": [
+        [
+          {
+            "node": "Tem impedimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem impedimento": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Responde com mensagem de impedimento1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Falha na digitação": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Responde com mensagem de impedimento1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Responde se ha restrição no saque1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "On Error Buscar  Cartões Disponíveis1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "On Error Buscar Limite Saque1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "On Error Buscar Simulação1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Responde sem limite de saque1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Field Verification1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dividir Cartões": {
+      "main": [
+        [
+          {
+            "node": "Buscar Cartões Disponíveis Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Rename Keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Keys": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Ade": {
+      "main": [
+        [
+          {
+            "node": "XML Buscar Cartões Disponíveis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "On Error Buscar  Cartões Disponíveis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 180
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "29590620000"
+        }
+      }
+    ]
+  },
+  "versionId": "aee1fe7d-a456-47c8-a435-68757da3a657",
+  "activeVersionId": "aee1fe7d-a456-47c8-a435-68757da3a657",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T12:59:34.995Z",
+      "createdAt": "2025-06-30T12:59:34.995Z",
+      "role": "workflow:owner",
+      "workflowId": "QdGzALtkWTgFEuju",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "aee1fe7d-a456-47c8-a435-68757da3a657",
+    "workflowId": "QdGzALtkWTgFEuju",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f83ab9ac-57d2-471c-9156-fbecd4cca128",
+                "name": "login",
+                "value": "robo.54873",
+                "type": "string"
+              },
+              {
+                "id": "c88f03dd-1f83-42d2-baa2-d3c47d1f3694",
+                "name": "senha",
+                "value": "Cosmo@001",
+                "type": "string"
+              },
+              {
+                "id": "bae96078-ad32-4b68-be2b-5b0aa6285af1",
+                "name": "loginConsig",
+                "value": "MDG54873.DAYANESTE",
+                "type": "string"
+              },
+              {
+                "id": "4724c2b0-7e62-4601-8929-baf611283647",
+                "name": "senhaConsig",
+                "value": "Cosmo@003",
+                "type": "string"
+              },
+              {
+                "id": "c025f066-dbcf-484b-aad9-11547fce83f3",
+                "name": "credilusToken",
+                "value": "kDSgE9KhSkkXk0WQkA0FU1f6VQ6N6g0Olvxl0Byhb1b6280f",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -240,
+          -3180
+        ],
+        "id": "7b716066-fd7b-4778-8d54-863bcebc37dd",
+        "name": "Credentials"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+                "name": "CPF",
+                "value": "={{ $('Merge1').item.json.query.padStart(11, 0) }}",
+                "type": "string"
+              },
+              {
+                "id": "a84db3a6-b122-4ce9-860f-712ca96fe3c6",
+                "name": "numeroAdesao",
+                "value": "98323676",
+                "type": "string"
+              },
+              {
+                "id": "d7df7224-4779-4389-8199-3b08eb90ddb9",
+                "name": "dataInicial",
+                "value": "={{ new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString().slice(0,19) }}",
+                "type": "string"
+              },
+              {
+                "id": "535b283f-1c0e-43e2-a0d0-b510b222f09a",
+                "name": "dataFinal",
+                "value": "={{ new Date().toISOString().slice(0,19) }}",
+                "type": "string"
+              },
+              {
+                "id": "13b46918-4845-48d9-abd2-4ffb8a42ae7e",
+                "name": "login",
+                "value": "={{ $json.login }}",
+                "type": "string"
+              },
+              {
+                "id": "f822c196-aeea-4410-9475-70b24929e1a4",
+                "name": "senha",
+                "value": "={{ $json.senha }}",
+                "type": "string"
+              },
+              {
+                "id": "b0115191-12df-46ae-bb98-0a03091f2457",
+                "name": "loginConsig",
+                "value": "={{ $json.loginConsig }}",
+                "type": "string"
+              },
+              {
+                "id": "5ecc115d-2935-4aa6-9482-e05da263a638",
+                "name": "senhaConsig",
+                "value": "={{ $json.senhaConsig }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -80,
+          -3180
+        ],
+        "id": "70107d8f-dfd2-4bcd-95ab-1d5bb0760651",
+        "name": "Get Body"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          600,
+          -3200
+        ],
+        "id": "6e9fe418-3a1b-4931-afea-45dca4fe6278",
+        "name": "XML Buscar Cartões Disponíveis"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a083d6b1-b22e-455f-9713-f35c52ca49a8",
+                "name": "cpfImpedidoComissionar",
+                "value": "={{ $json.cpfImpedidoComissionar._ }}",
+                "type": "boolean"
+              },
+              {
+                "id": "69c48e07-1805-4d6e-a2ea-8f3fe54948b7",
+                "name": "entidade",
+                "value": "={{ $json.entidade._ }}",
+                "type": "string"
+              },
+              {
+                "id": "d03bac7e-2501-4390-9b18-4e5c2e68c031",
+                "name": "liberado",
+                "value": "={{ $json.liberado._ }}",
+                "type": "boolean"
+              },
+              {
+                "id": "450b5227-6d9b-4fda-bda5-9666a5a1fdf2",
+                "name": "modalidadeSaque",
+                "value": "={{ $json.modalidadeSaque._ === \"SaqueAutorizado (Rotativo)\" ? 1 : $json.modalidadeSaque._ === \"Parcelado\" ? 2 : 0 }}\n",
+                "type": "number"
+              },
+              {
+                "id": "2adae826-b59a-44cb-93f0-ddd40f8e22a1",
+                "name": "numeroAdesao",
+                "value": "={{ $json.numeroAdesao._ }}",
+                "type": "string"
+              },
+              {
+                "id": "4ee5a041-d573-49c9-9b77-55d08fcb698d",
+                "name": "numeroCartao",
+                "value": "={{ $json.numeroCartao._ }}",
+                "type": "string"
+              },
+              {
+                "id": "c8bb2965-0846-40a6-b8a0-c4a3e8316ba8",
+                "name": "numeroContaInterna",
+                "value": "={{ $json.numeroContaInterna._ }}",
+                "type": "string"
+              },
+              {
+                "id": "b82b942f-8582-446b-a087-6fbe1d9ded98",
+                "name": "mensagemImpedimento",
+                "value": "={{ $json.mensagemImpedimento._ }}",
+                "type": "string"
+              },
+              {
+                "id": "4f3ff8fd-889f-48b9-a7d3-e9c2eba23ea2",
+                "name": "matricula",
+                "value": "={{ $json.matricula._ }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          940,
+          -3200
+        ],
+        "id": "b1fa15ef-c07b-4b07-aad7-5ee372b6326b",
+        "name": "Buscar Cartões Disponíveis Response"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "37b5b7bd-8f97-4c45-9c99-a75e8009b90a",
+                "leftValue": "={{ $items('Buscar Cartões Disponíveis Response').length  }}",
+                "rightValue": 1,
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1120,
+          -3200
+        ],
+        "id": "851bc993-33ac-4cd6-ad98-742609a390a5",
+        "name": "Tem impedimento"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Falha ao realizar digitação\"\n}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1100,
+          -840
+        ],
+        "id": "f8e59e40-41b4-4094-b97f-d6eb8ebfa01f",
+        "name": "Falha na digitação"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "4f76ea07-3184-4296-a03f-d73b8507d67c",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "39dcf00f-b81a-4e45-a75b-5d2d84401dd7",
+                "name": "step",
+                "value": "Buscar Cartões Disponíveis impedimento",
+                "type": "string"
+              },
+              {
+                "id": "930a948a-480a-4a71-a30d-395d2a29f284",
+                "name": "message",
+                "value": "Há alguns impedimentos nesse item",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1100,
+          -1780
+        ],
+        "id": "117c679f-7261-49d2-8e51-2e5ccc41f09f",
+        "name": "Responde com mensagem de impedimento1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f54023ce-e41d-4af2-99ef-ac1d12bd0f17",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "60a4d955-2c52-4805-9ce8-9dc9a2ff17e0",
+                "name": "step",
+                "value": "Buscar Limite Saque com restrição de saque",
+                "type": "string"
+              },
+              {
+                "id": "d8f6bd24-4b87-4409-8e2b-f0894658019b",
+                "name": "message",
+                "value": "={{ $json.mensagemErro }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1100,
+          -1360
+        ],
+        "id": "f54f6841-812c-4740-a002-a33b2ca43bf7",
+        "name": "Responde se ha restrição no saque1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f0e411ce-e80a-4f13-8c24-fe418e27f670",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "65a91fec-60a1-487e-97bd-535ea293b66c",
+                "name": "step",
+                "value": "Buscar Cartões Disponíveis",
+                "type": "string"
+              },
+              {
+                "id": "6717365f-697d-4670-a00b-b448e9fbc161",
+                "name": "message",
+                "value": "= {{ JSON.stringify($json.error.message) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1100,
+          -1980
+        ],
+        "id": "8d6e3178-f3a5-4bcb-b18f-7d4a4119232a",
+        "name": "On Error Buscar  Cartões Disponíveis1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "48d1788a-bc06-472d-8c7f-948b0d18ff47",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "323b2d87-dcb6-4c45-91e2-03ee1fbc44d4",
+                "name": "step",
+                "value": "Buscar Limite Saque",
+                "type": "string"
+              },
+              {
+                "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+                "name": "message",
+                "value": "={{ JSON.stringify($json.error.message) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1100,
+          -1560
+        ],
+        "id": "c51d1f8e-d4ba-4a14-bf04-4ca1bbf0b135",
+        "name": "On Error Buscar Limite Saque1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1ac3a69c-cb65-4a39-b00c-31aab3907557",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "5b2efb96-3df2-4d59-916a-75d6574c01c5",
+                "name": "step",
+                "value": " Buscar Simulação",
+                "type": "string"
+              },
+              {
+                "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+                "name": " message",
+                "value": "={{ JSON.stringify($json.error.message) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1100,
+          -1180
+        ],
+        "id": "d0fa7917-0d55-41f8-b078-4f945d0d1e80",
+        "name": "On Error Buscar Simulação1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "376b7752-d407-461d-a1aa-a128c47bfa80",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "3ff6a849-1c5a-4053-ad24-1053f64569d5",
+                "name": "step",
+                "value": "Sem limite de saque",
+                "type": "string"
+              },
+              {
+                "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+                "name": "message",
+                "value": "Sem limite de saque",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1100,
+          -1040
+        ],
+        "id": "f65bfdfd-fa40-49e1-9ae2-271e03fc6eb0",
+        "name": "Responde sem limite de saque1"
+      },
+      {
+        "parameters": {
+          "numberInputs": 8
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          1540,
+          -1740
+        ],
+        "id": "aa617908-8121-4e27-b510-fe173b39a9bb",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1948883-42d8-4746-b557-c3731300a492",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "0fe11459-4583-4176-b692-37054bcb8c6c",
+                "name": "step",
+                "value": "Verificação de CPF e type_digitation",
+                "type": "string"
+              },
+              {
+                "id": "4da9d51b-8166-4774-ba46-fc886aeef891",
+                "name": "message",
+                "value": "Favor informar o CPF e type_digitation",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1100,
+          -2140
+        ],
+        "id": "86090f75-58e0-4719-9867-4d3fbd3973d4",
+        "name": "Field Verification1"
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1920,
+          -1620
+        ],
+        "id": "8cdcde38-fcb7-4846-8d90-fe9c9ab07fd6",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "compare": "selectedFields",
+          "fieldsToCompare": "message",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.removeDuplicates",
+        "typeVersion": 2,
+        "position": [
+          1740,
+          -1620
+        ],
+        "id": "8f41e88d-9415-4312-bc65-8afde0662d16",
+        "name": "Remove Duplicates"
+      },
+      {
+        "parameters": {
+          "jsCode": "return $input.all().map(item => {\n    const caminho = item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:buscarCartoesDisponiveisResponse\"]\n        .buscarCartoesDisponiveisReturn.cartoesRetorno.cartoesRetorno;\n    \n    return Array.isArray(caminho) ? caminho.map(c => ({ json: c })) : [{ json: caminho }];\n}).flat();\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          760,
+          -3200
+        ],
+        "id": "de08b53e-7690-4b51-936a-115e63dbe753",
+        "name": "Dividir Cartões"
+      },
+      {
+        "parameters": {
+          "content": "## ERROS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 1880,
+          "width": 1720,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          920,
+          -2460
+        ],
+        "typeVersion": 1,
+        "id": "3b8a9067-beaf-482d-88f6-045b7bb142aa",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -1120,
+          -3080
+        ],
+        "id": "d02d7a14-fa06-487b-9afe-94fdb3d0ea5e",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          2080,
+          -1620
+        ],
+        "id": "4b2d48a4-f1d6-4c03-a205-025d03dae2dd",
+        "name": "Respond to Webhook1"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "4fde0774-5fe3-4a50-af18-5c1d71c1fb2c",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -1120,
+          -3280
+        ],
+        "id": "65847ca6-6d98-4f95-9ffa-d822caff8461",
+        "name": "Webhook",
+        "webhookId": "4fde0774-5fe3-4a50-af18-5c1d71c1fb2c"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1,
+        "position": [
+          -420,
+          -3180
+        ],
+        "id": "94d6a70d-3c3a-4521-a100-b2927f2b2405",
+        "name": "Merge1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2260,
+          -1620
+        ],
+        "id": "dc2e8ee1-5698-4c06-a8c1-ac880c32270c",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "content": "## VERIFICA SE TEM CARTÃO \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 440,
+          "width": 1080
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          220,
+          -3380
+        ],
+        "typeVersion": 1,
+        "id": "86439e79-ee5d-469a-827a-cdb1676b6635",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Pega o body como string\nlet raw = items[0].json.body;\n\n// Remove vírgula no final (caso exista)\nraw = raw.replace(/,\\s*}/, '}');\n\n// Converte de string para objeto JSON\nconst parsed = JSON.parse(raw);\n\n// Retorna o objeto limpo\nreturn [{ json: parsed }];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -880,
+          -3280
+        ],
+        "id": "6c9cf849-f04c-4b41-8ab0-098f6b306f54",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "keys": {
+            "key": [
+              {
+                "currentKey": "cpf",
+                "newKey": "query"
+              }
+            ]
+          },
+          "additionalOptions": {}
+        },
+        "type": "n8n-nodes-base.renameKeys",
+        "typeVersion": 1,
+        "position": [
+          -660,
+          -3280
+        ],
+        "id": "252a3d66-451f-4adb-a0c6-27886c3f2ab0",
+        "name": "Rename Keys"
+      },
+      {
+        "parameters": {
+          "content": "## RECEBIMENTO DE DADOS\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 620,
+          "width": 1220,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1160,
+          -3460
+        ],
+        "typeVersion": 1,
+        "id": "ca0f0cee-f877-4499-8a1b-39986135a7d7",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ws1.bmgconsig.com.br/webservices/ConsultaStatusAde?wsdl",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "SOAPAction",
+                "value": "\\\"http://localhost:8080/webservices/ConsultaStatusAde#consultaStatusAde\\\""
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "text/xml;charset=UTF-8",
+          "body": "=<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://localhost:8080/webservices/ConsultaStatusAde\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:consultaStatusAde>\n         <param>\n            <login>{{ $('Credentials').item.json.login }}</login>\n            <senha>{{ $('Credentials').item.json.senha }}</senha>\n            <loginConsig>{{ $('Credentials').item.json.loginConsig }}</loginConsig>\n            <senhaConsig>{{ $('Credentials').item.json.senhaConsig }}</senhaConsig>\n            <dataInicial>{{ new Date(Date.now() - 30 * 86400000).toISOString().slice(0,19) }}</dataInicial>\n            <dataFinal>{{ new Date().toISOString().slice(0,19) }}</dataFinal>\n         </param>\n      </web:consultaStatusAde>\n   </soapenv:Body>\n</soapenv:Envelope>",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          320,
+          -3180
+        ],
+        "id": "27a6f925-a956-4084-b911-9a3d7b36dbf6",
+        "name": "Consulta Ade",
+        "executeOnce": false,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ws1.bmgconsig.com.br/webservices/ConsultaStatusAde?wsdl",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "SOAPAction",
+                "value": "\"http://localhost:8080/webservices/ConsultaStatusAde#consultaStatusAde\""
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "text/xml;charset=UTF-8",
+          "body": "=<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://localhost:8080/webservices/ConsultaStatusAde\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <web:consultaStatusAde>\n         <param>\n            <login>{{ $('Credentials').item.json.login }}</login>\n            <senha>{{ $('Credentials').item.json.senha }}</senha>\n            <listaAdes>\n               <string>{{ $json.numeroAdesao }}</string>\n            </listaAdes>\n         </param>\n      </web:consultaStatusAde>\n   </soapenv:Body>\n</soapenv:Envelope>",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          280,
+          -2920
+        ],
+        "id": "351d6a90-d53f-42f5-a591-0dbb0d440a89",
+        "name": "Consulta Ade1",
+        "executeOnce": false,
+        "onError": "continueErrorOutput"
+      }
+    ],
+    "connections": {
+      "Credentials": {
+        "main": [
+          [
+            {
+              "node": "Get Body",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Body": {
+        "main": [
+          [
+            {
+              "node": "Consulta Ade",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Consulta Ade1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML Buscar Cartões Disponíveis": {
+        "main": [
+          [
+            {
+              "node": "Dividir Cartões",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Cartões Disponíveis Response": {
+        "main": [
+          [
+            {
+              "node": "Tem impedimento",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tem impedimento": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Responde com mensagem de impedimento1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Falha na digitação": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 7
+            }
+          ]
+        ]
+      },
+      "Responde com mensagem de impedimento1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "Responde se ha restrição no saque1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 4
+            }
+          ]
+        ]
+      },
+      "On Error Buscar  Cartões Disponíveis1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "On Error Buscar Limite Saque1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 3
+            }
+          ]
+        ]
+      },
+      "On Error Buscar Simulação1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 5
+            }
+          ]
+        ]
+      },
+      "Responde sem limite de saque1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 6
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Field Verification1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dividir Cartões": {
+        "main": [
+          [
+            {
+              "node": "Buscar Cartões Disponíveis Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "node": "Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Rename Keys",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rename Keys": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consulta Ade": {
+        "main": [
+          [
+            {
+              "node": "XML Buscar Cartões Disponíveis",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "On Error Buscar  Cartões Disponíveis1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-03-06T21:04:26.904Z",
+      "createdAt": "2025-03-06T14:34:43.037Z",
+      "id": "KGLw2ngNzHtwIRB0",
+      "name": "Agilus"
+    },
+    {
+      "updatedAt": "2025-02-20T16:29:31.422Z",
+      "createdAt": "2025-02-20T16:29:31.422Z",
+      "id": "XZLWvH2vm1NnuOvm",
+      "name": "Comercial"
+    }
+  ]
+}

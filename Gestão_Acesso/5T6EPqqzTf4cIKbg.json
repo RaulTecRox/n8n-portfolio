@@ -1,0 +1,1093 @@
+{
+  "updatedAt": "2025-10-02T15:10:07.760Z",
+  "createdAt": "2024-11-01T18:09:49.733Z",
+  "id": "5T6EPqqzTf4cIKbg",
+  "name": "Relatório - Usuários Ativos",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Base"
+        }
+      },
+      "id": "20abbce9-2dc2-4785-bcb7-5d84edd06ce8",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "6fe15cbc-4297-4094-a0e9-b8cf88d32461",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "0620e05d-ea23-45ba-ab74-d5402c93dbe3",
+              "name": "CARGO",
+              "value": "={{ $json.CARGO }}",
+              "type": "string"
+            },
+            {
+              "id": "9e1c6dd2-21fa-4943-85d6-327febbcfdd9",
+              "name": "E-MAIL/USUARIO",
+              "value": "={{ $json['E-MAIL/USUARIO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "92779c9f-2c13-49aa-8cc4-bd494ad35d1b",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA }}",
+              "type": "string"
+            },
+            {
+              "id": "28ebae10-132f-480b-9ac7-761d17dde752",
+              "name": "ATIVO",
+              "value": "={{ $json.ATIVO }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fe471c67-ab5b-437a-8096-47f8d67e5fc0",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+        "options": {}
+      },
+      "id": "46ae25a5-930f-423b-802f-73b7c1a22763",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        192
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "ycQRi5glz56987vv",
+          "name": "SSH Password account SRV01"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "1ccc402f-2768-4bc7-97ef-0fc968533a18",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6a66b862-1dca-4de2-a3cc-a5559bd05ec0",
+              "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+              "rightValue": "MDG INTERMEDIACOES DE NEGOCIOS EIRELI",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "7bc7aeec-d250-401b-bf00-27650df5af9f",
+              "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+              "rightValue": "MR CAMP",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "60b42dc0-76f2-42fc-a68c-273eef5bf6b4",
+              "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+              "rightValue": "A.C.G. CONSULTORIA EM GESTAO EMPRESARIAL LTDA",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "167ea8ae-4e05-4217-8085-40fb48e3bd12",
+              "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+              "rightValue": "GASPAR ASSESSORIA EMPRESARIAL LTDA",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b33b4baf-a688-47fd-870a-3dd51ce45e6f",
+              "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+              "rightValue": "DG SERVICOS DE CORRESPONDENCIA DE INSTITUICOES FINANCEIRAS EIRELI",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "d9dd2f19-4854-45fc-9799-14edffe8efa1",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1664,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "50a2572f-9124-4f71-9905-c337a4b50b05",
+              "leftValue": "={{ $json.ATIVO }}",
+              "rightValue": "SIM",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "dbd9aa44-b47b-4ebc-8d70-91bd3cf444af",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1904,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "NOME"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a37ca660-5d06-4af2-887d-6d6c51460226",
+      "name": "Sort",
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        64
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "d7569258-fcff-49b9-871a-585fd0fe947d",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3744,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recebendo os dados do nó que contém as informações dos funcionários\nconst dados = items.map(item => item.json);\n\n// Função para determinar a saudação conforme o horário\nconst getSaudacao = () => {\n    const horaAtual = new Date().getHours();\n    if (horaAtual < 12) {\n        return \"Bom dia!\";\n    } else if (horaAtual < 18) {\n        return \"Boa tarde!\";\n    } else {\n        return \"Boa noite!\";\n    }\n};\n\n// Obtém a saudação\nconst saudacao = getSaudacao();\n\n// Inicializa a string HTML da mensagem\nlet html = `\n<p>Prezados, ${saudacao},</p>\n<p>Segue em anexo a lista de usuários de sistemas da empresa atualizada até a data de hoje. A lista contém as informações necessárias de cada usuário, incluindo nome completo, CPF, cargo, e-mail.</p>\n<p>Caso necessitem de alguma informação adicional ou ajuste específico, estamos à disposição para colaborar.</p>\n<p>Atenciosamente,</p>\n<img src=\"https://drive.google.com/uc?id=1xhzjxM9bS0a612t02csjuvSLMEs22fPg\" alt=\"Assinatura\" style=\"max-width: 50%; height: auto;\"><br>`;\n\n// Retorna a mensagem como um resultado\nreturn [{ json: { html } }];\n"
+      },
+      "id": "60dfdc1a-bef5-4441-af4a-b580cfbe764f",
+      "name": "MontaHtmlEmail",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "fileName": "=ATIVOS {{$now.format('MM-yyyy') }}"
+        }
+      },
+      "id": "3abea445-0bde-4fe8-be29-55301fd0c3a5",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "id": "84f01187-158a-4cbe-885c-7a91fb1ede50",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3168,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fd53afe8-3583-4b06-9e74-7fc42a9c5628",
+              "name": "NOME",
+              "value": "={{ $json.NOME.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "3d03f947-9368-4a68-a9ce-c7d03749d16c",
+              "name": "CPF",
+              "value": "={{ $json.CPF.replaceAll('.','').replaceAll('-','')  }}",
+              "type": "string"
+            },
+            {
+              "id": "db9d9249-be71-49cf-9c23-dd35d8555b12",
+              "name": "CARGO",
+              "value": "={{ $json.CARGO.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "4680da88-757d-4904-8b30-f5ab26bf2f71",
+              "name": "EMAIL",
+              "value": "={{ $json['E-MAIL/USUARIO'].trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "32bfc682-af6b-4676-999c-9de98b0cc055",
+              "name": "EMPRESA",
+              "value": "={{ $json.EMPRESA.trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fea4cfc0-742e-48db-ba2a-cd92fa2fa41a",
+      "name": "ajustaCampos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2128,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "nicholas.azevedo@mdgintermediacoes.com.br,  isabella.brauer@mdgintermediacoes.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+        "subject": "=RELATORIO DE USUARIOS ATIVOS {{$now.format('MM-yyyy') }}",
+        "message": "={{ $('MontaHtmlEmail').first().json.html}}",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          },
+          "ccList": " raul.guimaraes@mdgintermediacoes.com.br, daniel.gaspar@mdgintermediacoes.com.br, denis.juliano@mdgintermediacoes.com.br"
+        }
+      },
+      "id": "004c5e48-60de-4e6c-93de-9f10c253cdcb",
+      "name": "ENVIA ATIVOS",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3584,
+        80
+      ],
+      "webhookId": "75baba49-b0e8-4b40-ac1c-b542f80b76cc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZJyGqcZOIRbf70ci",
+          "name": "Gestão De Acessos Gmail"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "ajustaCampos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MontaHtmlEmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaHtmlEmail": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "ENVIA ATIVOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ajustaCampos": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ENVIA ATIVOS": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "04f3d479-353c-47fe-94fc-b26913b33b91",
+  "activeVersionId": "04f3d479-353c-47fe-94fc-b26913b33b91",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-11-01T18:09:49.733Z",
+      "createdAt": "2024-11-01T18:09:49.733Z",
+      "role": "workflow:owner",
+      "workflowId": "5T6EPqqzTf4cIKbg",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "04f3d479-353c-47fe-94fc-b26913b33b91",
+    "workflowId": "5T6EPqqzTf4cIKbg",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "binaryPropertyName": "=data",
+          "options": {
+            "headerRow": true,
+            "sheetName": "Base"
+          }
+        },
+        "id": "20abbce9-2dc2-4785-bcb7-5d84edd06ce8",
+        "name": "Extract from File",
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          1264,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3ca550c2-422c-4ff3-921c-4f0facb0acb9",
+                "name": "NOME",
+                "value": "={{ $json.NOME.trim().toUpperCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "6fe15cbc-4297-4094-a0e9-b8cf88d32461",
+                "name": "CPF",
+                "value": "={{ $json.CPF }}",
+                "type": "string"
+              },
+              {
+                "id": "0620e05d-ea23-45ba-ab74-d5402c93dbe3",
+                "name": "CARGO",
+                "value": "={{ $json.CARGO }}",
+                "type": "string"
+              },
+              {
+                "id": "9e1c6dd2-21fa-4943-85d6-327febbcfdd9",
+                "name": "E-MAIL/USUARIO",
+                "value": "={{ $json['E-MAIL/USUARIO'] }}",
+                "type": "string"
+              },
+              {
+                "id": "92779c9f-2c13-49aa-8cc4-bd494ad35d1b",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA }}",
+                "type": "string"
+              },
+              {
+                "id": "28ebae10-132f-480b-9ac7-761d17dde752",
+                "name": "ATIVO",
+                "value": "={{ $json.ATIVO }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "fe471c67-ab5b-437a-8096-47f8d67e5fc0",
+        "name": "Edit Fields1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1440,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "download",
+          "path": "F:\\Dados\\TI\\01 - Planilhas\\Banco de Dados - Usuários1.xlsx",
+          "options": {}
+        },
+        "id": "46ae25a5-930f-423b-802f-73b7c1a22763",
+        "name": "SSH",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          1072,
+          192
+        ],
+        "credentials": {
+          "sshPassword": {
+            "id": "ycQRi5glz56987vv",
+            "name": "SSH Password account SRV01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "months",
+                "triggerAtHour": 9
+              }
+            ]
+          }
+        },
+        "id": "1ccc402f-2768-4bc7-97ef-0fc968533a18",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          768,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "6a66b862-1dca-4de2-a3cc-a5559bd05ec0",
+                "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+                "rightValue": "MDG INTERMEDIACOES DE NEGOCIOS EIRELI",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "7bc7aeec-d250-401b-bf00-27650df5af9f",
+                "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+                "rightValue": "MR CAMP",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "60b42dc0-76f2-42fc-a68c-273eef5bf6b4",
+                "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+                "rightValue": "A.C.G. CONSULTORIA EM GESTAO EMPRESARIAL LTDA",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "167ea8ae-4e05-4217-8085-40fb48e3bd12",
+                "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+                "rightValue": "GASPAR ASSESSORIA EMPRESARIAL LTDA",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "b33b4baf-a688-47fd-870a-3dd51ce45e6f",
+                "leftValue": "={{ $json.EMPRESA.trim().toUpperCase().trim() }}",
+                "rightValue": "DG SERVICOS DE CORRESPONDENCIA DE INSTITUICOES FINANCEIRAS EIRELI",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "id": "d9dd2f19-4854-45fc-9799-14edffe8efa1",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1664,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "50a2572f-9124-4f71-9905-c337a4b50b05",
+                "leftValue": "={{ $json.ATIVO }}",
+                "rightValue": "SIM",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "dbd9aa44-b47b-4ebc-8d70-91bd3cf444af",
+        "name": "If1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1904,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "sortFieldsUi": {
+            "sortField": [
+              {
+                "fieldName": "NOME"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a37ca660-5d06-4af2-887d-6d6c51460226",
+        "name": "Sort",
+        "type": "n8n-nodes-base.sort",
+        "typeVersion": 1,
+        "position": [
+          2624,
+          64
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "d7569258-fcff-49b9-871a-585fd0fe947d",
+        "name": "No Operation, do nothing",
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          3744,
+          592
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Recebendo os dados do nó que contém as informações dos funcionários\nconst dados = items.map(item => item.json);\n\n// Função para determinar a saudação conforme o horário\nconst getSaudacao = () => {\n    const horaAtual = new Date().getHours();\n    if (horaAtual < 12) {\n        return \"Bom dia!\";\n    } else if (horaAtual < 18) {\n        return \"Boa tarde!\";\n    } else {\n        return \"Boa noite!\";\n    }\n};\n\n// Obtém a saudação\nconst saudacao = getSaudacao();\n\n// Inicializa a string HTML da mensagem\nlet html = `\n<p>Prezados, ${saudacao},</p>\n<p>Segue em anexo a lista de usuários de sistemas da empresa atualizada até a data de hoje. A lista contém as informações necessárias de cada usuário, incluindo nome completo, CPF, cargo, e-mail.</p>\n<p>Caso necessitem de alguma informação adicional ou ajuste específico, estamos à disposição para colaborar.</p>\n<p>Atenciosamente,</p>\n<img src=\"https://drive.google.com/uc?id=1xhzjxM9bS0a612t02csjuvSLMEs22fPg\" alt=\"Assinatura\" style=\"max-width: 50%; height: auto;\"><br>`;\n\n// Retorna a mensagem como um resultado\nreturn [{ json: { html } }];\n"
+        },
+        "id": "60dfdc1a-bef5-4441-af4a-b580cfbe764f",
+        "name": "MontaHtmlEmail",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2880,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "xlsx",
+          "options": {
+            "fileName": "=ATIVOS {{$now.format('MM-yyyy') }}"
+          }
+        },
+        "id": "3abea445-0bde-4fe8-be29-55301fd0c3a5",
+        "name": "Convert to File",
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          2880,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "chooseBranch"
+        },
+        "id": "84f01187-158a-4cbe-885c-7a91fb1ede50",
+        "name": "Merge1",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          3168,
+          80
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "fd53afe8-3583-4b06-9e74-7fc42a9c5628",
+                "name": "NOME",
+                "value": "={{ $json.NOME.trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "3d03f947-9368-4a68-a9ce-c7d03749d16c",
+                "name": "CPF",
+                "value": "={{ $json.CPF.replaceAll('.','').replaceAll('-','')  }}",
+                "type": "string"
+              },
+              {
+                "id": "db9d9249-be71-49cf-9c23-dd35d8555b12",
+                "name": "CARGO",
+                "value": "={{ $json.CARGO.trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "4680da88-757d-4904-8b30-f5ab26bf2f71",
+                "name": "EMAIL",
+                "value": "={{ $json['E-MAIL/USUARIO'].trim()}}",
+                "type": "string"
+              },
+              {
+                "id": "32bfc682-af6b-4676-999c-9de98b0cc055",
+                "name": "EMPRESA",
+                "value": "={{ $json.EMPRESA.trim() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "fea4cfc0-742e-48db-ba2a-cd92fa2fa41a",
+        "name": "ajustaCampos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2128,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "sendTo": "nicholas.azevedo@mdgintermediacoes.com.br,  isabella.brauer@mdgintermediacoes.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+          "subject": "=RELATORIO DE USUARIOS ATIVOS {{$now.format('MM-yyyy') }}",
+          "message": "={{ $('MontaHtmlEmail').first().json.html}}",
+          "options": {
+            "attachmentsUi": {
+              "attachmentsBinary": [
+                {}
+              ]
+            },
+            "ccList": " raul.guimaraes@mdgintermediacoes.com.br, daniel.gaspar@mdgintermediacoes.com.br, denis.juliano@mdgintermediacoes.com.br"
+          }
+        },
+        "id": "004c5e48-60de-4e6c-93de-9f10c253cdcb",
+        "name": "ENVIA ATIVOS",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          3584,
+          80
+        ],
+        "webhookId": "75baba49-b0e8-4b40-ac1c-b542f80b76cc",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "ZJyGqcZOIRbf70ci",
+            "name": "Gestão De Acessos Gmail"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SSH": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "SSH",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "ajustaCampos",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sort": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MontaHtmlEmail",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MontaHtmlEmail": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "node": "ENVIA ATIVOS",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ajustaCampos": {
+        "main": [
+          [
+            {
+              "node": "Sort",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ENVIA ATIVOS": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2024-11-07T12:25:14.506Z",
+      "createdAt": "2024-11-07T12:25:14.506Z",
+      "id": "o0b1eCtfXeRfItda",
+      "name": "Gestão Acesso"
+    }
+  ]
+}

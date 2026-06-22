@@ -1,0 +1,1347 @@
+{
+  "updatedAt": "2026-06-11T14:17:59.000Z",
+  "createdAt": "2026-03-20T02:58:16.755Z",
+  "id": "W2bLFmt5TS2V2W8O",
+  "name": "ConsultByCpf",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "novavidati/search/by-cpf",
+        "responseMode": "responseNode",
+        "options": {
+          "ignoreBots": false,
+          "ipWhitelist": "10.3.0.0/16 , 10.4.0.0/16, 172.21.0.0/24"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        1088
+      ],
+      "id": "91b8fba5-a489-469e-b080-3dbe82394f5d",
+      "name": "Webhook",
+      "webhookId": "74d14370-82d4-4730-955a-ff4c10153936"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0e4281fa-c973-4e84-bb7d-d5a2d2d82bba",
+              "name": "cpf",
+              "value": "={{ $json.query.cpf }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        992
+      ],
+      "id": "8889aa0f-73fc-40aa-8154-df7435f7e7bd",
+      "name": "Search"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $('SeekOnRetention').item.json.payload }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1344,
+        800
+      ],
+      "id": "85f34ba0-c91f-429f-ba2b-57d4f23a669a",
+      "name": "FoundedOnRetention"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"source\": \"novavidati\",\n  \"retentionDays\": 90,\n  \"loopSize\": 100,\n  \"timeToWait\": 1,\n  \"startTime\": 0,\n  \"finishTime\": 24\n  \n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        992
+      ],
+      "id": "12eee2d6-d9b2-471b-bb55-d6e7c3b6c45a",
+      "name": "Configs"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6ab5d3de-8572-4975-aca6-6be82d3215ab",
+              "leftValue": "={{ $('SeekOnRetention').item.json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        896
+      ],
+      "id": "48e34a2c-3b83-45ed-b55e-6ddfeb2e7cd1",
+      "name": "IfHasRetention"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error Database\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1120,
+        1088
+      ],
+      "id": "44b4f550-ed59-42e0-845e-d6f0e6b114ae",
+      "name": "RespondErrorDatabase"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bebde9e0-d9ce-4592-b828-113679672e23",
+              "leftValue": "={{ $json.query.cpf }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        1088
+      ],
+      "id": "ec97881e-05b4-41de-87f1-68b5a0d598c5",
+      "name": "IfHasParameterCpf"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Please provide the cpf parameter.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        1184
+      ],
+      "id": "7be588e3-aa81-4fcf-a663-5bd94ec630dc",
+      "name": "NoParameterCpf"
+    },
+    {
+      "parameters": {
+        "jsCode": "const startTime = $('Configs').first().json.startTime;\nconst finishTime = $('Configs').first().json.finishTime;\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && nowDay !== 0) {\n      return {sheduler: true}\n    }\n\n return {sheduler: false}"
+      },
+      "id": "e240d627-ba06-4054-8d69-960eb1586054",
+      "name": "Scheduler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.sheduler }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "a5d67aa9-2609-423f-b76b-cbf37b3f0ada",
+      "name": "IsInTime",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Temporarily unavailable\"\n}",
+        "options": {
+          "responseCode": 423
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1792,
+        1088
+      ],
+      "id": "3afb1cdd-f8ce-4468-8885-6278adb288f7",
+      "name": "RespondTemporarilyUnavailable"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/novavidati/token",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        896
+      ],
+      "id": "0cba04c3-aedc-46e0-997a-fea8c8261604",
+      "name": "GetToken",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO retentions.holds (source, search, payload)\nVALUES ($1, $2::jsonb, $3::jsonb)\nON CONFLICT (search)\nDO UPDATE SET\n  payload = EXCLUDED.payload,\n  updated_at = CURRENT_TIMESTAMP\nRETURNING *;",
+        "options": {
+          "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json}},{{ $('GetDataClient').item.json.d.CONSULTA }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2464,
+        608
+      ],
+      "id": "3f179cf3-2ef1-4da8-9b82-e9c0d385ce09",
+      "name": "SaveOnRetention",
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "PUYASYaNLZYwlx66",
+          "name": "PostgresPatroni"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "067e7802-2cc0-4f29-b078-163fd722557a",
+              "leftValue": "={{ $json.d.CONSULTA }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2240,
+        704
+      ],
+      "id": "3ef1e140-eb2c-4a20-8e49-48180d517474",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error on get Token\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2016,
+        992
+      ],
+      "id": "628d1909-430c-4678-a1a5-27482bd65105",
+      "name": "ErrorGetToken"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"No data found\"\n}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2464,
+        800
+      ],
+      "id": "cfcad93a-cff2-4d46-bb15-f3f68d4ffbe5",
+      "name": "NoDataFound"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM retentions.holds\nWHERE\n  source = $1\n  AND search->>'cpf' = $2\n  AND updated_at > NOW() - ($3::int * INTERVAL '1 day')\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json.cpf }}, {{ $('Configs').item.json.retentionDays }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        896,
+        992
+      ],
+      "id": "f44acb2d-6fd3-4d50-867f-b0d1026cd756",
+      "name": "SeekOnRetention",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "PUYASYaNLZYwlx66",
+          "name": "PostgresPatroni"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.payload }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2688,
+        704
+      ],
+      "id": "185d3246-c384-4c92-a7ce-0c4c12dec275",
+      "name": "Success"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wsnv.novavidati.com.br/wslocalizador.asmx/NVCHECKJson",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "={{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"nvcheck\": {\n    \"Documento\": \"{{ $('Search').item.json.cpf }}\"\n    }\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2016,
+        800
+      ],
+      "id": "c1191121-4ee7-44ae-9948-ad7c9d029ee5",
+      "name": "GetDataClient",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"message\": {{ JSON.stringify($json.error) }}\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2240,
+        896
+      ],
+      "id": "a73b86c8-3e65-4c9f-bbaa-b2b5b77414b6",
+      "name": "ErrorGetDataClient"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error save on retention database.\"\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2688,
+        512
+      ],
+      "id": "2c135af6-48d1-479d-9d33-5895672f28e4",
+      "name": "SendRetentionError"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IfHasParameterCpf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search": {
+      "main": [
+        [
+          {
+            "node": "Configs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FoundedOnRetention": {
+      "main": [
+        []
+      ]
+    },
+    "Configs": {
+      "main": [
+        [
+          {
+            "node": "SeekOnRetention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfHasRetention": {
+      "main": [
+        [
+          {
+            "node": "FoundedOnRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondErrorDatabase": {
+      "main": [
+        []
+      ]
+    },
+    "IfHasParameterCpf": {
+      "main": [
+        [
+          {
+            "node": "Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NoParameterCpf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NoParameterCpf": {
+      "main": [
+        []
+      ]
+    },
+    "Scheduler": {
+      "main": [
+        [
+          {
+            "node": "IsInTime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IsInTime": {
+      "main": [
+        [
+          {
+            "node": "GetToken",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondTemporarilyUnavailable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondTemporarilyUnavailable": {
+      "main": [
+        []
+      ]
+    },
+    "GetToken": {
+      "main": [
+        [
+          {
+            "node": "GetDataClient",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ErrorGetToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveOnRetention": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendRetentionError",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "SaveOnRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NoDataFound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SeekOnRetention": {
+      "main": [
+        [
+          {
+            "node": "IfHasRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondErrorDatabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetDataClient": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ErrorGetDataClient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "dynamic",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 600
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5e65f323-5491-4c8e-8ed8-56f6cdb7f58c",
+  "activeVersionId": "5e65f323-5491-4c8e-8ed8-56f6cdb7f58c",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-20T02:58:16.755Z",
+      "createdAt": "2026-03-20T02:58:16.755Z",
+      "role": "workflow:owner",
+      "workflowId": "W2bLFmt5TS2V2W8O",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-06-11T14:18:00.801Z",
+    "createdAt": "2026-06-11T14:17:59.003Z",
+    "versionId": "5e65f323-5491-4c8e-8ed8-56f6cdb7f58c",
+    "workflowId": "W2bLFmt5TS2V2W8O",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "novavidati/search/by-cpf",
+          "responseMode": "responseNode",
+          "options": {
+            "ignoreBots": false,
+            "ipWhitelist": "10.3.0.0/16 , 10.4.0.0/16, 172.21.0.0/24"
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          1088
+        ],
+        "id": "91b8fba5-a489-469e-b080-3dbe82394f5d",
+        "name": "Webhook",
+        "webhookId": "74d14370-82d4-4730-955a-ff4c10153936"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "0e4281fa-c973-4e84-bb7d-d5a2d2d82bba",
+                "name": "cpf",
+                "value": "={{ $json.query.cpf }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          448,
+          992
+        ],
+        "id": "8889aa0f-73fc-40aa-8154-df7435f7e7bd",
+        "name": "Search"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $('SeekOnRetention').item.json.payload }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1344,
+          800
+        ],
+        "id": "85f34ba0-c91f-429f-ba2b-57d4f23a669a",
+        "name": "FoundedOnRetention"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "{\n  \"source\": \"novavidati\",\n  \"retentionDays\": 90,\n  \"loopSize\": 100,\n  \"timeToWait\": 1,\n  \"startTime\": 0,\n  \"finishTime\": 24\n  \n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          672,
+          992
+        ],
+        "id": "12eee2d6-d9b2-471b-bb55-d6e7c3b6c45a",
+        "name": "Configs"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6ab5d3de-8572-4975-aca6-6be82d3215ab",
+                "leftValue": "={{ $('SeekOnRetention').item.json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1120,
+          896
+        ],
+        "id": "48e34a2c-3b83-45ed-b55e-6ddfeb2e7cd1",
+        "name": "IfHasRetention"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error Database\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1120,
+          1088
+        ],
+        "id": "44b4f550-ed59-42e0-845e-d6f0e6b114ae",
+        "name": "RespondErrorDatabase"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "bebde9e0-d9ce-4592-b828-113679672e23",
+                "leftValue": "={{ $json.query.cpf }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          224,
+          1088
+        ],
+        "id": "ec97881e-05b4-41de-87f1-68b5a0d598c5",
+        "name": "IfHasParameterCpf"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Please provide the cpf parameter.\"\n}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          448,
+          1184
+        ],
+        "id": "7be588e3-aa81-4fcf-a663-5bd94ec630dc",
+        "name": "NoParameterCpf"
+      },
+      {
+        "parameters": {
+          "jsCode": "const startTime = $('Configs').first().json.startTime;\nconst finishTime = $('Configs').first().json.finishTime;\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && nowDay !== 0) {\n      return {sheduler: true}\n    }\n\n return {sheduler: false}"
+        },
+        "id": "e240d627-ba06-4054-8d69-960eb1586054",
+        "name": "Scheduler",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1344,
+          992
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.sheduler }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "a5d67aa9-2609-423f-b76b-cbf37b3f0ada",
+        "name": "IsInTime",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1568,
+          992
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Temporarily unavailable\"\n}",
+          "options": {
+            "responseCode": 423
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1792,
+          1088
+        ],
+        "id": "3afb1cdd-f8ce-4468-8885-6278adb288f7",
+        "name": "RespondTemporarilyUnavailable"
+      },
+      {
+        "parameters": {
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/novavidati/token",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1792,
+          896
+        ],
+        "id": "0cba04c3-aedc-46e0-997a-fea8c8261604",
+        "name": "GetToken",
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "INSERT INTO retentions.holds (source, search, payload)\nVALUES ($1, $2::jsonb, $3::jsonb)\nON CONFLICT (search)\nDO UPDATE SET\n  payload = EXCLUDED.payload,\n  updated_at = CURRENT_TIMESTAMP\nRETURNING *;",
+          "options": {
+            "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json}},{{ $('GetDataClient').item.json.d.CONSULTA }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2464,
+          608
+        ],
+        "id": "3f179cf3-2ef1-4da8-9b82-e9c0d385ce09",
+        "name": "SaveOnRetention",
+        "executeOnce": true,
+        "credentials": {
+          "postgres": {
+            "id": "PUYASYaNLZYwlx66",
+            "name": "PostgresPatroni"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "067e7802-2cc0-4f29-b078-163fd722557a",
+                "leftValue": "={{ $json.d.CONSULTA }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "object",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2240,
+          704
+        ],
+        "id": "3ef1e140-eb2c-4a20-8e49-48180d517474",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error on get Token\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2016,
+          992
+        ],
+        "id": "628d1909-430c-4678-a1a5-27482bd65105",
+        "name": "ErrorGetToken"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"No data found\"\n}",
+          "options": {
+            "responseCode": 404
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2464,
+          800
+        ],
+        "id": "cfcad93a-cff2-4d46-bb15-f3f68d4ffbe5",
+        "name": "NoDataFound"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT *\nFROM retentions.holds\nWHERE\n  source = $1\n  AND search->>'cpf' = $2\n  AND updated_at > NOW() - ($3::int * INTERVAL '1 day')\nLIMIT 1;",
+          "options": {
+            "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json.cpf }}, {{ $('Configs').item.json.retentionDays }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          896,
+          992
+        ],
+        "id": "f44acb2d-6fd3-4d50-867f-b0d1026cd756",
+        "name": "SeekOnRetention",
+        "alwaysOutputData": true,
+        "executeOnce": true,
+        "credentials": {
+          "postgres": {
+            "id": "PUYASYaNLZYwlx66",
+            "name": "PostgresPatroni"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json.payload }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2688,
+          704
+        ],
+        "id": "185d3246-c384-4c92-a7ce-0c4c12dec275",
+        "name": "Success"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://wsnv.novavidati.com.br/wslocalizador.asmx/NVCHECKJson",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "token",
+                "value": "={{ $json.token }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"nvcheck\": {\n    \"Documento\": \"{{ $('Search').item.json.cpf }}\"\n    }\n}",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          2016,
+          800
+        ],
+        "id": "c1191121-4ee7-44ae-9948-ad7c9d029ee5",
+        "name": "GetDataClient",
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"message\": {{ JSON.stringify($json.error) }}\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2240,
+          896
+        ],
+        "id": "a73b86c8-3e65-4c9f-bbaa-b2b5b77414b6",
+        "name": "ErrorGetDataClient"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error save on retention database.\"\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2688,
+          512
+        ],
+        "id": "2c135af6-48d1-479d-9d33-5895672f28e4",
+        "name": "SendRetentionError"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "IfHasParameterCpf",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search": {
+        "main": [
+          [
+            {
+              "node": "Configs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "FoundedOnRetention": {
+        "main": [
+          []
+        ]
+      },
+      "Configs": {
+        "main": [
+          [
+            {
+              "node": "SeekOnRetention",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IfHasRetention": {
+        "main": [
+          [
+            {
+              "node": "FoundedOnRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Scheduler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondErrorDatabase": {
+        "main": [
+          []
+        ]
+      },
+      "IfHasParameterCpf": {
+        "main": [
+          [
+            {
+              "node": "Search",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "NoParameterCpf",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "NoParameterCpf": {
+        "main": [
+          []
+        ]
+      },
+      "Scheduler": {
+        "main": [
+          [
+            {
+              "node": "IsInTime",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IsInTime": {
+        "main": [
+          [
+            {
+              "node": "GetToken",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondTemporarilyUnavailable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondTemporarilyUnavailable": {
+        "main": [
+          []
+        ]
+      },
+      "GetToken": {
+        "main": [
+          [
+            {
+              "node": "GetDataClient",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "ErrorGetToken",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SaveOnRetention": {
+        "main": [
+          [
+            {
+              "node": "Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "SendRetentionError",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "SaveOnRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "NoDataFound",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SeekOnRetention": {
+        "main": [
+          [
+            {
+              "node": "IfHasRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondErrorDatabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GetDataClient": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "ErrorGetDataClient",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 5e65f323",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

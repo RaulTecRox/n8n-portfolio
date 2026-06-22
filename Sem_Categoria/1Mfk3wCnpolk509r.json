@@ -1,0 +1,584 @@
+{
+  "updatedAt": "2025-03-20T21:19:26.954Z",
+  "createdAt": "2025-03-20T19:27:39.478Z",
+  "id": "1Mfk3wCnpolk509r",
+  "name": "Convert Xml 2 Json",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+              "name": "body",
+              "value": "={{ $('Webhook').item.json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        120,
+        -300
+      ],
+      "id": "4f6a11f6-a985-419a-ba57-43bc9040d5b4",
+      "name": "Get Body"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  \"message\": $('Get Body').first().json.body.message.replace(/^500 - \"/, \"\").replace(/\"$/, \"\").replace(/^\"|\"$/g, \"\").replace(/\\\\\"/g, '\"')\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        -300
+      ],
+      "id": "1e9ecff5-23fe-4929-bca2-ee5acb99aedf",
+      "name": "Sanitize String"
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "=message",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -400
+      ],
+      "id": "7afb3663-c436-4c0d-b2b6-37ce372fe9b1",
+      "name": "XML"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"message\": {{ $json.message }}\n} ",
+        "options": {
+          "responseCode": "={{ $json.statusCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        -200
+      ],
+      "id": "375a2d55-2b8f-4531-b163-fbfce1cbc9e9",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "34a2731d-cf4d-4369-8e0a-3267a28b7e5c",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        -300
+      ],
+      "id": "82ea7708-3a4c-4c13-9b6e-4c04e973b47e",
+      "name": "Webhook",
+      "webhookId": "34a2731d-cf4d-4369-8e0a-3267a28b7e5c"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        780,
+        0
+      ],
+      "id": "56887261-f36f-492a-84da-184c5d9b7155",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6521edf2-9e6c-4a87-9cd5-67f048c52588",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "<?xml version",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        -300
+      ],
+      "id": "1ee23408-0a4c-4faa-a9d6-394cb16c307f",
+      "name": "Is XML"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  \"message\": JSON.stringify($input.first().json.execution.error.message),\n  \"statusCode\": 400\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "id": "1a927897-73a2-4c53-88bf-1b6bd6f16cca",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  \"message\": \"Is not a valid JSON\",\n  \"statusCode\": 400\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        -200
+      ],
+      "id": "823fc64b-4d6d-46d1-bf37-095e368dfd5a",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        -400
+      ],
+      "id": "0e690c4c-3f36-4214-929b-0660a3bf5a5a",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "connections": {
+    "Get Body": {
+      "main": [
+        [
+          {
+            "node": "Sanitize String",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitize String": {
+      "main": [
+        [
+          {
+            "node": "Is XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is XML": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d461e902-5725-438f-bbe5-cfcd950d44ad",
+  "activeVersionId": "d461e902-5725-438f-bbe5-cfcd950d44ad",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-03-20T19:27:39.478Z",
+      "createdAt": "2025-03-20T19:27:39.478Z",
+      "role": "workflow:owner",
+      "workflowId": "1Mfk3wCnpolk509r",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "d461e902-5725-438f-bbe5-cfcd950d44ad",
+    "workflowId": "1Mfk3wCnpolk509r",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+                "name": "body",
+                "value": "={{ $('Webhook').item.json.body }}",
+                "type": "object"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          120,
+          -300
+        ],
+        "id": "4f6a11f6-a985-419a-ba57-43bc9040d5b4",
+        "name": "Get Body"
+      },
+      {
+        "parameters": {
+          "jsCode": "return {\n  \"message\": $('Get Body').first().json.body.message.replace(/^500 - \"/, \"\").replace(/\"$/, \"\").replace(/^\"|\"$/g, \"\").replace(/\\\\\"/g, '\"')\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          340,
+          -300
+        ],
+        "id": "1e9ecff5-23fe-4929-bca2-ee5acb99aedf",
+        "name": "Sanitize String"
+      },
+      {
+        "parameters": {
+          "dataPropertyName": "=message",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          780,
+          -400
+        ],
+        "id": "7afb3663-c436-4c0d-b2b6-37ce372fe9b1",
+        "name": "XML"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"message\": {{ $json.message }}\n} ",
+          "options": {
+            "responseCode": "={{ $json.statusCode }}"
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1220,
+          -200
+        ],
+        "id": "375a2d55-2b8f-4531-b163-fbfce1cbc9e9",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "34a2731d-cf4d-4369-8e0a-3267a28b7e5c",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -100,
+          -300
+        ],
+        "id": "82ea7708-3a4c-4c13-9b6e-4c04e973b47e",
+        "name": "Webhook",
+        "webhookId": "34a2731d-cf4d-4369-8e0a-3267a28b7e5c"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          780,
+          0
+        ],
+        "id": "56887261-f36f-492a-84da-184c5d9b7155",
+        "name": "Error Trigger"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "6521edf2-9e6c-4a87-9cd5-67f048c52588",
+                "leftValue": "={{ $json.message }}",
+                "rightValue": "<?xml version",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          560,
+          -300
+        ],
+        "id": "1ee23408-0a4c-4faa-a9d6-394cb16c307f",
+        "name": "Is XML"
+      },
+      {
+        "parameters": {
+          "jsCode": "return {\n  \"message\": JSON.stringify($input.first().json.execution.error.message),\n  \"statusCode\": 400\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1000,
+          0
+        ],
+        "id": "1a927897-73a2-4c53-88bf-1b6bd6f16cca",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "jsCode": "return {\n  \"message\": \"Is not a valid JSON\",\n  \"statusCode\": 400\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1000,
+          -200
+        ],
+        "id": "823fc64b-4d6d-46d1-bf37-095e368dfd5a",
+        "name": "Code1"
+      },
+      {
+        "parameters": {
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1000,
+          -400
+        ],
+        "id": "0e690c4c-3f36-4214-929b-0660a3bf5a5a",
+        "name": "Respond to Webhook1"
+      }
+    ],
+    "connections": {
+      "Get Body": {
+        "main": [
+          [
+            {
+              "node": "Sanitize String",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sanitize String": {
+        "main": [
+          [
+            {
+              "node": "Is XML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          []
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get Body",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is XML": {
+        "main": [
+          [
+            {
+              "node": "XML",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Code1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}

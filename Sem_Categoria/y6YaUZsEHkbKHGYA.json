@@ -1,0 +1,999 @@
+{
+  "updatedAt": "2026-02-02T16:41:51.353Z",
+  "createdAt": "2024-11-07T12:52:07.642Z",
+  "id": "y6YaUZsEHkbKHGYA",
+  "name": "Infra - reinicia Ac Unifi 1.0.2",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://10.3.0.37:8443/api/login",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "suporte"
+            },
+            {
+              "name": "password",
+              "value": "Zaq!@wsx"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "40a8d16a-8086-4544-9b9e-804e73058181",
+      "name": "Login Unifi",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        -416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Acesse a resposta completa\nconst response = $json;\n\n// Verifique se os cabeçalhos estão presentes\nif (response.headers && response.headers['set-cookie']) {\n    // Extraia o primeiro cookie\n    const cookieValue = response.headers['set-cookie'][0].split(\";\")[0];\n\n    // Retorne o cookie armazenado\n    return [{ json: { cookie: cookieValue } }];\n} else {\n    // Retorne um erro se o cookie não for encontrado\n    throw new Error(\"Cookie not found in response headers\");\n}\n"
+      },
+      "id": "d1641b8a-be4e-427f-857a-acb5519f91f4",
+      "name": "Cookie",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        -416
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ec3eb96b-3752-440e-a2f6-c279c70c7f39",
+              "name": "cookie",
+              "value": "={{ $json.cookie }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "02baa583-b377-4e2f-ae95-e551eb287170",
+      "name": "Salva Cookie",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        -416
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://10.3.0.37:8443/api/s/default/stat/device-basic",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cookie",
+              "value": "={{ $('Salva Cookie').last().json.cookie}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "uap"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "9514eeba-fc3e-4a25-be3c-9138f5912da4",
+      "name": "envia para Unifi1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        -416
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://10.3.0.37:8443/api/s/default/cmd/devmgr",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cookie",
+              "value": "={{ $('Salva Cookie').last().json.cookie}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cmd",
+              "value": "restart"
+            },
+            {
+              "name": "mac",
+              "value": "={{ $json.mac }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "0e362e7e-bd18-48a6-ba0b-c6b574583a86",
+      "name": "envia para Unifi",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2800,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "body.data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        -416
+      ],
+      "id": "efa6a1aa-a8d7-4844-b3a2-42041702d90b",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recebe os dados de entrada do nó $('Aggregate')\nconst inputData = $json.data[0];\n\n// Mapeia e extrai apenas os equipamentos que possuem nome\nconst equipmentList = inputData\n  .filter(equip => equip.name) // Filtra apenas os equipamentos que têm nome\n  .map(equip => ({\n    name: equip.name,\n    mac: equip.mac\n  }));\n\n// Retorna a lista com nome e MAC\nreturn equipmentList;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2032,
+        -416
+      ],
+      "id": "56c4d2bc-1099-42a5-a4ab-c3351d2fcbfb",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2288,
+        -416
+      ],
+      "id": "1ef7a9b9-d35b-4ae3-a4f3-db89d4e621a4",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "573fd5af-d225-4dae-b040-76f382d99227",
+              "name": "mac",
+              "value": "={{ $json.mac }}",
+              "type": "string"
+            },
+            {
+              "id": "58c87330-83df-4ada-895a-6db5519a253b",
+              "name": "cookie",
+              "value": "={{ $('Salva Cookie').item.json.cookie }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2608,
+        -400
+      ],
+      "id": "6634211a-dc08-4d69-ae12-8879a50209ea",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3360,
+        112
+      ],
+      "id": "d7cd92db-f669-4913-8518-ae095a23b764",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        -416
+      ],
+      "id": "54d8c5a7-0aaa-47d3-9dd5-de7a7788a655",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta os dados do nó $('Code')\nconst dados = $('Code').all();\n\n// Função para formatar a data como dd/mm/yyyy\nfunction formatDate(date) {\n    const day = String(date.getDate()).padStart(2, '0');\n    const month = String(date.getMonth() + 1).padStart(2, '0');\n    const year = date.getFullYear();\n    return `${day}/${month}/${year}`;\n}\n\n// Função para determinar a saudação com base na hora do dia\nfunction getGreeting() {\n    const hour = new Date().getHours();\n    if (hour < 12) {\n        return \"Bom dia\";\n    } else if (hour < 18) {\n        return \"Boa tarde\";\n    } else {\n        return \"Boa noite\";\n    }\n}\n\n// Coleta a data atual e formata\nconst currentDate = new Date();\nconst formattedDate = formatDate(currentDate);\n\n// Cria a saudação personalizada\nconst greeting = getGreeting();\n\n// Verifica se os dados são um array\nlet mensagem = `${greeting} Amigos 😁,\\nAqui está a lista de equipamentos reiniciados no UniFi em ${formattedDate}:\\n`;\n\nif (Array.isArray(dados) && dados.length > 0) {\n    // Adiciona os nomes e MACs dos dispositivos na mensagem\n    const equipamentos = dados\n        .map(item => {\n            const nome = item.json.name || \"Nome não informado\";\n            const mac = item.json.mac || \"MAC não informado\"; // Adiciona um texto padrão se o MAC estiver vazio\n            return `${nome} - ${mac}`;\n        });\n\n    // Adiciona os equipamentos na mensagem\n    if (equipamentos.length > 0) {\n        mensagem += `${equipamentos.join(\"\\n\")}\\n\\nTodos os equipamentos foram reiniciados com sucesso.`;\n    } else {\n        mensagem += \"Nenhum equipamento foi localizado na base de dados.\\n\\n\";\n    }\n} else {\n    mensagem += \"Nenhum dado foi encontrado para o dia de hoje.\";\n}\n\n// Retorna a mensagem formatada\nreturn [\n    {\n        json: {\n            textMessage: mensagem\n        }\n    }\n];\n"
+      },
+      "id": "bfcb5c34-0c9c-48ed-a410-760faae69344",
+      "name": "MontaMensagemWhats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2304,
+        -864
+      ]
+    },
+    {
+      "parameters": {
+        "queue": "google_chat-queue",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "Space  ID",
+                "value": "spaces/AAAA-XXOyVI"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        2640,
+        -864
+      ],
+      "id": "19b4d635-1d46-467d-9a14-016076708a71",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Login Unifi": {
+      "main": [
+        [
+          {
+            "node": "Cookie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cookie": {
+      "main": [
+        [
+          {
+            "node": "Salva Cookie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salva Cookie": {
+      "main": [
+        [
+          {
+            "node": "envia para Unifi1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia para Unifi1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "MontaMensagemWhats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "envia para Unifi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia para Unifi": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Login Unifi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MontaMensagemWhats": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Gmail Trigger": {
+      "Gmail Trigger": {
+        "lastTimeChecked": 1729194977,
+        "possibleDuplicates": [
+          "1929c0d8d36ea6dc"
+        ]
+      }
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-02-02T07:00:13.011-03:00",
+          "Readable date": "February 2nd 2026, 7:00:13 am",
+          "Readable time": "7:00:13 am",
+          "Day of week": "Monday",
+          "Year": "2026",
+          "Month": "February",
+          "Day of month": "02",
+          "Hour": "07",
+          "Minute": "00",
+          "Second": "13",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "64ae7b64-ab83-4fad-a92d-e2c8aeb701e1",
+  "activeVersionId": "04e38c26-376e-4c0c-a26d-aab4192b2769",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-02T12:28:14.909Z",
+      "createdAt": "2026-02-02T12:28:14.909Z",
+      "role": "workflow:owner",
+      "workflowId": "y6YaUZsEHkbKHGYA",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "04e38c26-376e-4c0c-a26d-aab4192b2769",
+    "workflowId": "y6YaUZsEHkbKHGYA",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://10.3.0.37:8443/api/login",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "username",
+                "value": "suporte"
+              },
+              {
+                "name": "password",
+                "value": "Zaq!@wsx"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true,
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "40a8d16a-8086-4544-9b9e-804e73058181",
+        "name": "Login Unifi",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          980,
+          -420
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Acesse a resposta completa\nconst response = $json;\n\n// Verifique se os cabeçalhos estão presentes\nif (response.headers && response.headers['set-cookie']) {\n    // Extraia o primeiro cookie\n    const cookieValue = response.headers['set-cookie'][0].split(\";\")[0];\n\n    // Retorne o cookie armazenado\n    return [{ json: { cookie: cookieValue } }];\n} else {\n    // Retorne um erro se o cookie não for encontrado\n    throw new Error(\"Cookie not found in response headers\");\n}\n"
+        },
+        "id": "d1641b8a-be4e-427f-857a-acb5519f91f4",
+        "name": "Cookie",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1180,
+          -420
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ec3eb96b-3752-440e-a2f6-c279c70c7f39",
+                "name": "cookie",
+                "value": "={{ $json.cookie }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "02baa583-b377-4e2f-ae95-e551eb287170",
+        "name": "Salva Cookie",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1400,
+          -420
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://10.3.0.37:8443/api/s/default/stat/device-basic",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "cookie",
+                "value": "={{ $('Salva Cookie').last().json.cookie}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "type",
+                "value": "uap"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true,
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "9514eeba-fc3e-4a25-be3c-9138f5912da4",
+        "name": "envia para Unifi1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1600,
+          -420
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://10.3.0.37:8443/api/s/default/cmd/devmgr",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "cookie",
+                "value": "={{ $('Salva Cookie').last().json.cookie}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "cmd",
+                "value": "restart"
+              },
+              {
+                "name": "mac",
+                "value": "={{ $json.mac }}"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true,
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "0e362e7e-bd18-48a6-ba0b-c6b574583a86",
+        "name": "envia para Unifi",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2640,
+          -720
+        ]
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "body.data"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1820,
+          -420
+        ],
+        "id": "efa6a1aa-a8d7-4844-b3a2-42041702d90b",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Recebe os dados de entrada do nó $('Aggregate')\nconst inputData = $json.data[0];\n\n// Mapeia e extrai apenas os equipamentos que possuem nome\nconst equipmentList = inputData\n  .filter(equip => equip.name) // Filtra apenas os equipamentos que têm nome\n  .map(equip => ({\n    name: equip.name,\n    mac: equip.mac\n  }));\n\n// Retorna a lista com nome e MAC\nreturn equipmentList;\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2020,
+          -420
+        ],
+        "id": "56c4d2bc-1099-42a5-a4ab-c3351d2fcbfb",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "options": {
+            "reset": false
+          }
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          2240,
+          -440
+        ],
+        "id": "1ef7a9b9-d35b-4ae3-a4f3-db89d4e621a4",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "573fd5af-d225-4dae-b040-76f382d99227",
+                "name": "mac",
+                "value": "={{ $json.mac }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2300,
+          -720
+        ],
+        "id": "6634211a-dc08-4d69-ae12-8879a50209ea",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "amount": 10
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          2500,
+          -420
+        ],
+        "id": "2d917bc4-91f9-4a45-8be0-dac5c7f09cbf",
+        "name": "Wait",
+        "webhookId": "6fa9e4a3-aa03-4fbe-8dbe-daf0876bde94"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          3360,
+          100
+        ],
+        "id": "d7cd92db-f669-4913-8518-ae095a23b764",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks",
+                "triggerAtDay": [
+                  1
+                ],
+                "triggerAtHour": 7
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          760,
+          -420
+        ],
+        "id": "54d8c5a7-0aaa-47d3-9dd5-de7a7788a655",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Coleta os dados do nó $('Code')\nconst dados = $('Code').all();\n\n// Função para formatar a data como dd/mm/yyyy\nfunction formatDate(date) {\n    const day = String(date.getDate()).padStart(2, '0');\n    const month = String(date.getMonth() + 1).padStart(2, '0');\n    const year = date.getFullYear();\n    return `${day}/${month}/${year}`;\n}\n\n// Função para determinar a saudação com base na hora do dia\nfunction getGreeting() {\n    const hour = new Date().getHours();\n    if (hour < 12) {\n        return \"Bom dia\";\n    } else if (hour < 18) {\n        return \"Boa tarde\";\n    } else {\n        return \"Boa noite\";\n    }\n}\n\n// Coleta a data atual e formata\nconst currentDate = new Date();\nconst formattedDate = formatDate(currentDate);\n\n// Cria a saudação personalizada\nconst greeting = getGreeting();\n\n// Verifica se os dados são um array\nlet mensagem = `${greeting} Amigos 😁,\\nAqui está a lista de equipamentos reiniciados no UniFi em ${formattedDate}:\\n`;\n\nif (Array.isArray(dados) && dados.length > 0) {\n    // Adiciona os nomes e MACs dos dispositivos na mensagem\n    const equipamentos = dados\n        .map(item => {\n            const nome = item.json.name || \"Nome não informado\";\n            const mac = item.json.mac || \"MAC não informado\"; // Adiciona um texto padrão se o MAC estiver vazio\n            return `${nome} - ${mac}`;\n        });\n\n    // Adiciona os equipamentos na mensagem\n    if (equipamentos.length > 0) {\n        mensagem += `${equipamentos.join(\"\\n\")}\\n\\nTodos os equipamentos foram reiniciados com sucesso.`;\n    } else {\n        mensagem += \"Nenhum equipamento foi localizado na base de dados.\\n\\n\";\n    }\n} else {\n    mensagem += \"Nenhum dado foi encontrado para o dia de hoje.\";\n}\n\n// Retorna a mensagem formatada\nreturn [\n    {\n        json: {\n            textMessage: mensagem\n        }\n    }\n];\n"
+        },
+        "id": "bfcb5c34-0c9c-48ed-a410-760faae69344",
+        "name": "MontaMensagemWhats",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2300,
+          -860
+        ]
+      },
+      {
+        "parameters": {
+          "queue": "google_chat-queue",
+          "options": {
+            "headers": {
+              "header": [
+                {
+                  "key": "Space  ID",
+                  "value": "spaces/AAAA-XXOyVI"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.rabbitmq",
+        "typeVersion": 1.1,
+        "position": [
+          2640,
+          -860
+        ],
+        "id": "19b4d635-1d46-467d-9a14-016076708a71",
+        "name": "RabbitMQ",
+        "credentials": {
+          "rabbitmq": {
+            "id": "8S2CCfj4pf5t6xWv",
+            "name": "RabbitMQ account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Login Unifi": {
+        "main": [
+          [
+            {
+              "node": "Cookie",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cookie": {
+        "main": [
+          [
+            {
+              "node": "Salva Cookie",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Salva Cookie": {
+        "main": [
+          [
+            {
+              "node": "envia para Unifi1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "envia para Unifi1": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "MontaMensagemWhats",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "envia para Unifi",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "envia para Unifi": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Login Unifi",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MontaMensagemWhats": {
+        "main": [
+          [
+            {
+              "node": "RabbitMQ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RabbitMQ": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}

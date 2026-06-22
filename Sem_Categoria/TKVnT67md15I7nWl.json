@@ -1,0 +1,557 @@
+{
+  "updatedAt": "2026-03-13T19:22:42.296Z",
+  "createdAt": "2026-03-12T17:10:17.471Z",
+  "id": "TKVnT67md15I7nWl",
+  "name": "MARGEM Pref.Londrina senff",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# CONSULTA MARGEM SENFF.\n",
+        "height": 432,
+        "width": 1492
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "2b4f6de7-8ee5-4248-81d4-3543b80347ca",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://senffconsig.senff.com.br/api/v1/admin/zetra/consult-margin",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json, text/plain, */*"
+            },
+            {
+              "name": "accept-language",
+              "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+            },
+            {
+              "name": "account",
+              "value": "senff-web"
+            },
+            {
+              "name": "authorization",
+              "value": "=Bearer {{ $json.bearer }}"
+            },
+            {
+              "name": "origin",
+              "value": "https://senffconsig.senff.com.br"
+            },
+            {
+              "name": "referer",
+              "value": "https://senffconsig.senff.com.br/app/proposals/add"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "cors"
+            },
+            {
+              "name": "tenant-id",
+              "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+            },
+            {
+              "name": "user-agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "x-correlation-id",
+              "value": "585c641d-20e4-4163-8753-5b6c54a0f607"
+            },
+            {
+              "name": "x-store-code",
+              "value": "84"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agreement\": {\n    \"id\": 11\n  },\n  \"benefit_number\": \"{{ $json.matricula }}\",\n  \"document\": \"{{ $json.cpf }}\",\n  \"valueOfInstallment\": 0.1,\n  \"client_name\": \"{{ $json.client_name }}\",\n  \"servantPassword\": \"\",\n  \"product\": {\n    \"id\": 1\n  },\n  \"original_ccb_code\": null\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        912,
+        272
+      ],
+      "id": "5275eb6c-cc10-4e3c-a2e2-9e52e246cbcf",
+      "name": "consult-margin",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5c18ce3-87a9-4f11-9ab3-41d637f7a7cd",
+              "name": "bearer",
+              "value": "={{ $json.token }}",
+              "type": "string"
+            },
+            {
+              "id": "4d730899-c2d4-4a95-b753-319f3c0b17f3",
+              "name": "client_name",
+              "value": "={{ $('Webhook').item.json.body.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "79ea12f1-f108-423c-98bc-f3b45ea8a49e",
+              "name": "cpf",
+              "value": "={{ $('Webhook').item.json.body.cpf }}",
+              "type": "string"
+            },
+            {
+              "id": "db6dc68a-a11b-4e29-90ad-7662e54af0e2",
+              "name": "matricula",
+              "value": "={{ $('Webhook').item.json.body.matricula }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        272
+      ],
+      "id": "4c6d5e78-228e-48e9-a837-3583dcea5e70",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1200,
+        160
+      ],
+      "id": "f7853870-5314-44bd-8574-2e81c50aed3c",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        160
+      ],
+      "id": "1ec84559-e9f3-4bda-bc2b-8fc99536df27",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b44e6d64-620f-4a10-9051-79c70c949b0f",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        272
+      ],
+      "id": "932f02c2-c4a4-4844-a9fc-d3521625c804",
+      "name": "Webhook",
+      "webhookId": "b44e6d64-620f-4a10-9051-79c70c949b0f"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/senff/token",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        272
+      ],
+      "id": "445e3732-e322-4828-a584-1f2bdc915c1e",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "consult-margin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consult-margin": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "75",
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/x-www-form-urlencoded",
+            "user-agent": "bruno-runtime/3.1.4",
+            "request-start-time": "1773346257147",
+            "accept-encoding": "gzip, compress, deflate, br"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "client_name": "DEMIR GERVASIO DE SOUZA JUNIOR",
+            "cpf": "06428854945",
+            "matricula": "102334"
+          },
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/b44e6d64-620f-4a10-9051-79c70c949b0f",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "2b415fd0-dee2-4a4c-9466-8721d09fcdef",
+  "activeVersionId": "2b415fd0-dee2-4a4c-9466-8721d09fcdef",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-12T17:10:17.471Z",
+      "createdAt": "2026-03-12T17:10:17.471Z",
+      "role": "workflow:owner",
+      "workflowId": "TKVnT67md15I7nWl",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-13T19:22:52.855Z",
+    "createdAt": "2026-03-13T19:22:42.298Z",
+    "versionId": "2b415fd0-dee2-4a4c-9466-8721d09fcdef",
+    "workflowId": "TKVnT67md15I7nWl",
+    "nodes": [
+      {
+        "parameters": {
+          "content": "# CONSULTA MARGEM SENFF.\n",
+          "height": 432,
+          "width": 1492
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          144,
+          48
+        ],
+        "typeVersion": 1,
+        "id": "2b4f6de7-8ee5-4248-81d4-3543b80347ca",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://senffconsig.senff.com.br/api/v1/admin/zetra/consult-margin",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "name": "accept-language",
+                "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+              },
+              {
+                "name": "account",
+                "value": "senff-web"
+              },
+              {
+                "name": "authorization",
+                "value": "=Bearer {{ $json.bearer }}"
+              },
+              {
+                "name": "origin",
+                "value": "https://senffconsig.senff.com.br"
+              },
+              {
+                "name": "referer",
+                "value": "https://senffconsig.senff.com.br/app/proposals/add"
+              },
+              {
+                "name": "sec-fetch-mode",
+                "value": "cors"
+              },
+              {
+                "name": "tenant-id",
+                "value": "426e6d32-9041-49c5-b6b0-fd729152e5c9"
+              },
+              {
+                "name": "user-agent",
+                "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+              },
+              {
+                "name": "x-correlation-id",
+                "value": "585c641d-20e4-4163-8753-5b6c54a0f607"
+              },
+              {
+                "name": "x-store-code",
+                "value": "84"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"agreement\": {\n    \"id\": 11\n  },\n  \"benefit_number\": \"{{ $json.matricula }}\",\n  \"document\": \"{{ $json.cpf }}\",\n  \"valueOfInstallment\": 0.1,\n  \"client_name\": \"{{ $json.client_name }}\",\n  \"servantPassword\": \"\",\n  \"product\": {\n    \"id\": 1\n  },\n  \"original_ccb_code\": null\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          912,
+          272
+        ],
+        "id": "5275eb6c-cc10-4e3c-a2e2-9e52e246cbcf",
+        "name": "consult-margin",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d5c18ce3-87a9-4f11-9ab3-41d637f7a7cd",
+                "name": "bearer",
+                "value": "={{ $json.token }}",
+                "type": "string"
+              },
+              {
+                "id": "4d730899-c2d4-4a95-b753-319f3c0b17f3",
+                "name": "client_name",
+                "value": "={{ $('Webhook').item.json.body.client_name }}",
+                "type": "string"
+              },
+              {
+                "id": "79ea12f1-f108-423c-98bc-f3b45ea8a49e",
+                "name": "cpf",
+                "value": "={{ $('Webhook').item.json.body.cpf }}",
+                "type": "string"
+              },
+              {
+                "id": "db6dc68a-a11b-4e29-90ad-7662e54af0e2",
+                "name": "matricula",
+                "value": "={{ $('Webhook').item.json.body.matricula }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          672,
+          272
+        ],
+        "id": "4c6d5e78-228e-48e9-a837-3583dcea5e70",
+        "name": "Edit Fields6"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1200,
+          160
+        ],
+        "id": "f7853870-5314-44bd-8574-2e81c50aed3c",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1408,
+          160
+        ],
+        "id": "1ec84559-e9f3-4bda-bc2b-8fc99536df27",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "b44e6d64-620f-4a10-9051-79c70c949b0f",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          224,
+          272
+        ],
+        "id": "932f02c2-c4a4-4844-a9fc-d3521625c804",
+        "name": "Webhook",
+        "webhookId": "b44e6d64-620f-4a10-9051-79c70c949b0f"
+      },
+      {
+        "parameters": {
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/senff/token",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          464,
+          272
+        ],
+        "id": "445e3732-e322-4828-a584-1f2bdc915c1e",
+        "name": "HTTP Request"
+      }
+    ],
+    "connections": {
+      "Edit Fields6": {
+        "main": [
+          [
+            {
+              "node": "consult-margin",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "consult-margin": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version 2b415fd0",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

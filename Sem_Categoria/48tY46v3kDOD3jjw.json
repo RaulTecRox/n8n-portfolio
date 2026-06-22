@@ -1,0 +1,1502 @@
+{
+  "updatedAt": "2026-03-31T22:33:14.003Z",
+  "createdAt": "2026-03-14T00:11:53.395Z",
+  "id": "48tY46v3kDOD3jjw",
+  "name": "MarginCip",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/banks/senff/margin/cip",
+        "responseMode": "responseNode",
+        "options": {
+          "ignoreBots": false
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        800
+      ],
+      "id": "0e0381da-d2d7-4a8b-9fbd-9ee6193590d6",
+      "name": "Webhook",
+      "webhookId": "706560db-4db5-4df2-ab97-8c133dc3e4e6"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"The fields 'name', 'document' and 'product_id' are required.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        320,
+        912
+      ],
+      "id": "bb7aad1c-7230-4616-b2b9-f7ed1932a16a",
+      "name": "RespondNoParameters"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bebde9e0-d9ce-4592-b828-113679672e23",
+              "leftValue": "={{ $json.body.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "8dd800f3-90ac-44ad-8874-740480588b89",
+              "leftValue": "={{ $json.body.product_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "74f23242-d5c2-4f1a-947a-160952f82cf1",
+              "leftValue": "={{ $json.body.document }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        800
+      ],
+      "id": "255aba19-33b6-46ea-b9ff-07ef06cda9ec",
+      "name": "IfHasParameters"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"source\": \"senffconsigcip\",\n  \"retentionDays\": 90,\n  \"loopSize\": 100,\n  \"timeToWait\": 1,\n  \"startTime\": 0,\n  \"finishTime\": 24\n  \n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        672
+      ],
+      "id": "21cf1dd2-68d8-45bb-a6a7-87a171e76cb8",
+      "name": "Configs"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error Database\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1008,
+        768
+      ],
+      "id": "f59ff77e-5ec6-4516-b09f-fb5ca5823efd",
+      "name": "RespondErrorDatabase"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM retentions.holds\nWHERE\n  source = $1\n  AND search->>'document' = $2\n  AND search->>'name' = $3\n  AND search->>'agency_id' = $4\n  AND search->>'agreement_id' = $5\n  AND search->>'withdraw_type_id' = $6\n  AND search->>'product_id' = $7\n  AND updated_at > NOW() - ($8::int * INTERVAL '1 day')\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json.document }}, {{ $('Search').item.json.name }}, {{ $('Search').item.json.agency_id }}, {{ $('Search').item.json.agreement_id }}, {{ $('Search').item.json.withdraw_type_id }}, {{ $('Search').item.json.product_id }}, {{ $json.retentionDays }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        784,
+        672
+      ],
+      "id": "6029cfee-ae71-4b81-9811-9c6449bd55b8",
+      "name": "SeekByRetention",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "PUYASYaNLZYwlx66",
+          "name": "PostgresPatroni"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6ab5d3de-8572-4975-aca6-6be82d3215ab",
+              "leftValue": "={{ $('SeekByRetention').item.json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1008,
+        576
+      ],
+      "id": "c3541177-3eda-4e29-ba9a-d29831ce4471",
+      "name": "IfHasRetention"
+    },
+    {
+      "parameters": {
+        "jsCode": "const startTime = $('Configs').first().json.startTime;\nconst finishTime = $('Configs').first().json.finishTime;\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && nowDay !== 0) {\n      return {sheduler: true}\n    }\n\n return {sheduler: false}"
+      },
+      "id": "0586843f-7b20-4260-880f-668f7e1dff7f",
+      "name": "Scheduler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.sheduler }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "a529e484-4acb-4895-bde4-9775347b9f89",
+      "name": "IsInTime",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Temporarily unavailable\"\n}",
+        "options": {
+          "responseCode": 423
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1664,
+        768
+      ],
+      "id": "ae2f20a5-3ee6-43e3-bc64-92cd14f92d88",
+      "name": "RespondTemporarilyUnavailable"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $('SeekByRetention').item.json.payload }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1216,
+        464
+      ],
+      "id": "2d486d12-e80b-41fe-9559-bf856347ae5c",
+      "name": "FoundedOnRetention"
+    },
+    {
+      "parameters": {
+        "jsCode": "const webhook = $('Webhook').first().json.body;\n\nconst client = {\n  \"document\":webhook.document,\n  \"name\":webhook.name,\n  \"agency_id\":webhook.agency_id,  \n  \"agreement_id\":webhook.agreement_id,  \n  \"withdraw_type_id\":webhook.withdraw_type_id, \n  \"product_id\":webhook.product_id  \n}\n\nreturn client;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        672
+      ],
+      "id": "3305e939-511f-4f1f-b596-a262d8b1cabc",
+      "name": "Search"
+    },
+    {
+      "parameters": {
+        "content": "## Exemplo RMC\n**Method: POST**\nBody:\n{\n  \"document\":\"40718171861\",\n  \"name\":\"AALAN DA SILVA ARAUJO\",\n  \"agency_id\":21,\n  \"agreement_id\":13,\n  \"withdraw_type_id\":1,\n  \"product_id\": 3\n}",
+        "height": 256,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -256,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "2a7d95ac-11fa-473f-b3d5-6a873d215638",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO retentions.holds (source, search, payload)\nVALUES ($1, $2::jsonb, $3::jsonb)\nON CONFLICT (search)\nDO UPDATE SET\n  payload = EXCLUDED.payload,\n  updated_at = CURRENT_TIMESTAMP\nRETURNING *;",
+        "options": {
+          "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json }}, {{ $('GetDataClient').item.json }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2240,
+        160
+      ],
+      "id": "fcdac068-2a02-4d12-92f8-c620105fa683",
+      "name": "SaveOnRetention",
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "PUYASYaNLZYwlx66",
+          "name": "PostgresPatroni"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "067e7802-2cc0-4f29-b078-163fd722557a",
+              "leftValue": "={{ $('GetDataClient').item.json.rows }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2032,
+        240
+      ],
+      "id": "2320a4d3-497e-41d6-95f1-5b6e21d6fffd",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook/banks/senff/token",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1632,
+        480
+      ],
+      "id": "21fcbba0-005a-4903-b618-95c7a413d95c",
+      "name": "GetToken",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://senffconsig.senff.com.br/api/v1/admin/cip/list-benefits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=document",
+              "value": "={{ $('Search').item.json.document }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $('Search').item.json.name }}"
+            },
+            {
+              "name": "agency_id",
+              "value": "={{ $('Search').item.json.agency_id }}"
+            },
+            {
+              "name": "agreement_id",
+              "value": "={{ $('Search').item.json.agreement_id }}"
+            },
+            {
+              "name": "=withdraw_type_id",
+              "value": "={{ $('Search').item.json.withdraw_type_id }}"
+            },
+            {
+              "name": "product_id",
+              "value": "={{ $('Search').item.json.product_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "={\n  \"Authorization\": \"***REDACTED***\",\n  \"Account\":\"senff-web\",\n  \"Tenant-id\":\"426e6d32-9041-49c5-b6b0-fd729152e5c9\",\n  \"Content-Type\":\"application/json\",\n  \"x-store-code\":84\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1840,
+        368
+      ],
+      "id": "221c9d92-2e5f-4c6c-ae1a-e577e61fd091",
+      "name": "GetDataClient",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error on get Token\"\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1856,
+        576
+      ],
+      "id": "631aa7c3-c5b2-4ae8-a981-a94959515f5f",
+      "name": "ErrorGetToken"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"message\": {{ JSON.stringify($json.error) }}\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2080,
+        496
+      ],
+      "id": "726b14e4-61b4-4fb0-9f3a-6648175bd50e",
+      "name": "ErrorGetClientData"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.payload }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2464,
+        64
+      ],
+      "id": "bda76b4c-20a8-42b3-b3c3-a41afc922dfb",
+      "name": "Success"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Error save on retention database.\"\n}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2480,
+        240
+      ],
+      "id": "7cf46a13-5981-48d1-943e-e0b91768172e",
+      "name": "SendRetentionError"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"No data found\"\n}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2256,
+        320
+      ],
+      "id": "a3473d29-835f-44e8-8682-465670555c2e",
+      "name": "NoDataFound"
+    },
+    {
+      "parameters": {
+        "content": "## Exemplo RCC\n**Method: POST**\nBody:\n{\n  \"document\":\"40718171861\",\n  \"name\":\"AALAN DA SILVA ARAUJO\",\n  \"agency_id\":21,\n  \"agreement_id\":13,\n  \"withdraw_type_id\":1,\n  \"product_id\": 1\n}",
+        "height": 256,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "3c4c77ef-fc11-4e09-a0c9-0417b8e7b5e7",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IfHasParameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondNoParameters": {
+      "main": [
+        []
+      ]
+    },
+    "IfHasParameters": {
+      "main": [
+        [
+          {
+            "node": "Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondNoParameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configs": {
+      "main": [
+        [
+          {
+            "node": "SeekByRetention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondErrorDatabase": {
+      "main": [
+        []
+      ]
+    },
+    "SeekByRetention": {
+      "main": [
+        [
+          {
+            "node": "IfHasRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondErrorDatabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfHasRetention": {
+      "main": [
+        [
+          {
+            "node": "FoundedOnRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduler": {
+      "main": [
+        [
+          {
+            "node": "IsInTime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IsInTime": {
+      "main": [
+        [
+          {
+            "node": "GetToken",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RespondTemporarilyUnavailable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RespondTemporarilyUnavailable": {
+      "main": [
+        []
+      ]
+    },
+    "FoundedOnRetention": {
+      "main": [
+        []
+      ]
+    },
+    "Search": {
+      "main": [
+        [
+          {
+            "node": "Configs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveOnRetention": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendRetentionError",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "SaveOnRetention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NoDataFound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetToken": {
+      "main": [
+        [
+          {
+            "node": "GetDataClient",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ErrorGetToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetDataClient": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ErrorGetClientData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 600
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.26",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.26",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.26",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "147",
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "user-agent": "bruno-runtime/1.34.0",
+            "request-start-time": "1774631510270",
+            "accept-encoding": "gzip, compress, deflate, br"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "document": "40718171861",
+            "name": "AALAN DA SILVA ARAUJO",
+            "agency_id": 21,
+            "agreement_id": 14,
+            "withdraw_type_id": 1,
+            "product_id": 1
+          },
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook/banks/senff/margin/cip",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "d85f1851-70a6-41b5-abfe-954a5881ab5b",
+  "activeVersionId": "d85f1851-70a6-41b5-abfe-954a5881ab5b",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-14T00:11:53.395Z",
+      "createdAt": "2026-03-14T00:11:53.395Z",
+      "role": "workflow:owner",
+      "workflowId": "48tY46v3kDOD3jjw",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-31T22:33:20.673Z",
+    "createdAt": "2026-03-31T22:33:14.007Z",
+    "versionId": "d85f1851-70a6-41b5-abfe-954a5881ab5b",
+    "workflowId": "48tY46v3kDOD3jjw",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "/banks/senff/margin/cip",
+          "responseMode": "responseNode",
+          "options": {
+            "ignoreBots": false
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -64,
+          800
+        ],
+        "id": "0e0381da-d2d7-4a8b-9fbd-9ee6193590d6",
+        "name": "Webhook",
+        "webhookId": "706560db-4db5-4df2-ab97-8c133dc3e4e6"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"The fields 'name', 'document' and 'product_id' are required.\"\n}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          320,
+          912
+        ],
+        "id": "bb7aad1c-7230-4616-b2b9-f7ed1932a16a",
+        "name": "RespondNoParameters"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "bebde9e0-d9ce-4592-b828-113679672e23",
+                "leftValue": "={{ $json.body.name }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "8dd800f3-90ac-44ad-8874-740480588b89",
+                "leftValue": "={{ $json.body.product_id }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "74f23242-d5c2-4f1a-947a-160952f82cf1",
+                "leftValue": "={{ $json.body.document }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          160,
+          800
+        ],
+        "id": "255aba19-33b6-46ea-b9ff-07ef06cda9ec",
+        "name": "IfHasParameters"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "{\n  \"source\": \"senffconsigcip\",\n  \"retentionDays\": 90,\n  \"loopSize\": 100,\n  \"timeToWait\": 1,\n  \"startTime\": 0,\n  \"finishTime\": 24\n  \n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          560,
+          672
+        ],
+        "id": "21cf1dd2-68d8-45bb-a6a7-87a171e76cb8",
+        "name": "Configs"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error Database\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1008,
+          768
+        ],
+        "id": "f59ff77e-5ec6-4516-b09f-fb5ca5823efd",
+        "name": "RespondErrorDatabase"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT *\nFROM retentions.holds\nWHERE\n  source = $1\n  AND search->>'document' = $2\n  AND search->>'name' = $3\n  AND search->>'agency_id' = $4\n  AND search->>'agreement_id' = $5\n  AND search->>'withdraw_type_id' = $6\n  AND search->>'product_id' = $7\n  AND updated_at > NOW() - ($8::int * INTERVAL '1 day')\nLIMIT 1;",
+          "options": {
+            "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json.document }}, {{ $('Search').item.json.name }}, {{ $('Search').item.json.agency_id }}, {{ $('Search').item.json.agreement_id }}, {{ $('Search').item.json.withdraw_type_id }}, {{ $('Search').item.json.product_id }}, {{ $json.retentionDays }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          784,
+          672
+        ],
+        "id": "6029cfee-ae71-4b81-9811-9c6449bd55b8",
+        "name": "SeekByRetention",
+        "alwaysOutputData": true,
+        "executeOnce": true,
+        "credentials": {
+          "postgres": {
+            "id": "PUYASYaNLZYwlx66",
+            "name": "PostgresPatroni"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6ab5d3de-8572-4975-aca6-6be82d3215ab",
+                "leftValue": "={{ $('SeekByRetention').item.json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1008,
+          576
+        ],
+        "id": "c3541177-3eda-4e29-ba9a-d29831ce4471",
+        "name": "IfHasRetention"
+      },
+      {
+        "parameters": {
+          "jsCode": "const startTime = $('Configs').first().json.startTime;\nconst finishTime = $('Configs').first().json.finishTime;\n\nconst now = new Date();\nconst nowHour = now.getHours();\nconst nowDay = now.getDay();\nif (nowHour >= startTime && nowHour < finishTime && nowDay !== 0) {\n      return {sheduler: true}\n    }\n\n return {sheduler: false}"
+        },
+        "id": "0586843f-7b20-4260-880f-668f7e1dff7f",
+        "name": "Scheduler",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1216,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.sheduler }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "a529e484-4acb-4895-bde4-9775347b9f89",
+        "name": "IsInTime",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1456,
+          624
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Temporarily unavailable\"\n}",
+          "options": {
+            "responseCode": 423
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1664,
+          768
+        ],
+        "id": "ae2f20a5-3ee6-43e3-bc64-92cd14f92d88",
+        "name": "RespondTemporarilyUnavailable"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $('SeekByRetention').item.json.payload }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1216,
+          464
+        ],
+        "id": "2d486d12-e80b-41fe-9559-bf856347ae5c",
+        "name": "FoundedOnRetention"
+      },
+      {
+        "parameters": {
+          "jsCode": "const webhook = $('Webhook').first().json.body;\n\nconst client = {\n  \"document\":webhook.document,\n  \"name\":webhook.name,\n  \"agency_id\":webhook.agency_id,  \n  \"agreement_id\":webhook.agreement_id,  \n  \"withdraw_type_id\":webhook.withdraw_type_id, \n  \"product_id\":webhook.product_id  \n}\n\nreturn client;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          336,
+          672
+        ],
+        "id": "3305e939-511f-4f1f-b596-a262d8b1cabc",
+        "name": "Search"
+      },
+      {
+        "parameters": {
+          "content": "## Exemplo RMC\n**Method: POST**\nBody:\n{\n  \"document\":\"40718171861\",\n  \"name\":\"AALAN DA SILVA ARAUJO\",\n  \"agency_id\":21,\n  \"agreement_id\":13,\n  \"withdraw_type_id\":1,\n  \"product_id\": 3\n}",
+          "height": 256,
+          "width": 336
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -256,
+          368
+        ],
+        "typeVersion": 1,
+        "id": "2a7d95ac-11fa-473f-b3d5-6a873d215638",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "INSERT INTO retentions.holds (source, search, payload)\nVALUES ($1, $2::jsonb, $3::jsonb)\nON CONFLICT (search)\nDO UPDATE SET\n  payload = EXCLUDED.payload,\n  updated_at = CURRENT_TIMESTAMP\nRETURNING *;",
+          "options": {
+            "queryReplacement": "={{ $('Configs').item.json.source }}, {{ $('Search').item.json }}, {{ $('GetDataClient').item.json }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2240,
+          160
+        ],
+        "id": "fcdac068-2a02-4d12-92f8-c620105fa683",
+        "name": "SaveOnRetention",
+        "executeOnce": true,
+        "credentials": {
+          "postgres": {
+            "id": "PUYASYaNLZYwlx66",
+            "name": "PostgresPatroni"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "067e7802-2cc0-4f29-b078-163fd722557a",
+                "leftValue": "={{ $('GetDataClient').item.json.rows }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "array",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2032,
+          240
+        ],
+        "id": "2320a4d3-497e-41d6-95f1-5b6e21d6fffd",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook/banks/senff/token",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1632,
+          480
+        ],
+        "id": "21fcbba0-005a-4903-b618-95c7a413d95c",
+        "name": "GetToken",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://senffconsig.senff.com.br/api/v1/admin/cip/list-benefits",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "=document",
+                "value": "={{ $('Search').item.json.document }}"
+              },
+              {
+                "name": "name",
+                "value": "={{ $('Search').item.json.name }}"
+              },
+              {
+                "name": "agency_id",
+                "value": "={{ $('Search').item.json.agency_id }}"
+              },
+              {
+                "name": "agreement_id",
+                "value": "={{ $('Search').item.json.agreement_id }}"
+              },
+              {
+                "name": "=withdraw_type_id",
+                "value": "={{ $('Search').item.json.withdraw_type_id }}"
+              },
+              {
+                "name": "product_id",
+                "value": "={{ $('Search').item.json.product_id }}"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "specifyHeaders": "json",
+          "jsonHeaders": "={\n  \"Authorization\": \"***REDACTED***\",\n  \"Account\":\"senff-web\",\n  \"Tenant-id\":\"426e6d32-9041-49c5-b6b0-fd729152e5c9\",\n  \"Content-Type\":\"application/json\",\n  \"x-store-code\":84\n}",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1840,
+          368
+        ],
+        "id": "221c9d92-2e5f-4c6c-ae1a-e577e61fd091",
+        "name": "GetDataClient",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error on get Token\"\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1856,
+          576
+        ],
+        "id": "631aa7c3-c5b2-4ae8-a981-a94959515f5f",
+        "name": "ErrorGetToken"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"message\": {{ JSON.stringify($json.error) }}\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2080,
+          496
+        ],
+        "id": "726b14e4-61b4-4fb0-9f3a-6648175bd50e",
+        "name": "ErrorGetClientData"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json.payload }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2464,
+          64
+        ],
+        "id": "bda76b4c-20a8-42b3-b3c3-a41afc922dfb",
+        "name": "Success"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"Error save on retention database.\"\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2480,
+          240
+        ],
+        "id": "7cf46a13-5981-48d1-943e-e0b91768172e",
+        "name": "SendRetentionError"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"message\": \"No data found\"\n}",
+          "options": {
+            "responseCode": 404
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2256,
+          320
+        ],
+        "id": "a3473d29-835f-44e8-8682-465670555c2e",
+        "name": "NoDataFound"
+      },
+      {
+        "parameters": {
+          "content": "## Exemplo RCC\n**Method: POST**\nBody:\n{\n  \"document\":\"40718171861\",\n  \"name\":\"AALAN DA SILVA ARAUJO\",\n  \"agency_id\":21,\n  \"agreement_id\":13,\n  \"withdraw_type_id\":1,\n  \"product_id\": 1\n}",
+          "height": 256,
+          "width": 336
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          112,
+          368
+        ],
+        "typeVersion": 1,
+        "id": "3c4c77ef-fc11-4e09-a0c9-0417b8e7b5e7",
+        "name": "Sticky Note1"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "IfHasParameters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondNoParameters": {
+        "main": [
+          []
+        ]
+      },
+      "IfHasParameters": {
+        "main": [
+          [
+            {
+              "node": "Search",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondNoParameters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Configs": {
+        "main": [
+          [
+            {
+              "node": "SeekByRetention",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondErrorDatabase": {
+        "main": [
+          []
+        ]
+      },
+      "SeekByRetention": {
+        "main": [
+          [
+            {
+              "node": "IfHasRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondErrorDatabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IfHasRetention": {
+        "main": [
+          [
+            {
+              "node": "FoundedOnRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Scheduler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scheduler": {
+        "main": [
+          [
+            {
+              "node": "IsInTime",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IsInTime": {
+        "main": [
+          [
+            {
+              "node": "GetToken",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RespondTemporarilyUnavailable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RespondTemporarilyUnavailable": {
+        "main": [
+          []
+        ]
+      },
+      "FoundedOnRetention": {
+        "main": [
+          []
+        ]
+      },
+      "Search": {
+        "main": [
+          [
+            {
+              "node": "Configs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SaveOnRetention": {
+        "main": [
+          [
+            {
+              "node": "Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "SendRetentionError",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "SaveOnRetention",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "NoDataFound",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GetToken": {
+        "main": [
+          [
+            {
+              "node": "GetDataClient",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "ErrorGetToken",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GetDataClient": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "ErrorGetClientData",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Suporte MDG Suporte",
+    "name": "Version d85f1851",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}

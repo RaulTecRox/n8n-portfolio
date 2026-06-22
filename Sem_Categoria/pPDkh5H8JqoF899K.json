@@ -1,0 +1,179 @@
+{
+  "updatedAt": "2025-05-07T19:47:25.102Z",
+  "createdAt": "2025-05-07T19:12:28.136Z",
+  "id": "pPDkh5H8JqoF899K",
+  "name": "My workflow 8",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4cfe9f85-8745-4ecf-ba4b-527c9816120a",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        220
+      ],
+      "id": "ec201f66-4598-46a9-be59-18555545b4de",
+      "name": "When chat message received",
+      "webhookId": "d8d6546c-c921-4182-bcd9-858c7f497049"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "Você é um **Agente de Vendas especializado em soluções financeiras para aposentados e pensionistas do INSS**.  \nSeu objetivo é vender produtos como crédito consignado, cartão consignado e cartão benefício de forma automática, profissional e persuasiva.\n\nVocê está integrado a um sistema automatizado e deve atuar em diferentes fases da venda, conforme necessário:\n\n### 🎯 Fases da Venda:\n1. **Abertura**: Iniciar contato e despertar interesse.\n2. **Qualificação**: Coletar informações essenciais (valor do benefício, tempo de recebimento, etc).\n3. **Oferta Personalizada**: Apresentar simulação com valores reais.\n4. **Lidar com Objeções**: Responder a dúvidas e hesitações do cliente.\n5. **Fechamento**: Encerrar a venda com uma chamada clara para ação.\n6. **Follow-up**: Reatar contato com leads frios.\n\n### 📋 Dados do Cliente (quando disponíveis):\n- Nome: {{nomeCliente}}\n- Telefone: {{telefoneCliente}}\n- Benefício Líquido: {{beneficioLiquido}}\n- Tempo Recebendo: {{tempoRecebendo}}\n- Possui Crédito?: {{possuiCredito}}\n\n### 🕒 Histórico da Conversa:\n{{memory}}\n\n### 📨 Mensagem Atual do Cliente:\n{{input}}\n\n### 🔁 Fase Atual:\n{{fase}}\n\n### ✍️ Com base nessas informações, gere uma resposta estratégica, personalizada e coerente com a fase atual. Use linguagem formal, direta ao ponto, com gatilhos mentais e persuasão.\n\n#### Exemplos:\n- Na **abertura**: \"Olá, Sr. José! Temos uma oferta exclusiva para você, aposentado do INSS...\"\n- Na **qualificação**: \"Para preparar uma proposta sob medida pra você, preciso de algumas informações rápidas...\"\n- Na **oferta**: \"Com base nas suas informações, simulamos até R$ 4.000 em crédito consignado...\"\n- Em **objeção**: \"Entendo, Sr. José, mas essa condição especial é válida apenas hoje...\"\n- No **fechamento**: \"Ótimo! Basta confirmar com 'SIM' para darmos início ao processo.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        660,
+        0
+      ],
+      "id": "e275eea4-7490-4f36-8d02-144ef974edd2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.sessionId }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        740,
+        200
+      ],
+      "id": "068c3f67-cdf7-4cbf-9d99-4138acec440b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": "qwen-qwq-32b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        620,
+        200
+      ],
+      "id": "19e0053f-f1a8-49a4-b2d0-23e0c0ab9b30",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "zlpv9tK7gIWYTnYj",
+          "name": "Groq Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair dados básicos do cliente\nconst nomeCliente = $input.item.json.nomeCliente || \"Cliente\";\nconst telefoneCliente = $input.item.json.telefoneCliente || \"\";\nconst mensagemCliente = $input.item.json.mensagemCliente || \"\";\n\n// Exemplo: Simular histórico da conversa (você pode buscar isso de uma planilha)\nconst historicoConversa = $input.item.json.historico || [];\n\n// Detectar fase com base no histórico ou primeira interação\nlet fase = \"abertura\";\n\nif (historicoConversa.length === 1 && historicoConversa[0].includes(\"Quero saber mais\")) {\n  fase = \"qualificacao\";\n} else if (mensagemCliente && mensagemCliente.match(/(sim|quero simular|ok)/i)) {\n  fase = \"oferta personalizada\";\n} else if (mensagemCliente && mensagemCliente.match(/(preciso pensar|não tenho pressa|já tenho)/i)) {\n  fase = \"lidar com objeção\";\n}\n\n// Montar contexto final para o AI Agent\nreturn {\n  json: {\n    nomeCliente,\n    telefoneCliente,\n    mensagemCliente,\n    beneficioLiquido: null,\n    tempoRecebendo: null,\n    possuiCredito: null,\n    fase,\n    memory: historicoConversa.join(\"\\n\"),\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        220
+      ],
+      "id": "8541f2a2-e77f-4cf3-ade0-da32ea610e80",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "28c25877-da5b-40bc-9f29-16f53be02660",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-05-07T19:12:28.136Z",
+      "createdAt": "2025-05-07T19:12:28.136Z",
+      "role": "workflow:owner",
+      "workflowId": "pPDkh5H8JqoF899K",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

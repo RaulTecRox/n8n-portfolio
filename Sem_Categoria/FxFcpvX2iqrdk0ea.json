@@ -1,0 +1,3737 @@
+{
+  "updatedAt": "2025-09-05T12:28:17.240Z",
+  "createdAt": "2025-02-12T14:09:46.149Z",
+  "id": "FxFcpvX2iqrdk0ea",
+  "name": "iA - Saque Complementar",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "={{ $json.Prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1792,
+        -1200
+      ],
+      "id": "92395589-0d43-4966-8ab2-8e0734cde526",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -1008
+      ],
+      "id": "58ab1714-fa9e-42dc-bd8c-9acedfe4cd57",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "zlpv9tK7gIWYTnYj",
+          "name": "Groq Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## CPF TESTE\n HAPPY: 35292580244\n BMG: 26881551487\n295.906.200-00\n\n",
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4288,
+        -1488
+      ],
+      "typeVersion": 1,
+      "id": "c8ab5a51-5fcc-4772-aadb-4a4188c11cfb",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1cc7223b-e0d1-4e1c-b3a4-305bb009baf1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -3760,
+        -608
+      ],
+      "id": "b96d488d-d193-4898-9bc2-03de2166c64c",
+      "name": "Webhook",
+      "webhookId": "1cc7223b-e0d1-4e1c-b3a4-305bb009baf1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "baffb7d1-181e-4327-bc56-d45fc0adc0ab",
+                    "leftValue": "={{ $json.body.event }}",
+                    "rightValue": "messages.upsert",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "messages.upsert"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.event }}",
+                    "rightValue": "send.message",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "239ea911-10aa-41d6-ab30-399f75dc2e71"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "send.message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -3536,
+        -608
+      ],
+      "id": "9856dc82-52cc-4432-b937-f5053e4066cd",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/{{ $('Webhook').item.json.body.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "kqd8awta15phwswkxyylkn"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\"textMessage\": {\"text\":{{ $json.output }}}}\n",
+        "options": {}
+      },
+      "id": "e79dda98-0661-40f2-90b3-e6ab6047da3d",
+      "name": "envia WhatsApp1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2320,
+        -1200
+      ],
+      "alwaysOutputData": false,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "081eca1a-a178-47c5-a311-d328c8de30fa",
+              "name": "output",
+              "value": "={{ $json.output.replaceAll('>','').toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2128,
+        -1200
+      ],
+      "id": "efcf7c14-3459-4da4-be1d-2928fa2ab27f",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        -1200
+      ],
+      "id": "8e07e649-3a9d-4c48-bc3e-7c0a2e868053",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "887b5d72-e8f3-4ad6-af4e-6894818f2550",
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.sessionId }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ABERTURA -  sem dados"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.fase }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    },
+                    "id": "93cfcc59-a05f-4042-a64c-8d5af83c6f87"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ABERTURA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fc6ec16b-c6a3-413b-b7a7-8e4ce3c9657e",
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.fase }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "1 - CONVERSÃO "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "44550378-01bd-48ad-b88d-cc5d5ba982a3",
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.fase }}",
+                    "rightValue": "recusa_definitiva",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Recusa_definitiva"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6cb03851-b3f7-426c-9c64-3d6e7572ec13",
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.fase }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "2 - Validar os dados"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2cee6c6f-7eee-4f37-9169-542772c132d7",
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.fase }}",
+                    "rightValue": "3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "3 - GRAVAR PROPOSTA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ebfea52a-6ee0-46af-a36b-5d13082391f6",
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.fase }}",
+                    "rightValue": "reversao",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "4 - REVERSÃO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4ebf0769-4273-41c7-8ab2-ccac94a050d8",
+                    "leftValue": "={{ $('Google Sheets Dados').item.json.fase }}",
+                    "rightValue": "finalizado",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        512,
+        -448
+      ],
+      "id": "da1c227c-94ee-4028-818f-4fdc98997d05",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "bc3020d4-88b5-4cf8-9f95-ea7e16f469b7",
+              "name": "chatInput",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "ed11d324-f9d3-4ce9-bd0e-61f7ec30fe02",
+              "name": "remoteJid",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=---\n\n## 🤖 Prompt da Emma — Agente Virtual de Vendas (MDG)\n\nAssistente virtual especialista em crédito consignado da MDG Intermediações de Negócios, com foco em Saque Complementar BMG para aposentados, pensionistas e servidores públicos.\n\n---\n\n## 🔐 Regras de comportamento\n\n* ❌ Não inventar informações. Use apenas dados fornecidos.\n* 🛑 Nunca mencionar ferramentas ou lógica interna.\n* ✅ Só seguir com contrato após confirmação clara.\n* 🤐 Não compartilhar dados técnicos com o cliente.\n\n---\n\n## 🗣️ Tom de Voz\n\n* Empática, acolhedora e humana\n* Objetiva, porém gentil\n* Uso leve de emojis 😊\n\n---\n\n## 🔁 Fluxo de Atendimento\n\n---\n\n### 1️⃣ Saudação inicial\n\n**Mensagem:**\nOi! 😊 Aqui é a Emma da MDG. Estou passando por aqui pra te explicar uma oportunidade de saque complementar no seu cartão de crédito consignado. Pode ser que você tenha um valor disponível! Antes de te explicar melhor, posso saber seu nome?\n\n---\n\n### 2️⃣ Nome informado\n\n**Mensagem:**\nPerfeito, {{nome}}! 😊 Podemos prosseguir com a consulta? Pra verificar se você tem valor disponível, preciso apenas do seu CPF. É uma consulta segura, sem compromisso e protegida pela LGPD 🔒\n\n---\n\n### 3️⃣ CPF informado\n\n**Ferramentas a acionar (em ordem):**\n\n* `ConsultaValorSaque` *(retorna dados bancários e matrícula)*\n* `SimulaParcela`\n📤 Corpo JSON enviado no n8n:\n\n  \"cpf\": \"{{cpf}}\",\n\n📤 Corpo JSON RECEBIDO:\n\n  \"cpf\": \"{{cpf}}\",\n  \"limiteDisponivel\": {{limiteDisponivel}},\n  \"valorParcela\": {{valorParcela}},\n  \"numeroParcelas\": \"{{numeroParcelas}}\",\n  \"entidade\": \"{{codigoEntidade}}\",\n  \"modalidadeSaque\": \"{{modalidadeSaque}}\",\n  \"numeroAdesao\": \"{{numeroAdesao}}\",\n  \"numeroContaInterna\": \"{{numeroContaInterna}}\",\n  \"matricula\": \"{{matricula}}\",\n  \"remoteJid\": \"{{remoteJid}}\",\n  \"banco\": \"{{banco}}\",\n  \"agencia\": \"{{agencia}}\",\n  \"conta\": \"{{conta}}\",\n  \"digitoConta\": \"{{digitoConta}}\"\n\n**Mensagem:**\nOlá, {{nome}}! 😊\nAqui está a simulação que fiz pra você:\n💰 Valor disponível: R\\$ {{limiteDisponivel}}\n📆 Parcelamento: {{numeroParcelas}}x de R\\$ {{valorParcela}}\n🏦 Desconto direto no benefício\n\nSe estiver tudo certo, responda com:\n**'ACEITO a proposta conforme informado.'**\nCaso queira um valor diferente, é só me dizer quanto gostaria de sacar que recalculo as parcelas pra você! 😊\n\n---\n\n### 4️⃣ Valor diferente informado\n\n**Ferramenta a acionar:** `SimulaParcela`\n\n**Mensagem:**\nSimulei com o valor de R\\$ {{valorInformadoPeloCliente}}:\n📆 Parcelamento: {{novaNumeroParcelas}}x de R\\$ {{novaValorParcela}}\nSe estiver de acordo, responda com **'ACEITO a proposta conforme informado.'** para seguirmos com o contrato 😊\n\n---\n\n### 5️⃣ Aceite da proposta\nMensagem:\nPerfeito, {{nome}}! 🙌\nPra gente continuar, preciso confirmar os dados bancários onde você recebe seu benefício.\nConfira com atenção:\n\n🏦 Banco: {{banco}}\n🏢 Agência: {{agencia}}\n💳 Conta: {{conta}}-{{digitoConta}}\n\nEsses dados estão corretos?\nSe sim, por favor, responda com “Sim” para seguirmos.\nSe quiser atualizar, é só responder “Não” e me informar os dados certos. 😊\n---\n\n### 6️⃣ Confirmação bancária\nFerramenta a acionar no n8n: GravaProposta\n\nApós a confirmação positiva dos dados bancários, a Emma envia a proposta para a ferramenta GravaProposta com todos os dados originais da negociação, sem renomear variáveis.\n\n📤 Corpo JSON enviado no n8n:\n\n  \"cpf\": \"{{cpf}}\",\n  \"limiteDisponivel\": {{limiteDisponivel}},\n  \"valorParcela\": {{valorParcela}},\n  \"numeroParcelas\": \"{{numeroParcelas}}\",\n  \"entidade\": \"{{codigoEntidade}}\",\n  \"modalidadeSaque\": \"{{modalidadeSaque}}\",\n  \"numeroAdesao\": \"{{numeroAdesao}}\",\n  \"numeroContaInterna\": \"{{numeroContaInterna}}\",\n  \"matricula\": \"{{matricula}}\",\n  \"remoteJid\": \"{{remoteJid}}\",\n  \"banco\": \"{{banco}}\",\n  \"agencia\": \"{{agencia}}\",\n  \"conta\": \"{{conta}}\",\n  \"digitoConta\": \"{{digitoConta}}\"\n\n🧾 Mensagem enviada ao cliente:\nPerfeito, {{nome}}! 🙌\nSeu contrato está sendo gerado com os seguintes dados:\n\n📄 CPF: {{cpf}}\n💰 Valor para saque: R$ {{limiteDisponivel}}\n📆 Parcelas: {{numeroParcelas}}x de R$ {{valorParcela}}\n\nVocê receberá o link em instantes para assinatura digital ✍️\nApós isso, o valor costuma cair na sua conta em até 2 horas úteis 💸\n\n---\n\n### 7️⃣ Encerramento\n\n**Mensagem:**\nTudo pronto, {{nome}}! 😊\nFoi um prazer te ajudar.\nQualquer dúvida, é só me chamar aqui no WhatsApp.\nDeseja deixar um feedback sobre meu atendimento?\nSe quiser, pode responder com um emoji ou uma mensagem ✨\n\n---\n\n## 📦 Variáveis obrigatórias para o fluxo funcionar no n8n\n{{cpf}}\n\n{{limiteDisponivel}}, {{valorParcela}}, {{numeroParcelas}}\n\n{{codigoEntidade}}, {{modalidadeSaque}}, {{numeroAdesao}}, {{numeroContaInterna}}, {{matricula}}\n\n{{remoteJid}}\n\n{{banco}}, {{agencia}}, {{conta}}, {{digitoConta}}\n\n---\n\n## 🔧 Ferramentas por etapa\n\n| Etapa | Ferramenta         | Observações                                                                                        |\n| ----- | ------------------ | -------------------------------------------------------------------------------------------------- |\n| 3     | ConsultaValorSaque | Retorna matrícula, valor de saque, parcelas **e dados bancários**                                  |\n| 3     | SimulaParcela      | Simulação com o valor padrão ou personalizado                                                      |\n| 4     | SimulaParcela      | Usa o valor informado para nova simulação                                                          |\n| 6     | GravaProposta      | Envia CPF, valor, parcelas, matrícula, adesão, entidade, conta interna, dados bancários e WhatsApp |\n\n---\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3840,
+        -1440
+      ],
+      "id": "56a9ba99-0ea6-4806-be27-c281929dd216",
+      "name": "original"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3adeda47-43c6-426a-88a8-74c8bdd4d3df",
+              "name": "sessionId",
+              "value": "={{ $('Webhook').first().json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "1fdba794-f9a1-4a88-a9ba-1efcebd8ef91",
+              "name": "remoteJid",
+              "value": "={{ $('Webhook').first().json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "f27a55d3-1260-4054-88bc-df75504af8d8",
+              "name": "instance",
+              "value": "={{ $('Webhook').first().json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "2414390c-39d5-4c0e-bb74-64428079d944",
+              "name": "message",
+              "value": "={{ $json.List_msg }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        -352
+      ],
+      "id": "8d183e53-f3e2-4fbb-84ad-87095bc38585",
+      "name": "MenssageInput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const nome = $('Switch1').item.json.NOME;\n\nlet mensagem;\n\nif (nome && nome.trim() !== '') {\n  const primeiroNome = nome.split(' ')[0];\n  const nomeFormatado = primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();\n\n  mensagem = `Oi ${nomeFormatado}, tudo bem? 😊  \nAqui é a Emma da MDG Intermediações!  \nVi que você respondeu minha mensagem — fico feliz em falar com você!  \nTem uma **oportunidade especial** de saque no seu cartão consignado, e pode ser que você tenha um valor disponível 💰  \nPosso te explicar rapidinho como funciona?`;\n} else {\n  mensagem = `Oi! 😊 Aqui é a Emma da MDG Intermediações!  \nVi que você respondeu minha mensagem — fico feliz em falar com você!  \nTem uma **oportunidade especial** de saque no seu cartão consignado, e pode ser que você tenha um valor disponível 💰  \nPosso te explicar rapidinho como funciona?`;\n}\n\nreturn [{ json: { mensagem } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        -1200
+      ],
+      "id": "148ad24f-47b5-4483-904d-6ea9ff179f68",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1qMrDaTyiNuAlaFksC_Ghjx5Vv5FMN4u_nVpSKEwyC90",
+          "mode": "list",
+          "cachedResultName": "IA- Acompanhamaento BMG SAQUE COMPLEMENTAR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMrDaTyiNuAlaFksC_Ghjx5Vv5FMN4u_nVpSKEwyC90/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMrDaTyiNuAlaFksC_Ghjx5Vv5FMN4u_nVpSKEwyC90/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionId": "={{ $json.key.remoteJid }}",
+            "fase": "1"
+          },
+          "matchingColumns": [
+            "sessionId"
+          ],
+          "schema": [
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CPF",
+              "displayName": "CPF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "NOME",
+              "displayName": "NOME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "limiteDisponivel",
+              "displayName": "limiteDisponivel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "valorParcela",
+              "displayName": "valorParcela",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "numeroParcelas",
+              "displayName": "numeroParcelas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "entidade",
+              "displayName": "entidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "modalidadeSaque",
+              "displayName": "modalidadeSaque",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "numeroAdesao",
+              "displayName": "numeroAdesao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "numeroContaInterna",
+              "displayName": "numeroContaInterna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "matricula",
+              "displayName": "matricula",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "banco",
+              "displayName": "banco",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "agencia",
+              "displayName": "agencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "conta",
+              "displayName": "conta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "digitoConta",
+              "displayName": "digitoConta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fase",
+              "displayName": "fase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2560,
+        -1200
+      ],
+      "id": "b5e74ad8-551c-415d-9b9f-28272cd8d193",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "ed11d324-f9d3-4ce9-bd0e-61f7ec30fe02",
+              "name": "remoteJid",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "b7cf581f-baa8-437e-af47-76418b47d233",
+              "name": "CPF",
+              "value": "={{ $('Switch1').item.json.CPF }}",
+              "type": "number"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=## 🤖 Prompt da Emma — Fase Inicial — Saudação Automática e Atualização para Fase 1\n\nVocê é a Emma, assistente virtual da **MDG Intermediações de Negócios**.\nEspecialista em crédito consignado, seu foco é o **Saque Complementar BMG**, atendendo aposentados, pensionistas e servidores públicos.\n\n---\n\n## 🔐 Regras de comportamento\n\n* ❌ Não invente dados. Use apenas informações reais fornecidas.\n* 🛑 Nunca mencione ferramentas, APIs, sistemas ou processos internos.\n* 🤐 Nunca compartilhe termos técnicos ou dados confidenciais com o cliente.\n* ✅ Envie a mensagem de saudação e **atualize a fase para 1** para começar a monitorar as respostas.\n\n---\n\n## 🗣️ Tom de voz\n\n* Acolhedora, simpática e empática\n* Direta, mas sempre gentil\n* Uso leve de emojis 😊\n\n---\n\n## 🧠 Objetivo da Fase Inicial\n\nEnviar uma saudação personalizada e amigável, usando o nome do cliente se disponível, e posicionar o cliente para a próxima fase onde será identificado o interesse real.\n\n---\n\n## 💬 Mensagem enviada\n{{ $json.mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1584,
+        -1200
+      ],
+      "id": "81a21de0-422c-4b1b-825b-0344b16f6741",
+      "name": "FASE 0  — Saudação inicial"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        -208
+      ],
+      "id": "e5ccc2f9-1d3d-44d3-9dc2-d6c40e02ed0e",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "zlpv9tK7gIWYTnYj",
+          "name": "Groq Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('MenssageInput').item.json.sessionId }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        1792,
+        -208
+      ],
+      "id": "ac9cf676-0778-46a0-99f1-8272efad84f3",
+      "name": "Redis Chat Memory2",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/CL020",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "kqd8awta15phwswkxyylkn"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\"textMessage\": {\"text\":{{ $json.output }}}}\n",
+        "options": {}
+      },
+      "id": "0f909c03-07b7-4e99-b1f3-7f8fdd3cf446",
+      "name": "envia WhatsApp2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2240,
+        -448
+      ],
+      "alwaysOutputData": false,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "081eca1a-a178-47c5-a311-d328c8de30fa",
+              "name": "output",
+              "value": "={{ $json.output.replaceAll('>','').toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2048,
+        -448
+      ],
+      "id": "d14c307d-3ac8-4051-ac54-14a0a10b3f39",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        -448
+      ],
+      "id": "cc0a1444-0b48-4617-bbcd-59e44b6aa17b",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -624
+      ],
+      "id": "069ccdba-9588-4351-8099-5004e6ed2c07",
+      "name": "Groq Chat Model3",
+      "credentials": {
+        "groqApi": {
+          "id": "zlpv9tK7gIWYTnYj",
+          "name": "Groq Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('MenssageInput').item.json.sessionId }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        1760,
+        -624
+      ],
+      "id": "987d8aec-a948-4e91-96c5-4c2bdfde8e7d",
+      "name": "Redis Chat Memory3",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/CL020",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "kqd8awta15phwswkxyylkn"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\"textMessage\": {\"text\":{{ $json.output }}}}\n",
+        "options": {}
+      },
+      "id": "164cd5ca-05fe-4cfd-8b40-94859536d340",
+      "name": "envia WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2368,
+        -848
+      ],
+      "alwaysOutputData": false,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "081eca1a-a178-47c5-a311-d328c8de30fa",
+              "name": "output",
+              "value": "={{ $json.output.replaceAll('>','').toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2144,
+        -848
+      ],
+      "id": "fe5e1a3c-3a68-4d4a-adfc-0f0f1796795b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        -880
+      ],
+      "id": "0ceca803-0972-4853-bed1-1596c8ddbda8",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        1920,
+        -1008
+      ],
+      "id": "26541dfe-0361-4203-829a-15413137ea0c",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        224
+      ],
+      "id": "50e198d5-02c6-4843-b3a3-1c4821c6fa7c",
+      "name": "Groq Chat Model4",
+      "credentials": {
+        "groqApi": {
+          "id": "zlpv9tK7gIWYTnYj",
+          "name": "Groq Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.mdgintermediacoes.com.br/mcp/saque_complementar_bmg/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        224
+      ],
+      "id": "83ff910f-96b6-4706-9e93-0f19e3247a2b",
+      "name": "MCP Client saque complementar BMG2"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('MenssageInput').item.json.sessionId }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        1792,
+        224
+      ],
+      "id": "81fc8e2b-00af-4640-a516-46254865a746",
+      "name": "Redis Chat Memory4",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/CL020",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "kqd8awta15phwswkxyylkn"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\"textMessage\": {\"text\":{{ $json.output }}}}\n",
+        "options": {}
+      },
+      "id": "7330f8d5-3a32-48d9-805f-ee74301bad5d",
+      "name": "envia WhatsApp3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2240,
+        0
+      ],
+      "alwaysOutputData": false,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "081eca1a-a178-47c5-a311-d328c8de30fa",
+              "name": "output",
+              "value": "={{ $json.output.replaceAll('>','').toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2048,
+        0
+      ],
+      "id": "220c2a69-9ceb-49f5-82d0-6061e51494f4",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        0
+      ],
+      "id": "fb14fdf3-a168-4007-a003-7ab1c3d2f7c0",
+      "name": "No Operation, do nothing4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('FASE 1 - Conversao').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "={{ $('FASE 1 - Conversao').item.json.Prompt }}",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        -864
+      ],
+      "id": "3f673de8-a16e-4294-ab5e-c89660fc0ce9",
+      "name": "AI Agent Conversão"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        688
+      ],
+      "id": "fb95770d-cfe0-48b6-83ee-633825e1bcd1",
+      "name": "Groq Chat Model5",
+      "credentials": {
+        "groqApi": {
+          "id": "zlpv9tK7gIWYTnYj",
+          "name": "Groq Suporte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.mdgintermediacoes.com.br/mcp/saque_complementar_bmg/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        688
+      ],
+      "id": "d9534e58-0c8c-4786-b21d-9ada85990440",
+      "name": "MCP Client saque complementar BMG3"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('MenssageInput').item.json.sessionId }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        2224,
+        688
+      ],
+      "id": "1aabf465-cb82-4ba0-978c-086ad99801f9",
+      "name": "Redis Chat Memory5",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolutionapi-dev.mdgintermediacoes.com.br/message/sendText/CL020",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "kqd8awta15phwswkxyylkn"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"delay\": 5, \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\"textMessage\": {\"text\":{{ $json.output }}}}\n",
+        "options": {}
+      },
+      "id": "64500748-75fc-42e1-819b-3065a531cb3e",
+      "name": "envia WhatsApp4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2672,
+        432
+      ],
+      "alwaysOutputData": false,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "081eca1a-a178-47c5-a311-d328c8de30fa",
+              "name": "output",
+              "value": "={{ $json.output.replaceAll('>','').toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2464,
+        432
+      ],
+      "id": "5dd6111a-1306-41c8-aaff-94ed9a41c365",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        432
+      ],
+      "id": "fe3dd0ca-fd76-4077-b5f2-c39d057b5986",
+      "name": "No Operation, do nothing5"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "t6L4FrTkaa1BEGiA",
+          "mode": "list",
+          "cachedResultName": "Simulação - BMG SAQUE COMPLEMENTAR FULL"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1472,
+        432
+      ],
+      "id": "a04db4cf-e4f0-4d26-a2f2-b1b71de106a5",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "={{ $json.Prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2128,
+        432
+      ],
+      "id": "dcfff4a4-2e57-4d54-b950-dd1b7fbeb06b",
+      "name": "AI Agent Reversão"
+    },
+    {
+      "parameters": {
+        "content": "## PROMPT INICIAL COMPLETO\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 580,
+        "width": 880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3936,
+        -1568
+      ],
+      "typeVersion": 1,
+      "id": "3247f6a8-100e-42d4-b657-74321f32cc52",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qMrDaTyiNuAlaFksC_Ghjx5Vv5FMN4u_nVpSKEwyC90",
+          "mode": "list",
+          "cachedResultName": "IA- Acompanhamaento BMG SAQUE COMPLEMENTAR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMrDaTyiNuAlaFksC_Ghjx5Vv5FMN4u_nVpSKEwyC90/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMrDaTyiNuAlaFksC_Ghjx5Vv5FMN4u_nVpSKEwyC90/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "sessionId",
+              "lookupValue": "={{ $json.remoteJid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        304,
+        -336
+      ],
+      "id": "779e3608-3f37-47b9-8051-d8a4288ac50a",
+      "name": "Google Sheets Dados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TckYcAKTANWzd2jN",
+          "name": "Google Sheets account DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('Google Sheets Dados').first().json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=<Identidade>\nVocê é **Emma**, agente virtual da **MDG Intermediações**, especialista em **Saque Complementar BMG**, atendendo via **WhatsApp**.\n\n🎯 **Missão:**  \nRealizar a reversão de recusas com **persistência inteligente e estratégica**, sem ser invasiva.  \nApós enviar a proposta inicial, se o cliente responde (qualquer resposta), é **sinal de interesse**.  \nA partir disso, **é obrigatório tentar pelo menos 3 vezes** antes de aceitar qualquer recusa.  \n\n❌ **Nunca encerre após a primeira negativa.**  \n✅ Só aceite uma recusa após ter tentado, no mínimo, **três abordagens progressivas**.  \n</Identidade>\n\n<TomDeVoz>\n- Informal, empático e humanizado (estilo WhatsApp)\n- Simpático, acolhedor e próximo\n- Objetivo, persuasivo e inteligente\n- Usa leve humor, metáforas e gatilhos de benefício\n- Emojis de forma moderada, para criar conexão sem parecer robótico\n</TomDeVoz>\n\n<RegrasDeReversão>\n- Se o cliente respondeu à proposta inicial, ele demonstrou interesse.  \n- A Emma deve usar **três tentativas sequenciais**, cada uma com um argumento diferente:  \n  1. **Benefício imediato** (facilidade, cair na conta, resolver algo hoje)  \n  2. **Cenário futuro/prevenção** (emergências, segurança financeira)  \n  3. **Oportunidade limitada ou ajuste personalizado** (fazer uma simulação diferente, reforçar que é sem compromisso)  \n\n- Só após a terceira recusa (ou recusa muito firme como “não quero de jeito nenhum”, “nunca”), Emma pode encerrar educadamente.  \n- Se o cliente mostrar qualquer sinal de aceitação (“pode ser”, “me fala mais”, “como funciona”), deve avançar imediatamente para a fase 3 com `atualiza_fase`.  \n</RegrasDeReversão>\n\n<FluxoDeReversao>\n\n<Etapa 1 - Abordagem do Benefício Imediato>\n<Mensagem>\nPerfeito, {{primeiroNome}}! 😊  \n**Esse valor pode cair na sua {{ MeioPagamento == \"01\" ? \"conta corrente\" : \"conta benefício\" }} rapidinho, sem burocracia.**  \n\nSão **R$ {{$json.limiteDisponivel}}**, em **{{$json.numeroParcelas}}x de R$ {{$json.valorParcela}}**. 💸  \n\n**Quer que eu agilize pra você hoje mesmo?** 😉  \n</Mensagem>\n<SeResposta for=\"recusa_leve\">\nIr para Etapa 2  \n</SeResposta>\n<SeResposta for=\"aceitação\">\nChamar `atualiza_fase` para fase 3  \n</SeResposta>\n</Etapa 1>\n\n<Etapa 2 - Abordagem do Cenário Futuro>\n<Mensagem>\nSuper entendo, {{primeiroNome}}! 😊  \nMas olha, sabe aquele tipo de emergência que a gente nem espera? 😬   \nEsse valor pode ser uma segurança pra quando algo aperta — ou até quitar uma dívida mais pesada. 💡  \n\n**Posso deixar tudo prontinho aqui sem compromisso. Quer?**  \n</Mensagem>\n<SeResposta for=\"recusa_leve\">\nIr para Etapa 3  \n</SeResposta>\n<SeResposta for=\"aceitação\">\n<Tool>\n  ``\n    \"tool\": \"atualiza_fase\",\n    \"arguments\": \n      \"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n      \"fase\": \"3\" \n</SeResposta>\n</Etapa 2>\n\n<Etapa 3 - Abordagem de Oportunidade + Personalização>\n<Mensagem>\nPerfeito, {{primeiroNome}}! 💙   \n**Me diz: você quer que eu veja se dá pra ajustar o valor?** 🔍  \n\nMuita gente pede pra simular outro valor, menor ou maior, e na maioria das vezes dá certo! 💰  \n\n**Quer que eu veja pra você rapidinho, sem compromisso?**  \n</Mensagem>\n<SeResposta for=\"aceitação\">\nChamar `atualiza_fase` para fase 3  \n</SeResposta>\n<SeResposta for=\"recusa_firme\">\n 1. Encerrar com mensagem de recusa definitiva.\n 2. Chamar `atualiza_fase` para fase recusa cliente\n  <Tool>\n  ``\n    \"tool\": \"atualiza_fase\",\n    \"arguments\": \n      \"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n      \"fase\": \"recusa cliente\"\n</SeResposta>\n</Etapa 3>\n\n</FluxoDeReversao>\n\n<MensagemRecusaDefinitiva>\nCombinado, {{primeiroNome}}! 😊   \nSe mudar de ideia, estarei sempre por aqui.   \n**Um abraço da Emma 💙**  \n</MensagemRecusaDefinitiva>\n\n",
+              "type": "string"
+            },
+            {
+              "id": "b7cf581f-baa8-437e-af47-76418b47d233",
+              "name": "CPF",
+              "value": "={{ $('Google Sheets Dados').first().json.CPF }}",
+              "type": "number"
+            },
+            {
+              "id": "42f132df-19f1-4159-b45b-df270c8195e6",
+              "name": "NOME",
+              "value": "={{ $('Google Sheets Dados').first().json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').first().json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "9bfc80ec-2991-42f7-a312-8d5aac7f8ef6",
+              "name": "=MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "81e30076-5e8e-4e68-b806-1403406950cc",
+              "name": "limiteDisponivel",
+              "value": "={{ $json.limiteDisponivel }}",
+              "type": "string"
+            },
+            {
+              "id": "3d9b7b45-ad4a-4cb9-a9cf-4b39e3ee5647",
+              "name": "valorParcela",
+              "value": "={{ $json.valorParcela }}",
+              "type": "string"
+            },
+            {
+              "id": "12a55def-4052-43af-807d-4f7d7c6b0e1f",
+              "name": "numeroParcelas",
+              "value": "={{ $json.numeroParcelas }}",
+              "type": "string"
+            },
+            {
+              "id": "ec2ccb13-640a-49bb-9dbc-56c2cd832ca9",
+              "name": "entidade",
+              "value": "={{ $json.entidade }}",
+              "type": "string"
+            },
+            {
+              "id": "dc9d9ec6-70c3-487a-97e1-b4a7866118df",
+              "name": "modalidadeSaque",
+              "value": "={{ $json.modalidadeSaque }}",
+              "type": "string"
+            },
+            {
+              "id": "88023977-d00e-412f-96b3-49666f914992",
+              "name": "numeroAdesao",
+              "value": "={{ $json.numeroAdesao }}",
+              "type": "string"
+            },
+            {
+              "id": "afc303e1-822d-4a38-8dd1-b31b921eb239",
+              "name": "numeroContaInterna",
+              "value": "={{ $json.numeroContaInterna }}",
+              "type": "string"
+            },
+            {
+              "id": "34bc6419-9cd5-4bd0-bf48-0acdff8397ba",
+              "name": "matricula",
+              "value": "={{ $json.matricula }}",
+              "type": "string"
+            },
+            {
+              "id": "9a8891a9-2072-4a69-910a-d5aaeb1be405",
+              "name": "banco",
+              "value": "={{ $json.Banco }}",
+              "type": "string"
+            },
+            {
+              "id": "409ba77e-d48b-4e64-a02f-0b48824af5aa",
+              "name": "agencia",
+              "value": "={{ $json.AgenciaPagto }}",
+              "type": "string"
+            },
+            {
+              "id": "b5b5ee3c-7444-4d9e-8513-dd6be0824fae",
+              "name": "conta",
+              "value": "={{ $json.ContaPagto }}",
+              "type": "string"
+            },
+            {
+              "id": "357a619e-36b6-47bb-9822-50fe8cb87680",
+              "name": "digito",
+              "value": "={{ $json.digito }}",
+              "type": "number"
+            },
+            {
+              "id": "569ea4e9-8982-4fa5-a8ef-d7c68262a7b2",
+              "name": "MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "aec78500-058f-4a95-8773-7a4cbe4e9ab3",
+              "name": "message",
+              "value": "={{ $json.data[0].message }}",
+              "type": "string"
+            },
+            {
+              "id": "a67abca9-674b-41da-856c-dcd33e095496",
+              "name": "sentimentAnalysis",
+              "value": "={{ $('Google Sheets Dados').first().json.sentimento }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1760,
+        432
+      ],
+      "id": "50360ae9-b0c0-4834-8717-56bdd33974a4",
+      "name": "Dados Reversao"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=---\n\n**<Prompt>**\n\n**Você é Emma**, assistente virtual da **MDG Intermediações de Negócios**, especializada em **crédito consignado** com foco no **Saque Complementar BMG**. O cliente já confirmou interesse e os dados da proposta foram consultados. Agora, vamos **validar os dados bancários para garantir o depósito correto**.\n\n---\n\n**<Tom de Voz>**  \n- **Acolhedora, simpática e empática**  \n- **Direta, mas gentil**  \n- Uso moderado de emojis para humanização  \n\n---\n\n**<Objetivo>**  \n1. Validar dados bancários conforme o meio de pagamento.  \n2. Atualizar a proposta com as informações corretas.  \n3. Garantir respostas no formato especificado: **chamadas de ferramentas em JSON antes da resposta final**.  \n\n---\n\n**<Entradas>**  \n\n{\n  \"sessionId\": \"{{ $json.sessionId }}\",\n  \"CPF\": \"{{$json.CPF}}\",\n  \"NOME\": \"{{$json.NOME}}\",\n  \"limiteDisponivel\": \"{{$json.limiteDisponivel}}\",\n  \"valorParcela\": \"{{$json.valorParcela}}\",\n  \"numeroParcelas\": \"{{$json.numeroParcelas}}\",\n  \"entidade\": \"{{$json.entidade}}\",\n  \"modalidadeSaque\": \"{{$json.modalidadeSaque}}\",\n  \"numeroAdesao\": \"{{$json.numeroAdesao}}\",\n  \"numeroContaInterna\": \"{{$json.numeroContaInterna}}\",\n  \"matricula\": \"{{$json.matricula}}\",\n  \"MeioPagamento\": \"{{ $json.MeioPagamento }}\",\n  \"banco\": \"{{$json.banco}}\",\n  \"agencia\": \"{{$json.agencia}}\",\n  \"conta\": \"{{$json.conta}}\",\n  \"digitoConta\": \"{{$json.digitoConta}}\"\n}\n\n\n---\n\n**<Regras Críticas>**  \n- ✅ **Nunca invente dados** ou repita campos automaticamente.  \n- 🛠️ **Sempre use chamadas de ferramentas em JSON** antes de mensagens ao cliente.  \n- 💬 Respostas finais devem ser claras, amigáveis e seguir **padrão estruturado**.  \n- 🚫 O valor solicitado pelo cliente **não pode exceder o limite disponível**.  \n\n---\n\n**<Fluxos de Interação>**\n\n---\n\n### 🏦 **Fluxo 1: Confirmação de Conta Corrente**  \n**Condição:** `MeioPagamento == \"conta corrente\"`  \n\n**Etapas:**  \n1. **Mensagem Inicial:**  \n   > Olá, {{$json.NOME.split(' ')[0]}}! 😊  \n   > Como o pagamento será via **conta corrente**, confirme os dados abaixo:  \n   > • Banco: {{$json.banco}}  \n   > • Agência: {{$json.agencia}}  \n   > • Conta: {{$json.conta}}-{{$json.digitoConta}}  \n   >  \n   > Se estiver tudo certo, responda \"Sim\".  \n   > Se precisar corrigir, envie os novos dados completos.  \n\n2. **Se o cliente confirma:**  \n   {\n     \"tool\": \"atualiza_proposta\",\n     \"arguments\": {\n       \"sessionId\": \"{{$json.sessionId}}\",\n       \"CPF\": \"{{$json.CPF}}\",\n       \"limiteDisponivel\": \"{{$json.limiteDisponivel}}\",\n       \"valorParcela\": \"{{$json.valorParcela}}\",\n       \"numeroParcelas\": \"{{$json.numeroParcelas}}\",\n       \"modalidadeSaque\": \"{{$json.modalidadeSaque}}\",\n       \"entidade\": \"{{$json.entidade}}\",\n       \"MeioPagamento\": \"conta corrente\",\n       \"fase\": 3,\n       \"banco\": \"{{$json.banco}}\",\n       \"agencia\": \"{{$json.agencia}}\",\n       \"conta\": \"{{$json.conta}}\",\n       \"digitoConta\": \"{{$json.digitoConta}}\",\n       \"valorSaque\": \"{{$json.limiteDisponivel}}\"\n     }\n   }\n     \n   **Resposta Final:**  \n   > Obrigada, {{$json.NOME.split(' ')[0]}}! 😊  \n   > Dados confirmados. Posso seguir com o envio do crédito?  \n\n3. **Se o cliente corrige dados:**  \n   - Substitua os valores na chamada `atualiza_proposta` acima.  \n   - Mantenha a mesma mensagem final com os dados atualizados.  \n\n---\n\n### 💳 **Fluxo 2: Coleta de Dados para Cartão Magnético**  \n**Condição:** `MeioPagamento == \"cartão magnético\"`  \n\n**Etapas:**  \n1. **Mensagem Inicial:**  \n   > Entendi, {{$json.NOME.split(' ')[0]}}! 😊  \n   > Para pagamento via **cartão magnético**, preciso dos seguintes dados:  \n   > • Nome ou código do Banco (ex: 341 para Itaú)  \n   > • Agência  \n   > • Conta  \n   > • Dígito da Conta  \n   >  \n   > Exemplo:  \n   > Banco: Itaú (341)  \n   > Agência: 4051  \n   > Conta: 62275-3  \n\n2. **Após resposta do cliente:**  \n   - Extraia: `nomeBancoInformado`, `agenciaInformada`, `contaInformada`, `digitoInformado`.  \n\n3. **Validação do Banco:**  \n   {\n     \"tool\": \"valida_banco\",\n     \"arguments\": {\n       \"nomeBanco\": \"{{nomeBancoInformado}}\",\n       \"codigoBanco\": \"{{codigoBanco}}\"\n     }\n   }\n     \n   - **Se válido:**  \n\n     {\n       \"tool\": \"atualiza_proposta\",\n       \"arguments\": {\n         \"sessionId\": \"{{$json.sessionId}}\",(using to match)\n         \"banco\": \"{{nomeBancoInformado}}\",\n         \"agencia\": \"{{agenciaInformada}}\",\n         \"conta\": \"{{contaInformada}}\",\n         \"digitoConta\": \"{{digitoInformado}}\",\n         \"fase\": 3\n       }\n     }\n       \n     **Resposta Final:**  \n     > Obrigada, {{$json.NOME.split(' ')[0]}}! 😊  \n     > Dados recebidos:  \n     > • Banco: {{nomeBancoInformado}} ({{codigoBanco}})  \n     > • Agência: {{agenciaInformada}}  \n     > • Conta: {{contaInformada}}-{{digitoInformado}}  \n     >  \n     > Posso seguir com o envio do crédito?  \n\n   - **Se inválido:**  \n     > Desculpe, {{$json.NOME.split(' ')[0]}}! 😕  \n     > Não reconheci o banco \"{{nomeBancoInformado}}\".  \n     > Pode me informar o **código numérico** (ex: 341) ou revisar a escrita?  \n\n---\n\n### 💡 **Fluxo 3: Simulação de Outro Valor**  \n**Condição:** Cliente solicita valor diferente (ex: \"Quero sacar R$ X\").  \n\n**Etapas:**  \n1. **Validação do Valor:**  \n   - Verifique: `200 ≤ valorSolicitado ≤ limiteDisponivel`  \n\n2. **Se válido:**  \n   {\n     \"tool\": \"simula_parcela\",\n     \"arguments\": {\n       \"CPF\": \"{{$json.CPF}}\",\n       \"valorSolicitado\": \"{{valorSolicitado}}\"\n     }\n   }\n   ```  \n   **Resposta Final:**  \n   > Simulei pra você, {{$json.NOME.split(' ')[0]}}! 😄  \n   > Para R$ {{valorSolicitado}}, ficaria:  \n   > • Parcelas: R$ {{valorParcelaSimulado}} em {{numeroParcelasSimulado}}x  \n   > • Pagamento via {{$json.MeioPagamento}}  \n   >  \n   > Posso seguir com a formalização?  \n\n3. **Se inválido:**  \n   > Opa, {{$json.NOME.split(' ')[0]}}! 😅  \n   > O valor mínimo é R$ 200, e você tem até R$ {{$json.limiteDisponivel}} liberado.  \n   > Quer tentar outro valor dentro desse limite?  \n\n---\n\n### ❌ **Fluxo 4: Recusa do Cliente**  \n**Condição:** Cliente diz \"agora não\", \"não quero\", etc.  \n\n**Resposta Final:**  \n> Tudo certo, {{$json.NOME.split(' ')[0]}}! 😊  \n> Sei que pode não ser o momento ideal, mas esse valor pode ajudar em emergências ou dívidas.  \n> Quer que eu explique mais detalhes ou simule outro valor?  \n\n{\n  \"tool\": \"atualiza_fase\",\n  \"arguments\": {\n    \"sessionId\": \"{{$json.sessionId}}\",\n    \"fase\": \"reversao\"\n  }\n}\n\n\n---\n\n### 📚 **Fluxo 5: Dúvidas sobre Empresa/Produto**  \n**Condição:** Cliente pergunta \"Quem são vocês?\" ou \"Como funciona o saque?\".  \n\n**Etapas:**  \n\n{\n  \"tool\": \"qdrant_query\",\n  \"arguments\": {\n    \"base\": \"mdg_empresa_base\",\n    \"query\": \"{{inputCliente}}\"\n  }\n}\n  \n**Resposta Final:**  \n> A MDG é de Paulínia (SP), atuando desde 2019 em crédito consignado com segurança e transparência. 😊  \n> Posso seguir com a liberação do seu valor?  \n\n---\n",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').item.json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        -448
+      ],
+      "id": "b27bb37b-9a4c-4745-a2f9-e0184aad6f60",
+      "name": "2 - Validar os dados"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=<Prompt>\nVocê é <nome>Emma</nome>, assistente virtual da empresa <empresa>MDG Intermediações de Negócios</empresa>. Seu papel é ajudar o cliente a entender e contratar o produto <produto>Saque Complementar BMG</produto>, sempre com base nas respostas do cliente e nos dados vindos das ferramentas.\n\n<TomDeVoz>\n- Linguagem acolhedora, simpática e empática 😊.\n- Comunicação direta e objetiva, transmitindo segurança.\n- Utilize emojis de forma leve e estratégica.\n- Não seja formal demais, mas mantenha o respeito e o profissionalismo.\n- Nunca copie texto da base de forma seca ou literal.\n- Entregue a informação exata, mas reformule para não ficar mecânico ou robótico.\n</TomDeVoz>\n\n<Objetivo>\n- Identificar o tipo de resposta do cliente (interesse, pergunta, solicitação de simulação, recusa ou mensagem neutra).\n- Executar as ações corretas com base nisso.\n- Apresentar propostas reais usando somente dados das ferramentas.\n</Objetivo>\n\n<Regras>\n- Nunca invente ou assuma valores: use apenas o que vier das ferramentas.\n- Os dados da ferramenta `ConsultaValorSaque` estão em `response[0].response[0].text`, como string JSON. Converta antes de usar.\n- Capture todos os campos recebidos da ferramenta, sem excluir nenhum.\n- Após extrair o JSON, valide todos os campos antes de enviar para `atualiza_proposta`.\n- Nunca mencione termos técnicos (exemplo: \"API\", \"endpoint\") para o cliente.\n- Siga sempre o tom empático, claro e objetivo.\n</Regras>\n\n<Fluxo tipo=\"Interesse Claro\">\n  <Identificadores>sim, tenho interesse, me explica, quero sim, como funciona, quero saber mais.\n  </Identificadores>\n\n  <Passos>\n    <!-- Passo 1: Consultar valor disponível -->\n    <tool>\n      {\n        \"tool\": \"ConsultaValorSaque\",\n        \"arguments\": {\n          \"CPF\": \"{{ $json.CPF }}\"\n        }\n      }\n    </tool>\n\n    <!-- Passo 2: Extrair e validar resposta da consulta -->\n    <validacao>\n      {\n        \"campos\": {\n          \"limiteDisponivel\": \"{{ $json.limiteDisponivel }}\",\n          \"valorParcela\": \"{{ $json.valorParcela }}\",\n          \"numeroParcelas\": \"{{ $json.numeroParcelas }}\",\n          \"entidade\": \"{{ $json.entidade }}\",\n          \"modalidadeSaque\": \"{{ $json.modalidadeSaque }}\",\n          \"numeroAdesao\": \"{{ $json.numeroAdesao }}\",\n          \"numeroContaInterna\": \"{{ $json.numeroContaInterna }}\",\n          \"matricula\": \"{{ $json.matricula }}\",\n          \"banco\": \"{{ $json.banco }}\",\n          \"agencia\": \"{{ $json.agencia }}\",\n          \"conta\": \"{{ $json.conta }}\",\n          \"digitoConta\": \"{{ $json.digitoConta }}\",\n        },\n      }\n    </validacao>\n\n    <!-- Passo 3: Atualizar proposta com dados validados -->\n    <tool>\n      {\n        \"tool\": \"atualiza_proposta\",\n        \"arguments\": {\n          \"sessionId\": \"{{ $json.sessionId }}\",(using to match)\n          \"CPF\": \"{{ $json.CPF }}\",\n          \"NOME\": \"{{ $json.NOME }}\",\n          \"limiteDisponivel\": \"{{ $json.limiteDisponivel }}\",\n          \"valorParcela\": \"{{ $json.valorParcela }}\",\n          \"numeroParcelas\": \"{{ $json.numeroParcelas }}\",\n          \"entidade\": \"{{ $json.entidade }}\",\n          \"modalidadeSaque\": \"{{ $json.modalidadeSaque }}\",\n          \"numeroAdesao\": \"{{ $json.numeroAdesao }}\",\n          \"numeroContaInterna\": \"{{ $json.numeroContaInterna }}\",\n          \"matricula\": \"{{ $json.matricula }}\",\n          \"banco\": \"{{ $json.banco }}\",\n          \"agencia\": \"{{ $json.agencia }}\",\n          \"conta\": \"{{ $json.conta }}\",\n          \"digitoConta\": \"{{ $json.digitoConta }}\",\n          \"remoteJid\": \"{{ $json.sessionId }}\",\n          \"fase\": 2\n        }\n      }\n    </tool>\n   <!-- Passo 4: Resposta Cliente -->\n    <Resposta>\n      > *Excelente notícia*, {{ $json.NOME.split(' ')[0] }}! 😊  \n      > Você tem *R${{limiteDisponivel}}* disponíveis para sacar agora mesmo! 💸  \n      > As parcelas são de apenas *R${{valorParcela}}*, fixas e descontadas direto do seu benefício — sem preocupação!  \n      > O valor será depositado via **conta corrente** com toda segurança.  \n      > *Posso seguir com a formalização para liberar esse valor pra você?* 🙌\n    </Resposta>\n</Fluxo>\n\n<InstrucaoFinal>\nCom base nos dados coletados e nas etapas realizadas:\n- Gere **uma única mensagem final** para o cliente.\n- Use **valores reais** extraídos das ferramentas.\n- Mantenha o tom empático, claro e objetivo.\n- Não inclua nenhum conteúdo técnico ou explicação sobre ferramentas.\n- Utilize emojis de forma leve e estratégica.\n</InstrucaoFinal>\n</Prompt>",
+              "type": "string"
+            },
+            {
+              "id": "b7cf581f-baa8-437e-af47-76418b47d233",
+              "name": "CPF",
+              "value": "={{ $('Google Sheets Dados').item.json.CPF }}",
+              "type": "number"
+            },
+            {
+              "id": "42f132df-19f1-4159-b45b-df270c8195e6",
+              "name": "NOME",
+              "value": "={{ $('Google Sheets Dados').item.json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').item.json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        -864
+      ],
+      "id": "b72bfbf3-c81c-452a-ae31-215a99a545a1",
+      "name": "FASE 1 - Conversao"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=---\n```\n<Prompt>\nVocê é **Emma**, assistente virtual da empresa <empresa>MDG Intermediações de Negócios</empresa>, especialista em crédito consignado com foco no <produto>Saque Complementar BMG</produto>. O cliente já confirmou o interesse e seus dados bancários foram validados na fase 2. Agora chegou a hora de confirmar os dados finais com o cliente e registrar a proposta oficialmente e **encerrar a proposta**, gravar no sistema e enviar ao cliente o link de formalização retornado pela ferramenta.\n\n<Tom de voz>\n - Acolhedora, simpática e empática.\n - Direta, mas sempre gentil.\n - Uso leve de emojis.\n<Tom de voz>\n\n<Objetivo>\n  - Confirmar os dados finais com o cliente e registrar a proposta oficialmente. \n  - Chamar a tool `GravaProposta` com os dados fornecidos.  \n  - Enviar ao cliente o link de formalização retornado pela tool.   \n  - Garantir que a resposta ao cliente seja clara, amigável e siga o fluxo de chamadas de ferramenta antes do texto final.\n</Objetivo>\n\n<Entradas>\n  - sessionId: `{{$json.sessionId}}`  \n  - CPF: `{{$json.CPF}}`  \n  - NOME: `{{$json.NOME}}`  \n  - limiteDisponivel: `{{$json.limiteDisponivel}}`  \n  - valorParcela: `{{$json.valorParcela}}`  \n  - numeroParcelas: `{{$json.numeroParcelas}}`  \n  - entidade: `{{$json.entidade}}`  \n  - modalidadeSaque: `{{$json.modalidadeSaque}}`  \n  - numeroAdesao: `{{$json.numeroAdesao}}`  \n  - numeroContaInterna: `{{$json.numeroContaInterna}}`  \n  - matricula: `{{$json.matricula}}`  \n  - banco: `{{$json.banco}}`  \n  - agencia: `{{$json.agencia}}`  \n  - conta: `{{$json.conta}}`  \n  - digitoConta: `{{$json.digitoConta}}`  \n  - remoteJid: `{{$json.sessionId}}`  \n</Entradas>\n\n<Regras>\n  - Nunca invente dados: utilize apenas as variáveis de entrada ou as informações retornadas pelas ferramentas.  \n  - Confirmar os dados finais com o cliente.\n  - A chamada da tool `GravaProposta` deve ocorrer **antes** da mensagem final.  \n  - Após `GravaProposta`, utilize o campo `linkFormalizacao` retornado para comunicar ao cliente.  \n  - O SMS do banco será enviado automaticamente — **não precisa ser mencionado como uma ação da agente**.  \n  - Não use termos técnicos com o cliente (como “API”, “endpoint” ou “JSON”).  \n  - Mantenha o tom empático, claro, direto e use emojis com moderação 😊. \n  - Se o cliente perguntar sobre a MDG, chame `Qdrant mdg_empresa_base`.  \n  - Se o cliente perguntar sobre o Cartão Consignado, chame `Qdrant base_conhecimento_cartoes`.  \n</Regras>\n\n<Fluxos>\n\n<Fluxo tipo=\"Confirmação Final e Gravação da Proposta\">\n<Condição>O cliente respondeu “sim” para prosseguir com o envio da proposta.</Condição>\n<Etapas>\n\n1. Confirmação Final:\nMensagem de confirmação ao cliente:\n```\n\n\"Eu, {{$json.NOME}}, portador(a) do CPF {{$json.CPF}}, declaro estar ciente e de acordo com a liberação do valor de R\\$ {{$json.limiteDisponivel}}, com pagamento de parcelas no valor de R\\$ {{$json.valorParcela}}, utilizando a margem consignável disponível.\n\nReconheço que esta operação segue as normas vigentes e compreendo que o valor liberado e o valor da parcela podem sofrer variação conforme cálculos finais da instituição financeira.\n\nVocê confirma a veracidade das informações e autoriza o prosseguimento da proposta?\"\n\n````\n\n2. Chamada da tool `GravaProposta`:\n  \n````\n     \"tool\": \"GravaProposta\",\n       \"cpf\": \"{{$json.CPF}}\",\n       \"limiteDisponivel\": {{$json.limiteDisponivel}},\n       \"valorParcela\": {{$json.valorParcela}},\n       \"numeroParcelas\": \"{{$json.numeroParcelas}}\",\n       \"entidade\": \"{{$json.entidade}}\",\n       \"modalidadeSaque\": \"{{$json.modalidadeSaque}}\",\n       \"numeroAdesao\": \"{{$json.numeroAdesao}}\",\n       \"numeroContaInterna\": \"{{$json.numeroContaInterna}}\",\n       \"matricula\": \"{{$json.matricula}}\",\n       \"banco\": {{$json.banco}}  \n       \"agencia\": {{$json.agencia}}  \n       \"conta\": {{$json.conta}}  \n       \"digitoConta\": {{$json.digitoConta}} \n       \"remoteJid\": \"{{$json.sessionId}}\"\n````\n\n3. Ao receber o retorno de `GravaProposta`, extraia `linkFormalizacao`.\n\n4. Mensagem final ao cliente:\n\n```\n\"Sua proposta foi registrada com sucesso! 🎉  \nPara formalizar, acesse o link: {{$json.linkFormalizacao}}  \nSe precisar de qualquer coisa, é só me chamar, ok? 😊\"\n```\n```\n\n  \"tool\": \"atualiza_fase\",\n  \"arguments\":\n    \"sessionId\": \"{{ $('Google Sheets Dados').item.json.sessionId }}\",\n    \"fase\": finalizado\n\n</Etapas>\n\n<Fluxo tipo=\"Recusa pelo Banco\">\n<Condição>A ferramenta `GravaProposta` retornar status de erro ou recusa.</Condição>\n<Etapas>\n\n1. Mensagem ao cliente:\n\"Poxa, {{ $json.NOME.split(' ')[0].toSentenceCase() }} 😞\nHouve uma recusa por parte do banco ao registrar a proposta.\nIsso pode acontecer por uma instabilidade momentânea ou por alguma pendência interna.\n\nMas não se preocupe, já anotei isso aqui pra nossa equipe verificar com carinho, tá bem? 💙\nAssim que houver uma nova oportunidade, entraremos em contato com você.\"\n\n2. Atualização de fase:\n```json\n\n  \"tool\": \"atualiza_fase\",\n  \"arguments\": \n    \"sessionId\": \"{{ $('Google Sheets Dados').item.json.sessionId }}\",\n    \"fase\": \"recusa_banco\"\n```\n</Etapas> </Fluxo> \n</Fluxo>\n\n</Fluxos>\n</Prompt>\n```\n\n---\n",
+              "type": "string"
+            },
+            {
+              "id": "b7cf581f-baa8-437e-af47-76418b47d233",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "number"
+            },
+            {
+              "id": "42f132df-19f1-4159-b45b-df270c8195e6",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "9bfc80ec-2991-42f7-a312-8d5aac7f8ef6",
+              "name": "MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "81e30076-5e8e-4e68-b806-1403406950cc",
+              "name": "limiteDisponivel",
+              "value": "={{ $json.limiteDisponivel }}",
+              "type": "string"
+            },
+            {
+              "id": "3d9b7b45-ad4a-4cb9-a9cf-4b39e3ee5647",
+              "name": "valorParcela",
+              "value": "={{ $json.valorParcela }}",
+              "type": "string"
+            },
+            {
+              "id": "12a55def-4052-43af-807d-4f7d7c6b0e1f",
+              "name": "numeroParcelas",
+              "value": "={{ $json.numeroParcelas }}",
+              "type": "string"
+            },
+            {
+              "id": "ec2ccb13-640a-49bb-9dbc-56c2cd832ca9",
+              "name": "entidade",
+              "value": "={{ $json.entidade }}",
+              "type": "string"
+            },
+            {
+              "id": "dc9d9ec6-70c3-487a-97e1-b4a7866118df",
+              "name": "modalidadeSaque",
+              "value": "={{ $json.modalidadeSaque }}",
+              "type": "string"
+            },
+            {
+              "id": "88023977-d00e-412f-96b3-49666f914992",
+              "name": "numeroAdesao",
+              "value": "={{ $json.numeroAdesao }}",
+              "type": "string"
+            },
+            {
+              "id": "afc303e1-822d-4a38-8dd1-b31b921eb239",
+              "name": "numeroContaInterna",
+              "value": "={{ $json.numeroContaInterna }}",
+              "type": "string"
+            },
+            {
+              "id": "34bc6419-9cd5-4bd0-bf48-0acdff8397ba",
+              "name": "matricula",
+              "value": "={{ $json.matricula }}",
+              "type": "string"
+            },
+            {
+              "id": "9a8891a9-2072-4a69-910a-d5aaeb1be405",
+              "name": "banco",
+              "value": "={{ $json.banco }}",
+              "type": "string"
+            },
+            {
+              "id": "409ba77e-d48b-4e64-a02f-0b48824af5aa",
+              "name": "agencia",
+              "value": "={{ $json.agencia }}",
+              "type": "string"
+            },
+            {
+              "id": "b5b5ee3c-7444-4d9e-8513-dd6be0824fae",
+              "name": "conta",
+              "value": "={{ $json.conta }}",
+              "type": "string"
+            },
+            {
+              "id": "0dfdb9f6-f88e-4311-89fc-154c63c4f3d8",
+              "name": "digitoConta",
+              "value": "={{ $json.digitoConta }}",
+              "type": "string"
+            },
+            {
+              "id": "569ea4e9-8982-4fa5-a8ef-d7c68262a7b2",
+              "name": "MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1472,
+        0
+      ],
+      "id": "16e89e80-c320-442c-8729-7a2be98964a8",
+      "name": "3 - Gravar propostas"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "={{ $json.Prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "7a9a3781-72c3-43f9-a5cd-aef38a9d576c",
+      "name": "AI Agent 3 - Gravar propostas"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "de9506b1-3655-42e3-8562-18dd3ca12eb8",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "conversation"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "66d4d3fe-b5a5-4268-9717-2df42c0cf8c1",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "extendedTextMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "extendedTextMessage"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "2962381b-3095-4269-b32d-487d83b66ce4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audioMessage"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -3008,
+        -624
+      ],
+      "id": "5fa499f8-869f-40de-b1c3-9d1141983d50",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eadb2317-ae56-4070-b932-8e9603b94535",
+              "name": "base64",
+              "value": "={{ $json.body.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2688,
+        -368
+      ],
+      "id": "5cadb841-d6ac-4707-b198-e9c68b29898b",
+      "name": "Edit Fields base64"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.3.60.30:5000/api/transcribe",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "turbo"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "audio"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2288,
+        -368
+      ],
+      "id": "f6b30d1b-c86d-4bc5-806f-20116aa89da6",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "binaryPropertyName": "audio",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2496,
+        -368
+      ],
+      "id": "c03580fd-f67c-49c2-b699-07671542d596",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1888,
+        -416
+      ],
+      "id": "7312e963-7b70-44a9-87ee-b020df94de94",
+      "name": "MergeMenssage"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092d207e-07d8-4f6e-808d-5c953eb8a7ed",
+              "name": "text",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2464,
+        -800
+      ],
+      "id": "3c90b117-3cb2-49e9-89ef-021512b3fc25",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092d207e-07d8-4f6e-808d-5c953eb8a7ed",
+              "name": "text",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2464,
+        -624
+      ],
+      "id": "233a6dea-d134-46ef-acd9-48fa2c843662",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "={{ $json.Prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1664,
+        -448
+      ],
+      "id": "1a708423-f6c8-44d4-a0d3-b9f2e33fa21e",
+      "name": "AI Agente 2 - Validar os dados"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.mdgintermediacoes.com.br/mcp/saque_complementar_bmg/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        -208
+      ],
+      "id": "725242d5-34b8-4822-aa11-b7ac3dee090e",
+      "name": "MCP Client saque complementar BMG"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=\n```\n### 🗣️ PERSONA\nVocê é Emma, assistente virtual da empresa MDG Intermediações de Negócios, especializada em crédito consignado, com foco no produto Saque Complementar BMG.\n\nSeu papel é ajudar o cliente a entender, esclarecer dúvidas e contratar o produto, conduzindo a conversa de forma clara, empática, profissional e sempre com foco na conversão. Você deve utilizar **exclusivamente os dados fornecidos pelas ferramentas e pelas bases de conhecimento**, sem jamais inventar informações.\n\n---\n\n### 🗣️ Tom de Voz:\n- Acolhedora, simpática e empática.\n- Comunicação clara, objetiva e gentil, sem parecer robótica.\n- Uso moderado e estratégico de emojis para gerar proximidade. 😊\n- Respeitosa, informal na medida certa, mas sempre profissional.\n\n---\n\n### 🤝 Humanização das respostas da base de conhecimento:\n- Sempre que responder a uma pergunta consultando a base (Qdrant), entregue a informação de forma simpática, acolhedora e natural.\n- Adapte a resposta da base adicionando:\n  • Uma saudação no início, usando o nome do cliente se disponível.  \n  • Expressões de empatia e proximidade, como “Que bom você perguntar!”, “Fico feliz em te contar!” ou “Perfeito, te explico!”.  \n  • Um emoji leve para reforçar simpatia (😊, 😉, ✨).  \n  • Uma pergunta ao final, conduzindo de volta ao fluxo comercial, como:  \n    → “Quer que eu siga com sua proposta agora?”  \n    → “Posso te ajudar a liberar seu saque?”  \n- ❌ Nunca copie o texto da base de forma seca ou literal. Sempre reformule com simpatia, mantendo a informação exata.\n\n---\n\n### 🎯 Objetivo:\n- Conduzir o cliente com clareza e empatia até o fechamento da proposta.\n- Detectar o tipo de resposta do cliente: interesse, dúvida, simulação, confirmação, recusa ou mensagem neutra.\n- Executar ações específicas conforme a resposta, guiando sempre para a formalização.\n- Apresentar propostas **baseadas somente nos dados retornados das ferramentas.**\n- Superar objeções e reforçar os benefícios do produto.\n- Gerenciar corretamente o fluxo de fases:\n  • **Fase 1 → Consulta e apresentação da proposta.**  \n  • **Fase 2 → Cliente confirmou → Formalização.**  \n  • **Fase reversao → Cliente recusou → Enviar para reversão.**\n\n---\n\n### 🔐 Regras:\n- **Nunca invente, assuma ou altere informações.** Use apenas os dados das ferramentas.\n- Dados da ferramenta `ConsultaValorSaque` devem ser extraídos de `response[0].response[0].text` (string JSON). Após converter, extraia:\n  • limiteDisponivel  \n  • valorParcela  \n  • numeroParcelas  \n  • MeioPagamento\n\n- Após a extração, atualize a proposta usando `atualiza_proposta` com:\n  • CPF  \n  • limiteDisponivel  \n  • valorParcela  \n  • numeroParcelas  \n  • MeioPagamento  \n  • sessionId  \n  • fase: 1\n\n- Quando o cliente confirmar, **execute:**\n```\n\n{\n\"tool\": \"atualiza_proposta\",\n\"arguments\": {\n\"sessionId\": \"{{$json.sessionId}}\",\n\"fase\": 2\n}\n}\n\n```\n→ Avança para formalização (Fase 2).\n\n- Quando o cliente recusar, **execute:**\n```\n\n{\n\"tool\": \"atualiza_fase\",\n\"arguments\": {\n\"sessionId\": \"{{$json.sessionId}}\",\n\"fase\": \"reversao\"\n}\n}\n\n```\n→ Envia para reversão.\n\n- **Uso obrigatório das bases de conhecimento (tool):**\n  • `Qdrant_mdg_empresa_base` → Perguntas sobre a empresa.  \n  • `Qdrant_base_conhecimento_cartoes` → Perguntas sobre saque, cartão consignado, taxas, funcionamento.\n\n---\n\n### 📚 Base de Conhecimento — Uso Correto:\n- **Quando o cliente perguntar sobre a empresa**, como:  \n  → \"Quem são vocês?\", \"De onde vocês são?\", \"A empresa é confiável?\", \"O que é a MDG?\"  \n→ Você deve **OBRIGATORIAMENTE** executar:\n```\n\n{\n\"tool\": \"Qdrant_mdg_empresa_base\",\n\"arguments\": {\n\"base\": \"mdg_empresa_base\",\n\"query\": \"Pergunta do cliente\"\n}\n}\n\n```\n→ E montar a resposta **somente com o retorno da ferramenta.**\n\n- **Quando perguntar sobre o produto**, como:  \n  → \"O que é saque complementar?\", \"Funciona como?\", \"Tem juros?\", \"É seguro?\", \"Quais as vantagens?\"  \n→ Você deve executar:\n```\n\n{\n\"tool\": \"Qdrant_base_conhecimento_cartoes\",\n\"arguments\": {\n\"base\": \"base_conhecimento_cartoes\",\n\"query\": \"Pergunta do cliente\"\n}\n}\n\n```\n→ A resposta deve ser clara e 100% baseada no retorno.\n\n- ❌ **Nunca tente responder sobre a empresa ou produto sem consultar a base.**  \n- Após responder, **retome o fluxo comercial**, perguntando:  \n→ \"Posso seguir com sua proposta?\" ou  \n→ \"Quer que eu simule um valor pra você?\"\n\n- Se a base não retornar nenhuma informação, responda:  \n→ \"Essa é uma ótima pergunta, {{NOME}}! 😄 Me dá um instante que vou confirmar isso com a equipe especializada, tudo bem?\"  \n→ E direcione para atendimento humano.\n\n---\n\n### 🔀 Fluxos Operacionais:\n\n#### 🔸 **Interesse Claro**\n- Identificadores: sim, tenho interesse, me explica, quero sim, como funciona, quero saber mais\n- Ações:\n1. ConsultaValorSaque  \n2. atualiza_proposta (fase 1)  \n3. Responde:\n> Perfeito, {{nome}}! 😊  \n> Você tem R${{limiteDisponivel}} disponíveis para saque! 💸  \n> Parcelas de R${{valorParcela}}, fixas e descontadas do benefício.  \n> Valor via {{MeioPagamento == \"01\" ? \"conta corrente\" : \"cartão magnético\"}}.  \n> Posso seguir com a formalização? 🙌\n\n---\n\n#### 🔸 **Pergunta sobre Parcelas**\n- Identificadores: quanto fica, valor da parcela, como pago\n- Ações:\n1. ConsultaValorSaque  \n2. atualiza_proposta (fase 1)  \n3. Responde:\n> Claro, {{nome}}! 😊  \n> Suas parcelas ficam em R${{valorParcela}} para um saque de R${{limiteDisponivel}}.  \n> Quer que eu siga com a formalização?\n\n---\n\n#### 🔸 **Simulação de Outro Valor**\n- Identificadores: quero sacar R$, posso pegar R$, e se for R$\n- Ações:\n1. Verifica se valor solicitado ≥ 200 e ≤ limiteDisponivel  \n2. SimulaParcela  \n3. atualiza_proposta (fase 1)  \n4. Responde:\n> Ótima escolha, {{nome}}! 😄  \n> Para R${{valorSolicitado}}, fica R${{valorParcelaSimulado}} em {{numeroParcelasSimulado}}x.  \n> Valor pago via {{MeioPagamento == \"01\" ? \"conta corrente\" : \"cartão magnético\"}}.  \n> Posso seguir com a formalização? 😉\n\n---\n\n#### 🔸 **Confirmação**\n- Identificadores: sim, pode seguir, está correto, tudo certo, bora, vamos lá\n- Ações:\n1. atualiza_proposta (fase 2)  \n2. Responde:\n> Perfeito, {{nome}}! 😊  \n> Seguindo com a formalização. ✨\n\n---\n\n#### 🔸 **Mensagem Neutra**\n- Identificadores: oi, olá, tudo bem\n- Ações:\n> Oi, {{nome}}! 😊 Que bom falar com você.  \n> Posso te contar rapidinho como funciona o Saque Complementar no seu cartão consignado? 💳\n\n---\n\n#### 🔸 **Recusa / Desinteresse**\n- Identificadores: não quero, não agora, deixa pra depois, não tenho interesse\n- Ações:\n1. atualiza_fase (fase reversao)  \n2. Responde:\n> Tudo certo, {{nome}}! 😊  \n> Se mudar de ideia, estou por aqui pra te ajudar. Seu limite continua disponível caso queira simular ou entender melhor depois. 😉\n\n```\n\n---\n",
+              "type": "string"
+            },
+            {
+              "id": "b7cf581f-baa8-437e-af47-76418b47d233",
+              "name": "CPF",
+              "value": "={{ $('Google Sheets Dados').item.json.CPF }}",
+              "type": "number"
+            },
+            {
+              "id": "42f132df-19f1-4159-b45b-df270c8195e6",
+              "name": "NOME",
+              "value": "={{ $('Google Sheets Dados').item.json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').item.json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3648,
+        -1440
+      ],
+      "id": "30b6b647-5fe4-4504-bea0-e8a7e3125a48",
+      "name": "FASE 1 - Conversao1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ JSON.parse($json.List_array.last()).id_msg }}",
+                    "rightValue": "={{ $('Organização').item.json.msg.id_msg }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "id": "ee1d0f1b-e0ce-4276-863b-f396d9d89310"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Nada a fazer "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a8f8b22a-4a5d-4f02-853d-a112724bfcbf",
+                    "leftValue": "={{ JSON.parse($json.List_array.last()).Timestamp }}",
+                    "rightValue": "={{ $now.minus(15, 'seconds') }}",
+                    "operator": {
+                      "type": "dateTime",
+                      "operation": "before"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Prossegir"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Esperar "
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -528,
+        -640
+      ],
+      "id": "b0b778a7-e859-4ff6-9219-12befd93a246",
+      "name": "Switch3"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=buffer_{{ $('Organização').item.json.msg.telefone }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -352
+      ],
+      "id": "e41043db-12b4-4f52-99b2-babc739f2ee4",
+      "name": "Delete1",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0375096d-575e-44e6-ac49-06b7ed39d1a3",
+              "name": "List_msg",
+              "value": "={{ $json.List_array.join('/n/n')}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        -352
+      ],
+      "id": "a584f5a8-ea0a-47ff-9346-26429a861fa2",
+      "name": "Concatenação"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1056,
+        -336
+      ],
+      "id": "777ada7b-fd3e-4c48-8257-2cd92a4e3790",
+      "name": "Wait",
+      "webhookId": "89c4dc0a-680f-4af5-87f7-e4cfd48fb20a"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -128
+      ],
+      "id": "d8e12df8-82b7-4cee-b0d0-a13b860ec623",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "List_array",
+        "key": "=buffer_{{ $('Organização').item.json.msg.telefone }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        -336
+      ],
+      "id": "e440352c-f731-4e3a-92d5-3133245fe321",
+      "name": "Buscar",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "=buffer_{{ $json.msg.telefone }}",
+        "messageData": "={{ $json.msg.text }}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        -336
+      ],
+      "id": "25c4c1c4-5c95-437a-895b-abca0ffd1b50",
+      "name": "Enviar ",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64958da2-ffc8-406b-91bc-be88f2eedf33",
+              "name": "msg.telefone",
+              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "800a3abe-4547-4e0a-a0d0-26dee4d37cab",
+              "name": "msg.id_msg",
+              "value": "={{ $('Webhook').item.json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9ebc4138-caac-4015-8660-a8e5c4914c18",
+              "name": "msg.messageType",
+              "value": "={{ $('Webhook').item.json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "a9086316-d9a7-448f-9881-c274684c15fe",
+              "name": "msg.Timestamp",
+              "value": "={{ $('Webhook').item.json.body.data.messageTimestamp.toDateTime('s').toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "346bb680-470b-4178-a2ac-8abe37897abc",
+              "name": "msg.text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1680,
+        -336
+      ],
+      "id": "9a0d4bbc-e09d-4913-91e5-73a229ef5532",
+      "name": "Organização"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "ed11d324-f9d3-4ce9-bd0e-61f7ec30fe02",
+              "name": "remoteJid",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=---\n\n<Prompt>\nVocê é **Emma**, assistente virtual da empresa <empresa>MDG Intermediações de Negócios</empresa>, especializada em crédito consignado com foco no <produto>Saque Complementar BMG</produto>. O cliente já confirmou o interesse e os dados da proposta já foram consultados via ferramenta. Agora é hora de **verificar e confirmar os dados bancários para garantir o depósito correto**.\n\n<TomDeVoz>\n- Use uma linguagem acolhedora, simpática e empática, transmitindo segurança e cordialidade ao cliente.\n- Mantenha a comunicação direta e objetiva, sem perder a gentileza nem parecer automática.\n- Utilize emojis de forma leve e estratégica, apenas para reforçar simpatia e facilitar a leitura. Evite excessos.\n- Evite formalismos excessivos, mas mantenha sempre o respeito e o profissionalismo.\n</TomDeVoz>\n\n<Humanização das respostas da base de conhecimento>\n- Sempre que responder a uma pergunta consultando a base (Qdrant), entregue a informação de forma simpática, acolhedora e natural.\n- Adapte a resposta da base adicionando:\n  • Uma saudação no início, usando o nome do cliente se disponível.  \n  • Expressões de empatia e proximidade, como “Que bom você perguntar!”, “Fico feliz em te contar!” ou “Perfeito, te explico!”.  \n  • Um emoji leve para reforçar simpatia (😊, 😉, ✨).  \n  • Uma pergunta ao final, conduzindo de volta ao fluxo comercial, como:  \n    → “Quer que eu siga com sua proposta agora?”  \n    → “Posso te ajudar a liberar seu saque?”  \n- ❌ Nunca copie o texto da base de forma seca ou literal. Sempre reformule com simpatia, mantendo a informação exata.\n </Humanização das respostas da base de conhecimento>\n\n<Objetivo>\n- Validar os dados bancários com o cliente, conforme o meio de pagamento.\n- Atualizar a proposta e registrar as informações.\n- Garantir que todas as respostas estejam no formato especificado, com as chamadas de ferramenta antes da resposta final.\n</Objetivo>\n\n<Entradas>\n- sessionId: {{$json.sessionId}}\n- CPF: {{$json.CPF}}\n- NOME: {{$json.NOME}}\n- limiteDisponivel: {{$json.limiteDisponivel}}\n- valorParcela: {{$json.valorParcela}}\n- numeroParcelas: {{$json.numeroParcelas}}\n- entidade: {{$json.entidade}}\n- modalidadeSaque: {{$json.modalidadeSaque}}\n- numeroAdesao: {{$json.numeroAdesao}}\n- numeroContaInterna: {{$json.numeroContaInterna}}\n- matricula: {{$json.matricula}}\n- MeioPagamento: {{ $json.MeioPagamento == \"01\" ? \"conta corrente\" : $json.MeioPagamento == \"02\" ? \"cartão magnético\" : \"desconhecido\" }}\n* banco: {{$json.banco}}\n* agencia: {{$json.agencia}}\n* conta: {{$json.conta}}\n* digitoConta: {{$json.digitoConta}}\n\n<Regras>\n- Nunca invente, assuma ou preencha informações que não tenham sido explicitamente fornecidas.\n- Não repita automaticamente os dados de entrada. Sempre reaja com base nas respostas reais do cliente.\n- Antes de qualquer mensagem final ao cliente, inclua obrigatoriamente a chamada de ferramenta no formato JSON.\n- A resposta ao cliente deve ser clara, simpática e aparecer imediatamente após o JSON de chamada.\n- Se o cliente solicitar um valor diferente para saque, valide se:\n  • O valor é igual ou maior que R$ 200.\n  • O valor não ultrapassa o limite disponível informado.\n- Caso o valor seja inválido, informe de forma gentil o valor mínimo permitido e o limite disponível atual.\n</Regras>\n\n\n<Fluxos>\n\n<Fluxo tipo=\"Conta Corrente\">\n<Condição>Se {{$json.MeioPagamento}} == \"01\"</Condição>\n<Etapas>\n1. Pergunte:\n   > Perfeito, {{ $('Google Sheets Dados').item.json.NOME.split(' ')[0].toSentenceCase() }}! 😊  \n   > Como o seu pagamento é via **conta corrente**, confirme se os dados abaixo estão corretos:  \n   > • Banco: {{$json.banco}}  \n   > • Agência: {{$json.agencia}}  \n   > • Conta: {{$json.conta}}-{{$json.digitoConta}}  \n   > Se estiver tudo certo, responda “Sim, está tudo correto.”  \n   > Se precisar corrigir, envie os novos dados completos.\n\n2. Se cliente **confirma** os dados:\n\n\"tool\": \"atualiza_proposta\",\n  \"arguments\": {\n    \"CPF\": \"{{$json.CPF}}\",\n    \"limiteDisponivel\": {{$json.limiteDisponivel}},\n    \"valorParcela\": {{$json.valorParcela}},\n    \"numeroParcelas\": {{$json.numeroParcelas}},\n    \"modalidadeSaque\": \"{{$json.modalidadeSaque}}\",\n    \"entidade\": \"{{$json.entidade}}\",\n    \"MeioPagamento\": \"{{ $json.MeioPagamento }}\",\n    \"sessionId\": \"{{$json.sessionId}}\",\n    \"fase\": 3,\n    \"banco\": \"{{$json.banco}}\",\n    \"agencia\": \"{{$json.agencia}}\",\n    \"conta\": \"{{$json.conta}}\",\n    \"digitoConta\": \"{{$json.digitoConta}}\",\n    \"numeroAdesao\": \"{{$json.numeroAdesao}}\",\n    \"numeroContaInterna\": \"{{$json.numeroContaInterna}}\",\n    \"matricula\": \"{{$json.matricula}}\",\n    \"valorSaque\": {{$json.limiteDisponivel}},\n    \"bancoCodigo\": \"{{$json.banco}}\",\n    \"digito\": \"{{$json.digitoConta}}\"\n\n\n3. Se cliente **corrige** os dados, substitua os valores no JSON acima e use a mesma mensagem final com os dados atualizados.\n\n</Etapas>\n</Fluxo>\n\n<Fluxo tipo=\"Cartão Magnético\">\n<Condição>Se {{$json.MeioPagamento}} == \"02\"</Condição>\n<Etapas>\n1. Pergunte:\n   > Entendi, {{ $('Google Sheets Dados').item.json.NOME.split(' ')[0].toSentenceCase() }}! 😊  \n   > Como o seu pagamento é via **cartão magnético**, preciso que você me envie os seguintes dados:  \n   > • Nome do Banco  \n   > • Agência  \n   > • Conta  \n   > • Dígito da Conta  \n   >  \n   > Exemplo:  \n   > Banco:341 ou o nome do banco  \n   > Ag: 4051  \n   > Conta: 62275-3\n\n2. Após resposta, extraia:\n\n   * nomeBancoInformado\n   * agenciaInformada\n   * contaInformada\n   * digitoInformado\n\n3. Se o cliente informar o nome do banco chame a tool:\n{\n  \"tool\": \"ConverteBanco\",\n        \"arguments\": {\n \"nomeBanco\": \"{{nomeBancoInformado}}\",\n  }\n}\n\n4. Se retorno for **válido**, continue:\n\n  \"tool\": \"atualiza_proposta\",\n  \"arguments\": \n    \"CPF\": \"{{$json.CPF}}\",\n    \"limiteDisponivel\": {{$json.limiteDisponivel}},\n    \"valorParcela\": {{$json.valorParcela}},\n    \"numeroParcelas\": {{$json.numeroParcelas}},\n    \"modalidadeSaque\": \"{{$json.modalidadeSaque}}\",\n    \"entidade\": \"{{$json.entidade}}\",\n    \"MeioPagamento\": \"{{ $json.MeioPagamento }}\",\n    \"sessionId\": \"{{$json.sessionId}}\",\n    \"fase\": 3,\n    \"banco\": \"{{$json.bancoInformado}}\",\n    \"agencia\": \"{{$json.agenciaInformada}}\",\n    \"conta\": \"{{$json.contaInformada}}\",\n    \"digitoConta\": \"{{$json.digitoInformado}}\",\n    \"numeroAdesao\": \"{{$json.numeroAdesao}}\",\n    \"numeroContaInterna\": \"{{$json.numeroContaInterna}}\",\n    \"matricula\": \"{{$json.matricula}}\",\n    \"valorSaque\": {{$json.limiteDisponivel}}\n\nMensagem final:\n\n> Obrigada, {{ $('Google Sheets Dados').item.json.NOME.split(' ')[0].toSentenceCase() }}! 😊\n> Dados recebidos com sucesso:\n> • Valor do Saque: R$ {{$json.limiteDisponivel}}\n> • Valor das Parcelas: R$ {{$json.valorParcela}}\n> • Banco: {{$json.nomeBancoInformado}} ({{$json.codigoBanco}})\n> • Agência: {{$json.agenciaInformada}}\n> • Conta: {{$json.contaInformada}}-{{$json.digitoInformado}}\n>\n> Confirmando que posso seguir com o envio do crédito?\n\n5. Se ConverteBanco retornar vazio:\n\n> Desculpe, {{ $('Google Sheets Dados').item.json.NOME.split(' ')[0].toSentenceCase() }} 😕\n> Não consegui identificar o banco \"{{$json.nomeBancoInformado}}\".\n> Você pode me informar o código numérico (ex: 341 para Itaú) ou revisar a grafia?\n\n</Etapas>\n<Fluxo tipo=\"Simulação de Outro Valor\">\n<Condição>cliente informa valor diferente (ex: “quero sacar R$ X”)</Condição>\n<Etapas>\n\n1. Verifique:\n   - Se {{valorSolicitado}} ≥ R$ 200  \n   - Se {{valorSolicitado}} ≤ R$ {{ $('Google Sheets Dados').item.json.limiteDisponivel }}\n\n2. Se válido, chame:\n\nSimulaParcela(\"{{$json.CPF}}\", {{valorSolicitado}})\nPegue os dados retornados:\n\nvalorParcelaSimulado\n\nnumeroParcelasSimulado\n\nEnvie a mensagem:\n\nSimulei aqui rapidinho pra você, {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😄\nPra R$ {{valorSolicitado}}, dá R$ {{valorParcelaSimulado}} em {{numeroParcelasSimulado}}x, direto do seu benefício.\nO valor cairia via {{ $json.MeioPagamento == \"01\" ? \"conta corrente\" : \"cartão magnético\" }}.\nTe adianto tudo e já deixo encaminhado, posso seguir? 😉\n\nSe o cliente aceitar, envie:\n\n{\n  \"tool\": \"atualiza_fase\",\n  \"arguments\": {\n    \"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n    \"fase\": 3\n  }\n}\nSe valor inválido:\n\nOpa, {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😅\nO valor mínimo pra saque é de R$ 200, e você tem até R$ {{ $('Google Sheets Dados').item.json.limiteDisponivel }} liberado.\n\nQuer tentar outro valor dentro desse limite? Posso simular na hora pra você! 💡\n\n</Etapas>\n</Fluxo>\n</Fluxo>\n<Fluxo tipo=\"Recusa\">\n<Condição>cliente diz “agora não”, “deixa pra depois”, “talvez”, “não quero”</Condição>\n <mensagem>\n   \"Tudo certo, {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😊 Sei que pode não parecer o momento agora, mas esse valor pode ajudar bastante em alguma emergência ou até mesmo quitar uma dívida. 💡 Posso te ajudar com mais informações ou até mesmo simular outro valor?\"\n  <mensagem>\n  <Tool>\n    \"tool\": \"atualiza_fase\",\n    \"arguments\": \n      \"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n      \"fase\": \"reversao\"\n  <Tool>\n</Fluxo>\n</Fluxo>\n<Fluxo tipo=\"Curiosidade sobre a Empresa\">\n<Condição>Cliente pergunta “de onde é?”, “quem são vocês?”, etc.</Condição>\n<Etapas>\n \"tool\": \"Qdrant_mdg_empresa_base\" \n</Etapas>\n<Fluxo tipo=\"Curiosidade sobre o Produto\">\n<Condição>Cliente pergunta “juros?”, “oque é”, etc.</Condição>\n<Etapas>\n \"tool\": \"QdranQdrant_base_conhecimento_cartoes\" \n</Etapas>\n</Fluxo>\n</Fluxos>\n\n</Prompt>\n\n---",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').item.json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3408,
+        -1440
+      ],
+      "id": "4e554b5b-ad0c-45af-aacb-fae01944e481",
+      "name": "2 - Validar os dados1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('MenssageInput').item.json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=---\n```\n<Prompt>\nVocê é **Emma**, assistente virtual da empresa <empresa>MDG Intermediações de Negócios</empresa>, especialista em crédito consignado com foco no <produto>Saque Complementar BMG</produto>. O cliente já confirmou o interesse e seus dados bancários foram validados na fase 2. Agora chegou a hora de confirmar os dados finais com o cliente e registrar a proposta oficialmente e **encerrar a proposta**, gravar no sistema e enviar ao cliente o link de formalização retornado pela ferramenta.\n\n<Tom de voz>\n - Acolhedora, simpática e empática.\n - Direta, mas sempre gentil.\n - Uso leve de emojis.\n<Tom de voz>\n\n<Objetivo>\n  - Confirmar os dados finais com o cliente e registrar a proposta oficialmente. \n  - Chamar a tool `GravaProposta` com os dados fornecidos.  \n  - Enviar ao cliente o link de formalização retornado pela tool.   \n  - Garantir que a resposta ao cliente seja clara, amigável e siga o fluxo de chamadas de ferramenta antes do texto final.\n</Objetivo>\n\n<Entradas>\n  - sessionId: `{{$json.sessionId}}`  \n  - CPF: `{{$json.CPF}}`  \n  - NOME: `{{$json.NOME}}`  \n  - limiteDisponivel: `{{$json.limiteDisponivel}}`  \n  - valorParcela: `{{$json.valorParcela}}`  \n  - numeroParcelas: `{{$json.numeroParcelas}}`  \n  - entidade: `{{$json.entidade}}`  \n  - modalidadeSaque: `{{$json.modalidadeSaque}}`  \n  - numeroAdesao: `{{$json.numeroAdesao}}`  \n  - numeroContaInterna: `{{$json.numeroContaInterna}}`  \n  - matricula: `{{$json.matricula}}`  \n  - banco: `{{$json.banco}}`  \n  - agencia: `{{$json.agencia}}`  \n  - conta: `{{$json.conta}}`  \n  - digitoConta: `{{$json.digitoConta}}`  \n  - remoteJid: `{{$json.sessionId}}`  \n</Entradas>\n\n<Regras>\n  - Nunca invente dados: utilize apenas as variáveis de entrada ou as informações retornadas pelas ferramentas.  \n  - Confirmar os dados finais com o cliente.\n  - A chamada da tool `GravaProposta` deve ocorrer **antes** da mensagem final.  \n  - Após `GravaProposta`, utilize o campo `linkFormalizacao` retornado para comunicar ao cliente.  \n  - O SMS do banco será enviado automaticamente — **não precisa ser mencionado como uma ação da agente**.  \n  - Não use termos técnicos com o cliente (como “API”, “endpoint” ou “JSON”).  \n  - Mantenha o tom empático, claro, direto e use emojis com moderação 😊. \n  - Se o cliente perguntar sobre a MDG, chame `Qdrant mdg_empresa_base`.  \n  - Se o cliente perguntar sobre o Cartão Consignado, chame `Qdrant base_conhecimento_cartoes`.  \n</Regras>\n\n<Fluxos>\n\n<Fluxo tipo=\"Confirmação Final e Gravação da Proposta\">\n<Condição>O cliente respondeu “sim” para prosseguir com o envio da proposta.</Condição>\n<Etapas>\n\n1. Confirmação Final:\nMensagem de confirmação ao cliente:\n```\n\n\"Eu, {{$json.NOME}}, portador(a) do CPF {{$json.CPF}}, declaro estar ciente e de acordo com a liberação do valor de R\\$ {{$json.limiteDisponivel}}, com pagamento de parcelas no valor de R\\$ {{$json.valorParcela}}, utilizando a margem consignável disponível.\n\nReconheço que esta operação segue as normas vigentes e compreendo que o valor liberado e o valor da parcela podem sofrer variação conforme cálculos finais da instituição financeira.\n\nVocê confirma a veracidade das informações e autoriza o prosseguimento da proposta?\"\n\n````\n\n2. Chamada da tool `GravaProposta`:\n  \n````\n     \"tool\": \"GravaProposta\",\n       \"cpf\": \"{{$json.CPF}}\",\n       \"limiteDisponivel\": {{$json.limiteDisponivel}},\n       \"valorParcela\": {{$json.valorParcela}},\n       \"numeroParcelas\": \"{{$json.numeroParcelas}}\",\n       \"entidade\": \"{{$json.entidade}}\",\n       \"modalidadeSaque\": \"{{$json.modalidadeSaque}}\",\n       \"numeroAdesao\": \"{{$json.numeroAdesao}}\",\n       \"numeroContaInterna\": \"{{$json.numeroContaInterna}}\",\n       \"matricula\": \"{{$json.matricula}}\",\n       \"banco\": {{$json.banco}}  \n       \"agencia\": {{$json.agencia}}  \n       \"conta\": {{$json.conta}}  \n       \"digitoConta\": {{$json.digitoConta}} \n       \"remoteJid\": \"{{$json.sessionId}}\"\n````\n\n3. Ao receber o retorno de `GravaProposta`, extraia `linkFormalizacao`.\n\n4. Mensagem final ao cliente:\n\n```\n\"Sua proposta foi registrada com sucesso! 🎉  \nPara formalizar, acesse o link: {{$json.linkFormalizacao}}  \nSe precisar de qualquer coisa, é só me chamar, ok? 😊\"\n```\n```\n\n  \"tool\": \"atualiza_fase\",\n  \"arguments\":\n    \"sessionId\": \"{{ $('Google Sheets Dados').item.json.sessionId }}\",\n    \"fase\": finalizado\n\n</Etapas>\n\n<Fluxo tipo=\"Recusa pelo Banco\">\n<Condição>A ferramenta `GravaProposta` retornar status de erro ou recusa.</Condição>\n<Etapas>\n\n1. Mensagem ao cliente:\n\"Poxa, {{ $json.NOME.split(' ')[0].toSentenceCase() }} 😞\nHouve uma recusa por parte do banco ao registrar a proposta.\nIsso pode acontecer por uma instabilidade momentânea ou por alguma pendência interna.\n\nMas não se preocupe, já anotei isso aqui pra nossa equipe verificar com carinho, tá bem? 💙\nAssim que houver uma nova oportunidade, entraremos em contato com você.\"\n\n2. Atualização de fase:\n```json\n\n  \"tool\": \"atualiza_fase\",\n  \"arguments\": \n    \"sessionId\": \"{{ $('Google Sheets Dados').item.json.sessionId }}\",\n    \"fase\": \"recusa_banco\"\n```\n</Etapas> </Fluxo> \n</Fluxo>\n\n</Fluxos>\n</Prompt>\n```\n\n---\n",
+              "type": "string"
+            },
+            {
+              "id": "b7cf581f-baa8-437e-af47-76418b47d233",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "number"
+            },
+            {
+              "id": "42f132df-19f1-4159-b45b-df270c8195e6",
+              "name": "NOME",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "9bfc80ec-2991-42f7-a312-8d5aac7f8ef6",
+              "name": "MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "81e30076-5e8e-4e68-b806-1403406950cc",
+              "name": "limiteDisponivel",
+              "value": "={{ $json.limiteDisponivel }}",
+              "type": "string"
+            },
+            {
+              "id": "3d9b7b45-ad4a-4cb9-a9cf-4b39e3ee5647",
+              "name": "valorParcela",
+              "value": "={{ $json.valorParcela }}",
+              "type": "string"
+            },
+            {
+              "id": "12a55def-4052-43af-807d-4f7d7c6b0e1f",
+              "name": "numeroParcelas",
+              "value": "={{ $json.numeroParcelas }}",
+              "type": "string"
+            },
+            {
+              "id": "ec2ccb13-640a-49bb-9dbc-56c2cd832ca9",
+              "name": "entidade",
+              "value": "={{ $json.entidade }}",
+              "type": "string"
+            },
+            {
+              "id": "dc9d9ec6-70c3-487a-97e1-b4a7866118df",
+              "name": "modalidadeSaque",
+              "value": "={{ $json.modalidadeSaque }}",
+              "type": "string"
+            },
+            {
+              "id": "88023977-d00e-412f-96b3-49666f914992",
+              "name": "numeroAdesao",
+              "value": "={{ $json.numeroAdesao }}",
+              "type": "string"
+            },
+            {
+              "id": "afc303e1-822d-4a38-8dd1-b31b921eb239",
+              "name": "numeroContaInterna",
+              "value": "={{ $json.numeroContaInterna }}",
+              "type": "string"
+            },
+            {
+              "id": "34bc6419-9cd5-4bd0-bf48-0acdff8397ba",
+              "name": "matricula",
+              "value": "={{ $json.matricula }}",
+              "type": "string"
+            },
+            {
+              "id": "9a8891a9-2072-4a69-910a-d5aaeb1be405",
+              "name": "banco",
+              "value": "={{ $json.banco }}",
+              "type": "string"
+            },
+            {
+              "id": "409ba77e-d48b-4e64-a02f-0b48824af5aa",
+              "name": "agencia",
+              "value": "={{ $json.agencia }}",
+              "type": "string"
+            },
+            {
+              "id": "b5b5ee3c-7444-4d9e-8513-dd6be0824fae",
+              "name": "conta",
+              "value": "={{ $json.conta }}",
+              "type": "string"
+            },
+            {
+              "id": "0dfdb9f6-f88e-4311-89fc-154c63c4f3d8",
+              "name": "digitoConta",
+              "value": "={{ $json.digitoConta }}",
+              "type": "string"
+            },
+            {
+              "id": "569ea4e9-8982-4fa5-a8ef-d7c68262a7b2",
+              "name": "MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3840,
+        -1264
+      ],
+      "id": "b617db0c-1906-4957-8488-21a2fc046f67",
+      "name": "3 - Gravar propostas1"
+    },
+    {
+      "parameters": {
+        "functionCode": "const remoteJid = $json.remoteJid;\nconst now = Math.floor(Date.now() / 1000);\n\nreturn [{\n  json: {\n    remoteJid,\n    now\n  }\n}];"
+      },
+      "name": "Preparar Dados",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -3584,
+        224
+      ],
+      "id": "78cd627f-2cbe-4e42-b36b-0b92e0497e71"
+    },
+    {
+      "parameters": {},
+      "name": "Salvar Última Mensagem",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3360,
+        144
+      ],
+      "id": "877022d3-4414-4093-998d-77ba135defdb",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Adicionar ao Set Ativos",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3360,
+        352
+      ],
+      "id": "009b0dd2-7948-4eb6-8513-6ab623387733",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Cron - A cada 1 minuto",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -4496,
+        688
+      ],
+      "id": "f135cec9-8994-4a23-ad45-b4eec1a2e8db"
+    },
+    {
+      "parameters": {},
+      "name": "Buscar Clientes Ativos",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -4304,
+        688
+      ],
+      "id": "b7332d61-c203-4e95-8a65-93b628f05120",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "return items[0].json.result.map(remoteJid => ({ json: { remoteJid } }));"
+      },
+      "name": "Mapear Clientes",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -4096,
+        688
+      ],
+      "id": "12bdf1f0-fc7c-4372-ade8-6e67256a9278"
+    },
+    {
+      "parameters": {},
+      "name": "Buscar Última Mensagem",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3904,
+        592
+      ],
+      "id": "071145c1-2435-4481-8c4b-0d600b77047f"
+    },
+    {
+      "parameters": {},
+      "name": "Verificar Se Já Enviou Follow-up",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3904,
+        784
+      ],
+      "id": "66a6c722-4987-4b6e-85f4-9ff257ccee29"
+    },
+    {
+      "parameters": {
+        "functionCode": "const lastTime = parseInt(items[0].json.result);\nconst followupSent = items[1].json.result === 'true';\nconst now = Math.floor(Date.now() / 1000);\nconst diff = now - lastTime;\n\nif (diff > 300 && !followupSent) {\n  return [{ json: { remoteJid: items[0].json.remoteJid } }];\n} else {\n  return [];\n}"
+      },
+      "name": "Checar Necessidade de Follow-up",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -3696,
+        688
+      ],
+      "id": "fb2a3dc7-1251-4e7d-8ae5-8efed9a10f3b"
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: {\n  remoteJid: $json.remoteJid,\n  message: \"Oi, só passando pra confirmar se você ainda está por aqui 😊. Posso continuar com sua proposta?\"\n} }];"
+      },
+      "name": "Montar Mensagem Follow-up",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -3504,
+        688
+      ],
+      "id": "6949b5f1-3edf-4e68-9b8e-5a700b49b55f"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Aqui você deve chamar seu node de envio de mensagem real\nconsole.log(`Enviando follow-up para: ${$json.remoteJid}`);\nreturn items;"
+      },
+      "name": "Enviar Mensagem",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -3296,
+        688
+      ],
+      "id": "5757d6c3-28c2-466e-9388-428ac5d28cc8"
+    },
+    {
+      "parameters": {},
+      "name": "Marcar Follow-up Enviado",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3104,
+        688
+      ],
+      "id": "b0d24d17-c4bc-4168-8f60-cb539b5d4d6d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "182287dc-db54-4b01-b74f-5d30249bbe9d",
+              "name": "sessionId",
+              "value": "={{ $('Google Sheets Dados').first().json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "a935e9f0-9e23-4acb-8eb1-b4d71a07bcda",
+              "name": "Prompt",
+              "value": "=````\n<Prompt>\nVocê é Emma, agente virtual da MDG Intermediações, especialista em Saque Complementar BMG, atuando via WhatsApp. Sua missão é reverter recusas com empatia, persistência e leveza — **não aceite um “não” na primeira resposta**. Explore ao máximo as possibilidades até obter uma aceitação explícita ou uma recusa definitiva.\n\n<TomDeVoz>\n- WhatsApp-friendly: linguagem leve, natural e informal  \n- Empática, acolhedora e simpática  \n- Direta, mas nunca agressiva \n- Persuasão \n- Uso moderado de emojis para conexão\n</TomDeVoz>\n\n<Objetivo>\n- Reverter a recusa inicial do cliente com mensagens personalizadas, empáticas e progressivas.\n- Entender o motivo da recusa.\n- Utilizar os dados de simulação, se disponíveis  \n- Se não houver simulação, usar `ConsultaValorSaque`  \n- **Não encerrar com a primeira recusa**  \n- Só chamar `atualiza_fase` para fase 3 se houver aceitação clara (“sim”, “pode ser”, etc.)  \n- Se o cliente recusar de forma definitiva (ex: “nunca”, “não quero de jeito nenhum”), então encerrar  \n</Objetivo>\n\n<Entradas>\n  - CPF: `{{$json.CPF}}`  \n  - Nome: `{{ $('Google Sheets Dados').first().json.NOME }}`  \n  - limiteDisponivel: `{{$json.limiteDisponivel}}` (opcional)  \n  - valorParcela: `{{$json.valorParcela}}` (opcional)  \n  - numeroParcelas: `{{$json.numeroParcelas}}` (opcional)  \n  - MeioPagamento: `{{$json.MeioPagamento}}`  \n  - sessionId: `{{ $('Google Sheets Dados').first().json.sessionId }}`  \n  - sentimento: `{{ $('Google Sheets Dados').first().json.sentimento }}`  \n</Entradas>\n\n<Regras>\n  - Use sempre o primeiro nome do cliente  \n  - Nunca avance de fase com recusa ou resposta neutra  \n  - Mantenha o diálogo em modo reversão até aceitação ou recusa definitiva  \n  - Use emojis com moderação para parecer humano e simpático  \n  - Se o cliente perguntar sobre a MDG, chame `Qdrant mdg_empresa_base`.  \n  - Se o cliente perguntar sobre o Cartão Consignado, chame `Qdrant base_conhecimento_cartoes`.\n  - Não use termos técnicos com o cliente (como “API”, “endpoint” ou “JSON”). \n  - Nunca invente dados: utilize apenas as variáveis de entrada ou as informações retornadas pelas ferramentas. \n</Regras>\n\n<Fluxos>\n\n<Fluxo tipo=\"Sentimento neutro\">\n<Condição>sentimento == 'neutro' e dados de simulação presentes</Condição>\n<Mensagem>\nOi {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😊  \nVocê tem **R$ {{$json.limiteDisponivel}}** disponíveis, em **{{$json.numeroParcelas}}x de R$ {{$json.valorParcela}}**, direto do seu benefício.\n\nMuita gente recusa no começo, mas depois vê que o valor dá aquela aliviada no bolso. 😉  \nQuer ajustar esse valor ou simular outro rapidinho?\n</Mensagem>\n</Fluxo>\n\n<Fluxo tipo=\"Sentimento negativo (com simulação)\">\n<Condição>sentimento == 'negativo' e dados de simulação presentes</Condição>\n<Mensagem>\nTudo certo,  {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}. Entendo sua dúvida! 😊  \nMas olha só: você tem R$ {{$json.limiteDisponivel}} liberado, em {{$json.numeroParcelas}}x de R$ {{$json.valorParcela}}.\n\nPode ajudar bastante em emergências ou até quitar algo. 💡  \nSe quiser, simulo outro valor na hora, sem compromisso! Me avisa. 💬\n</Mensagem>\n</Fluxo>\n\n<Fluxo tipo=\"Simulação de Outro Valor\">\n<Condição>cliente informa valor diferente (ex: “quero sacar R$ X”)</Condição>\n<Etapas>\n1. Verifique se {{valorSolicitado}} ≥ R$ 200  \n2. Verifique se {{valorSolicitado}} ≤ R$ {{ $('Google Sheets Dados').item.json.limiteDisponivel }}\n3. Chame:\n```json\nSimulaParcela(\"{{$json.CPF}}\", {{valorSolicitado}})\n````\n\n4. Pegue os dados:\n\n* valorParcelaSimulado\n* numeroParcelasSimulado\n\n5. Mensagem:\n\n> Simulei aqui rapidinho pra você,  {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😊\n> Pra R\\$ {{valorSolicitado}}, seriam R\\$ {{valorParcelaSimulado}} em {{numeroParcelasSimulado}}x, descontadas do seu benefício.\n> O valor cairia via **{{ $json.MeioPagamento == \"01\" ? \"conta corrente\" : \"cartão magnético\" }}**.\n> Posso seguir com a liberação?\n\n6. atualiza_fase:\n\n```json\n{\n  \"tool\": \"atualiza_fase\",\n  \"arguments\": {\n    \"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n    \"fase\": 3\n  }\n}\n```\n</Etapas>\n</Fluxo>\n\n<Fluxo tipo=\"Sem simulação prévia\">\n<Condição>simulação ausente</Condição>\n<Mensagem>\nOi  {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😊  \nSei que agora pode não parecer interessante, mas posso consultar **rapidinho** se há algum valor disponível pra você.\n\nMuita gente se surpreende com o que aparece! 💰\nQuer que eu consulte pra ver? </Mensagem> \n<Tool>\n\n```json\n\n  \"tool\": \"ConsultaValorSaque\",\n  \"cpf\": \"{{$json.CPF}}\"\n```\n\n```\n    \"tool\": \"atualiza_fase\",\n    \"arguments\": \n    \"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n    \"fase\": 3\n\n```\n\n</Tool>\n</Fluxo>\n\n<Fluxo tipo=\"Recusa leve\">\n<Condição>cliente diz “agora não”, “deixa pra depois”, “talvez”, “não quero”</Condição>\n<ação>\n- entenda o motivo da recusa.\n- seja persuasiva.\n- use respostas curtas.\n <mensagem>\n   \"Tudo certo, {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😊 Sei que pode não parecer o momento agora, mas esse valor pode ajudar bastante em alguma emergência ou até mesmo quitar uma dívida. 💡 Posso te ajudar com mais informações ou até mesmo simular outro valor?\"\n  <mensagem>\n<ação>\n<Regras>\n- Use variações de linguagem para parecer espontânea.\n- Se o cliente se mostrar minimamente receptivo (“pode ser”, “tudo bem”, etc.), avance para fase 3 com a tool:\n\n\"tool\": \"atualiza_fase\",\n\"arguments\": \n\"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n\"fase\": 3\n\n- Caso o cliente insista na recusa com firmeza (ex: “não quero de jeito nenhum”), use o fluxo de **Recusa Definitiva**.\n</Regras>\n</Fluxo>\n\n<Fluxo tipo=\"Recusa definitiva\">\n<Condição>cliente diz “não quero de jeito nenhum”, “nunca”, “definitivamente não”</Condição>\n<Mensagem>\nCompreendo,  {{ $('Google Sheets Dados').first().json.NOME.split(' ')[0].toSentenceCase() }}! 😊  \nSe mudar de ideia, estarei por aqui. Um abraço da Emma 💙\n</Mensagem>\n<Tool>\n```\n\n  \"tool\": \"atualiza_fase\",\n  \"arguments\": \n    \"sessionId\": \"{{ $('Google Sheets Dados').first().json.sessionId }}\",\n    \"fase\": \"recusa_definitiva\"\n\n```\n</Tool>\n</Fluxo>\n\n</Fluxos>\n</Prompt>\n```\n\n---",
+              "type": "string"
+            },
+            {
+              "id": "b7cf581f-baa8-437e-af47-76418b47d233",
+              "name": "CPF",
+              "value": "={{ $('Google Sheets Dados').first().json.CPF }}",
+              "type": "number"
+            },
+            {
+              "id": "42f132df-19f1-4159-b45b-df270c8195e6",
+              "name": "NOME",
+              "value": "={{ $('Google Sheets Dados').first().json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "3b128a16-1496-46d5-b560-7f322c9c1b3b",
+              "name": "chatInput",
+              "value": "={{ $('MenssageInput').first().json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "9bfc80ec-2991-42f7-a312-8d5aac7f8ef6",
+              "name": "=MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "81e30076-5e8e-4e68-b806-1403406950cc",
+              "name": "limiteDisponivel",
+              "value": "={{ $json.limiteDisponivel }}",
+              "type": "string"
+            },
+            {
+              "id": "3d9b7b45-ad4a-4cb9-a9cf-4b39e3ee5647",
+              "name": "valorParcela",
+              "value": "={{ $json.valorParcela }}",
+              "type": "string"
+            },
+            {
+              "id": "12a55def-4052-43af-807d-4f7d7c6b0e1f",
+              "name": "numeroParcelas",
+              "value": "={{ $json.numeroParcelas }}",
+              "type": "string"
+            },
+            {
+              "id": "ec2ccb13-640a-49bb-9dbc-56c2cd832ca9",
+              "name": "entidade",
+              "value": "={{ $json.entidade }}",
+              "type": "string"
+            },
+            {
+              "id": "dc9d9ec6-70c3-487a-97e1-b4a7866118df",
+              "name": "modalidadeSaque",
+              "value": "={{ $json.modalidadeSaque }}",
+              "type": "string"
+            },
+            {
+              "id": "88023977-d00e-412f-96b3-49666f914992",
+              "name": "numeroAdesao",
+              "value": "={{ $json.numeroAdesao }}",
+              "type": "string"
+            },
+            {
+              "id": "afc303e1-822d-4a38-8dd1-b31b921eb239",
+              "name": "numeroContaInterna",
+              "value": "={{ $json.numeroContaInterna }}",
+              "type": "string"
+            },
+            {
+              "id": "34bc6419-9cd5-4bd0-bf48-0acdff8397ba",
+              "name": "matricula",
+              "value": "={{ $json.matricula }}",
+              "type": "string"
+            },
+            {
+              "id": "9a8891a9-2072-4a69-910a-d5aaeb1be405",
+              "name": "banco",
+              "value": "={{ $json.Banco }}",
+              "type": "string"
+            },
+            {
+              "id": "409ba77e-d48b-4e64-a02f-0b48824af5aa",
+              "name": "agencia",
+              "value": "={{ $json.AgenciaPagto }}",
+              "type": "string"
+            },
+            {
+              "id": "b5b5ee3c-7444-4d9e-8513-dd6be0824fae",
+              "name": "conta",
+              "value": "={{ $json.ContaPagto }}",
+              "type": "string"
+            },
+            {
+              "id": "357a619e-36b6-47bb-9822-50fe8cb87680",
+              "name": "digito",
+              "value": "={{ $json.digito }}",
+              "type": "number"
+            },
+            {
+              "id": "569ea4e9-8982-4fa5-a8ef-d7c68262a7b2",
+              "name": "MeioPagamento",
+              "value": "={{ $json.MeioPagamento }}",
+              "type": "string"
+            },
+            {
+              "id": "aec78500-058f-4a95-8773-7a4cbe4e9ab3",
+              "name": "message",
+              "value": "={{ $json.data[0].message }}",
+              "type": "string"
+            },
+            {
+              "id": "a67abca9-674b-41da-856c-dcd33e095496",
+              "name": "sentimentAnalysis",
+              "value": "={{ $('Google Sheets Dados').first().json.sentimento }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3648,
+        -1264
+      ],
+      "id": "865fba3e-bfa6-4e0e-9a5f-d040a69e9fde",
+      "name": "Dados Reversao1"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.mdgintermediacoes.com.br/mcp/saque_complementar_bmg/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        -624
+      ],
+      "id": "6ba19fd7-e7bb-4429-8ddf-bc6e80685182",
+      "name": "MCP Client saque complementar BMG1"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -208
+      ],
+      "id": "1f9a60fc-4283-4e4a-9f42-adbce9b56143",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pOegylLBwaHAjzk2",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "List_array",
+        "key": "=buffer_{{ $('Organização').item.json.msg.telefone }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        -336
+      ],
+      "id": "fdccce18-725c-4a13-9763-11dae355472d",
+      "name": "Buscar1",
+      "credentials": {
+        "redis": {
+          "id": "2y8e8qNjLE5cI6iY",
+          "name": "Redis account dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ec7f84c0-4d56-4e4e-94a3-7d08058b0d00",
+              "leftValue": "={{ $('Buscar').item.json.List_array.last() }}",
+              "rightValue": "={{ $('Wait').item.json.List_array.last() }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -656,
+        -336
+      ],
+      "id": "4f25a7bd-c123-48b3-a45c-5fa1b0e209f5",
+      "name": "If"
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "envia WhatsApp1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "envia WhatsApp1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FASE 1 - Conversao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FASE 1 - Conversao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FASE 1 - Conversao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "2 - Validar os dados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3 - Gravar propostas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "MenssageInput": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "FASE 0  — Saudação inicial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FASE 0  — Saudação inicial": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Redis Chat Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agente 2 - Validar os dados",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia WhatsApp2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "envia WhatsApp2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Conversão",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent Conversão",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "envia WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent 3 - Gravar propostas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client saque complementar BMG2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent 3 - Gravar propostas",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory4": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent 3 - Gravar propostas",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia WhatsApp3": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "envia WhatsApp3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Conversão": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Reversão",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client saque complementar BMG3": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Reversão",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory5": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent Reversão",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia WhatsApp4": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "envia WhatsApp4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Dados Reversao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Reversão": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Dados": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados Reversao": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Reversão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2 - Validar os dados": {
+      "main": [
+        [
+          {
+            "node": "AI Agente 2 - Validar os dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FASE 1 - Conversao": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Conversão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3 - Gravar propostas": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 3 - Gravar propostas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent 3 - Gravar propostas": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields base64": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "MergeMenssage",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "MergeMenssage": {
+      "main": [
+        [
+          {
+            "node": "Organização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "MergeMenssage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "MergeMenssage",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AI Agente 2 - Validar os dados": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client saque complementar BMG": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agente 2 - Validar os dados",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch3": {
+      "main": [
+        [],
+        [],
+        []
+      ]
+    },
+    "Delete1": {
+      "main": [
+        [
+          {
+            "node": "Concatenação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Buscar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar ": {
+      "main": [
+        [
+          {
+            "node": "Buscar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organização": {
+      "main": [
+        [
+          {
+            "node": "Enviar ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Concatenação": {
+      "main": [
+        [
+          {
+            "node": "MenssageInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Dados": {
+      "main": [
+        [
+          {
+            "node": "Salvar Última Mensagem",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Adicionar ao Set Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron - A cada 1 minuto": {
+      "main": [
+        [
+          {
+            "node": "Buscar Clientes Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Clientes Ativos": {
+      "main": [
+        [
+          {
+            "node": "Mapear Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear Clientes": {
+      "main": [
+        [
+          {
+            "node": "Buscar Última Mensagem",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Verificar Se Já Enviou Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Última Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Checar Necessidade de Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Se Já Enviou Follow-up": {
+      "main": [
+        [
+          {
+            "node": "Checar Necessidade de Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checar Necessidade de Follow-up": {
+      "main": [
+        [
+          {
+            "node": "Montar Mensagem Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Mensagem Follow-up": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Marcar Follow-up Enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client saque complementar BMG1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Conversão",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agente 2 - Validar os dados",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Delete1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-03-18T13:19:36Z"
+    },
+    "node:Google Drive Trigger1": {
+      "lastTimeChecked": "2025-03-18T13:19:37Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.19",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.19",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.19",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "926",
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "user-agent": "axios/1.7.7",
+            "accept-encoding": "gzip, compress, deflate, br"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "CL020",
+            "data": {
+              "key": {
+                "remoteJid": "5519993418990@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB0723C4604B49B78B5CC"
+              },
+              "pushName": "Raul😎🤘",
+              "message": {
+                "conversation": "SIM",
+                "messageContextInfo": {
+                  "deviceListMetadata": {
+                    "senderKeyHash": "xjPawfyP5OPGkQ==",
+                    "senderTimestamp": "1749642102",
+                    "senderAccountType": "E2EE",
+                    "receiverAccountType": "E2EE",
+                    "recipientKeyHash": "0AifzoLPbbfYgQ==",
+                    "recipientTimestamp": "1749485417"
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": "p6yA4fvm2T+QS5FdAQLsIJ4I5mF7+87Cv9tHmAZfdXY="
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1750184246,
+              "owner": "CL020",
+              "source": "web"
+            },
+            "destination": "https://n8n.mdgintermediacoes.com.br/webhook-test/1cc7223b-e0d1-4e1c-b3a4-305bb009baf1",
+            "date_time": "2025-06-17T15:17:26.371Z",
+            "sender": "5519981152848@s.whatsapp.net",
+            "server_url": "http://evolutionapi-dev.mdgintermediacoes.com.br",
+            "apikey": "kqd8awta15phwswkxyylkn"
+          },
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook-test/1cc7223b-e0d1-4e1c-b3a4-305bb009baf1",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "06873e5a-634f-41d3-8fff-b0505c3ec799",
+  "activeVersionId": null,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2025-02-12T14:09:46.149Z",
+      "createdAt": "2025-02-12T14:09:46.149Z",
+      "role": "workflow:owner",
+      "workflowId": "FxFcpvX2iqrdk0ea",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

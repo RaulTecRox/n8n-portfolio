@@ -1,0 +1,1860 @@
+{
+  "updatedAt": "2025-06-05T13:36:49.138Z",
+  "createdAt": "2025-06-03T19:59:01.150Z",
+  "id": "VzNFvDWJ7DjA0B8X",
+  "name": "DIGITACAO - BMG SAQUE COMPLEMENTAR copy",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f83ab9ac-57d2-471c-9156-fbecd4cca128",
+              "name": "login",
+              "value": "robo.54873",
+              "type": "string"
+            },
+            {
+              "id": "c88f03dd-1f83-42d2-baa2-d3c47d1f3694",
+              "name": "senha",
+              "value": "Cosmo@001",
+              "type": "string"
+            },
+            {
+              "id": "bae96078-ad32-4b68-be2b-5b0aa6285af1",
+              "name": "loginConsig",
+              "value": "MDG54873.DAYANESTE",
+              "type": "string"
+            },
+            {
+              "id": "4724c2b0-7e62-4601-8929-baf611283647",
+              "name": "senhaConsig",
+              "value": "Cosmo@003",
+              "type": "string"
+            },
+            {
+              "id": "c025f066-dbcf-484b-aad9-11547fce83f3",
+              "name": "credilusToken",
+              "value": "kDSgE9KhSkkXk0WQkA0FU1f6VQ6N6g0Olvxl0Byhb1b6280f",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -200,
+        -3140
+      ],
+      "id": "7c9c9f50-9e71-4f38-8039-35df0459f70a",
+      "name": "Credentials"
+    },
+    {
+      "parameters": {
+        "url": "=https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf?cpf={{ $('Merge').item.json.cpf }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Credentials').item.json.credilusToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        -3140
+      ],
+      "id": "8235f4ae-ad6d-49f3-b917-3a6c79a00d51",
+      "name": "Credilus Request",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allData = $(\"Credilus Request\").first().json.data;\nconst record = allData[0];\n\nconst emails = record.EMAILS;\nconst nomeCompleto = record.NOME || \"\";\nconst cpf = record.CPFCNPJ || \"\";\n\nfunction parseEmailList(emailString) {\n  if (emailString) {\n    return emailString\n      .split(',')\n      .map(email => email.trim())\n      .filter(email => email !== '');\n  }\n  return [];\n}\n\nlet emailList = parseEmailList(emails);\n\nif (emailList.length === 0) {\n  const nomes = nomeCompleto.trim().split(\" \");\n  const primeiroNome = nomes[0]?.toLowerCase() || \"usuario\";\n  const ultimoNome = nomes[nomes.length - 1]?.toLowerCase() || \"padrao\";\n  const cpfDigitos = cpf.replace(/\\D/g, \"\"); // remove caracteres não numéricos\n  const ultimosDigitos = cpfDigitos.slice(-2) || \"00\";\n  const emailGerado = `${primeiroNome}${ultimoNome}${ultimosDigitos}@gmail.com`;\n  emailList = [emailGerado];\n}\n\nreturn {\n  emails: emailList\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        -3140
+      ],
+      "id": "aba553fa-3802-48a6-baea-7c330c567073",
+      "name": "Filter Emails"
+    },
+    {
+      "parameters": {
+        "jsCode": "const phoneData = $(\"Merge\").first().json.remoteJid;\n\nfunction extractPhoneInfo(whatsappString) {\n    const match = whatsappString?.match(/^55(\\d{2})(\\d{8,9})@s\\.whatsapp\\.net$/);\n    \n    if (match) {\n        return {\n            ddd: match[1],\n            phone: match[2]\n        };\n    }\n\n    return null; // Retorna null se o formato não corresponder\n}\n\nconst result = extractPhoneInfo(phoneData);\n\n// O n8n espera um array de objetos como saída no nó de código\nreturn result ? [result] : [];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        840,
+        -3140
+      ],
+      "id": "08c8ee2b-dcbc-4edb-8504-b089a2b4a346",
+      "name": "Telefone remoteJid"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mdgintermediacoes.com.br/webhook-test/agilus/af/create",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"cpf\": \"{{ $('Get Body').item.json.body.cpf.toString() }}\",\n  \"matricula\": \"{{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}\",\n  \"nome\": \"{{ $('Nova Era Response').item.json.beneficiario.Nome }}\",\n  \"rua\": \"{{ $('Nova Era Response').item.json.beneficiario.Endereco }}\",\n  \"numero\": \"{{ $('Nova Era Response').item.json.beneficiario.Numero ? $('Nova Era Response').item.json.beneficiario.Numero : \"\" }}\",\n  \"telefone\": \"({{ $('Telefone remoteJid').item.json.ddd }}){{$('Telefone remoteJid').item.json.phone}}\",\n  \"bairro\": \"{{ $('Nova Era Response').item.json.beneficiario.Bairro }}\",\n  \"cidade\": \"{{ $('Nova Era Response').item.json.beneficiario.Cidade }}\",\n  \"estado\": \"{{ $('Nova Era Response').item.json.beneficiario.UF }}\",\n  \"cep\": \"{{ $('Nova Era Response').item.json.beneficiario.CEP }}\",\n  \"rg\": \"{{ $('Nova Era Response').item.json.beneficiario.Rg }}\",\n  \"data_nascimento\": \"{{ $('Nova Era Response').item.json.beneficiario.DataNascimento }}\",\n  \"estado_civil\": \"solteiro\",\n  \"sexo\": \"{{ $('Nova Era Response').item.json.beneficiario.Sexo }}\",\n  \"banco_codigo\": {{ $('Nova Era Response').item.json.contaBancaria.Banco }},\n  \"banco_agencia\": \"{{ $('Nova Era Response').item.json.contaBancaria.AgenciaPagto }}\",\n  \"banco_conta_corrente\": \"{{ $('Nova Era Response').item.json.contaBancaria.ContaPagto }}\",\n  \"orgav_codigo\": {{ $('Nova Era Response').item.json.orgao_agilus }},\n  \"salario\": {{ $('Nova Era Response').item.json.resumoFinanceiro.ValorBeneficio }},\n  \"login_cadastramento\": \"DIGITADOR\",\n  \"banco_poupanca\": {{ $('Nova Era Response').item.json.contaBancaria.MeioPagamento === 2 ? true : false }},\n  \"especie\": {{ $('Nova Era Response').item.json.beneficiario.Especie }},\n  \"nome_mae\": \"{{ $('Nova Era Response').item.json.beneficiario.NomeMae }}\",\n  \"recebe_cartao_magnetico\": {{ $('Nova Era Response').item.json.contaBancaria.MeioPagamento === 2 || $('Nova Era Response').item.json.contaBancaria.MeioPagamento === 1 ? true : false }},\n  \"digitacao_banco\": \"BMG\",\n  \"digitacao_tbb_descricao\": \"SAQUE COMPLEMENTAR | SEM SEGURO\",\n  \"digitacao_valor_parcela\": {{ $('Buscar Simulação Response').item.json.valorParcela }},\n  \"digitacao_codigo_contrato_banco\": \"99999998\"\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2760,
+        -3140
+      ],
+      "id": "c2bc7297-62c2-4984-bfe3-fd6515096113",
+      "name": "Criar AF",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-partners.bancobmg.com.br/oauth/v1/access-token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"grant_type\": \"client_credentials\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2100,
+        -3140
+      ],
+      "id": "f3c3fcca-0cb0-4b73-aab8-c943ece54007",
+      "name": "BMG Gera Token",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "YaXQfYAVSv0UMT4M",
+          "name": "BMG API Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api-partners.bancobmg.com.br/captacao-consig-propostas/v1/formalizacoes/link-compartilhado",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "loginUsuario",
+              "value": "={{ $('Credentials').item.json.loginConsig }}"
+            },
+            {
+              "name": "numeroProposta",
+              "value": "={{ $('XML Buscar Limite Saque1').item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:gravarPropostaSaqueComplementarResponse\"].gravarPropostaSaqueComplementarReturn._ }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('BMG Gera Token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2320,
+        -3140
+      ],
+      "id": "a2d6123d-b0b4-4328-a519-db541bd831e8",
+      "name": "BMG Link Formalização"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "gZ5JN1xv9TScWZQj",
+          "mode": "list",
+          "cachedResultName": "Higenizador - IN100 Credilus copy"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        280,
+        -3140
+      ],
+      "id": "8d70043c-0c1a-4223-b136-c8f0c858a22e",
+      "name": "Execute Workflow",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"    xmlns:web=\"http://webservice.econsig.bmg.com\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">\n<soapenv:Header />\n<soapenv:Body>\n    <web:gravarPropostaSaqueComplementar soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n    <proposta xsi:type=\"web:SaqueComplementarParameter\">\n        <login xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.login }}</login>\n        <senha xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senha }}</senha>\n        <loginConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.loginConsig }}</loginConsig>\n        <codigoEntidade xsi:type=\"xsd:int\">{{ $('Merge').item.json.entidade }}</codigoEntidade>\n        <cpf xsi:type=\"soapenc:string\">{{ $('Get Body').item.json.CPF }}</cpf>\n        <senhaConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senhaConsig }}</senhaConsig>\n        <sequencialOrgao xsi:type=\"xsd:int\"></sequencialOrgao>\n        <cpfImpedidoComissionar xsi:type=\"xsd:boolean\">false</cpfImpedidoComissionar>\n        <matricula xsi:type=\"soapenc:string\">{{ $('Merge').item.json.matricula }}</matricula>\n        <matriculaInstituidor xsi:type=\"soapenc:string\"></matriculaInstituidor>\n        <numeroContaInterna xsi:type=\"xsd:long\">{{ $('Merge').item.json.numeroContaInterna }}</numeroContaInterna>\n        <script xsi:type=\"soapenc:string\"></script>\n        <tipoSaque xsi:type=\"xsd:int\">{{ $('Merge').item.json.modalidadeSaque }}</tipoSaque>\n        <vinculoMatricula xsi:type=\"soapenc:string\"></vinculoMatricula>\n        <aberturaContaPagamento xsi:type=\"xsd:int\">0</aberturaContaPagamento>\n        <banco xsi:type=\"web:BancoParameter\">\n            <numero xsi:type=\"xsd:int\">{{ $('Execute Workflow').item.json['CÓDIGO BANCÁRIO'] }}</numero>\n        </banco>\n        <agencia xsi:type=\"web:AgenciaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\"></digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['AGÊNCIA'] }}</numero>\n        </agencia>\n        <bancoOrdemPagamento xsi:type=\"xsd:int\">0</bancoOrdemPagamento>\n        <celular1 xsi:type=\"web:TelefoneParameter\">\n            <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n            <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n            <ramal xsi:type=\"soapenc:string\"></ramal>\n        </celular1>\n        <codigoFormaEnvioTermo xsi:type=\"soapenc:string\">15</codigoFormaEnvioTermo>\n        <codigoLoja xsi:type=\"xsd:int\">54873</codigoLoja>\n        <codigoRejeicaoContaSimples xsi:type=\"xsd:int\"></codigoRejeicaoContaSimples>\n        <codigoSituacaoServidor xsi:type=\"xsd:int\"></codigoSituacaoServidor>\n        <conta xsi:type=\"web:ContaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['DÍGITO CONTA'] }}</digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json.CONTA }}</numero>\n        </conta>\n        <email xsi:type=\"soapenc:string\">{{ $('Filter Emails').item.json.emails[0] }}</email>\n        <finalidadeCredito xsi:type=\"xsd:int\">1</finalidadeCredito>\n\t\t<numeroParcelas xsi:type=\"soapenc:int\">{{ $('Merge').item.json.numeroParcelas }}</numeroParcelas>\n        <formaCredito xsi:type=\"xsd:int\">2</formaCredito>\n        <telefoneFixoOuCelular xsi:type=\"web:TelefoneParameter\">\n          <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n          <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n          <ramal xsi:type=\"soapenc:string\"></ramal>\n        </telefoneFixoOuCelular>\n\t   <valorParcela xsi:type=\"soapenc:double\">{{ $('Merge').item.json.valorParcela }}</valorParcela>\n        <valorSaque xsi:type=\"xsd:double\">{{ $('Merge').item.json.limiteDisponivel }}</valorSaque>\n    </proposta>\n    </web:gravarPropostaSaqueComplementar>\n</soapenv:Body>\n\n</soapenv:Envelope>",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        -3140
+      ],
+      "id": "e267e0bf-0b9a-4a4a-bb62-c57d60c4bdfa",
+      "name": "Gravar Proposta1",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"    xmlns:web=\"http://webservice.econsig.bmg.com\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">\n<soapenv:Header />\n<soapenv:Body>\n    <web:gravarPropostaSaqueComplementar soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n    <proposta xsi:type=\"web:SaqueComplementarParameter\">\n        <login xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.login }}</login>\n        <senha xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senha }}</senha>\n        <loginConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.loginConsig }}</loginConsig>\n        <codigoEntidade xsi:type=\"xsd:int\">1581</codigoEntidade>\n        <cpf xsi:type=\"soapenc:string\">26881551487</cpf>\n        <senhaConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senhaConsig }}</senhaConsig>\n        <sequencialOrgao xsi:type=\"xsd:int\">0</sequencialOrgao>\n        <cpfImpedidoComissionar xsi:type=\"xsd:boolean\">false</cpfImpedidoComissionar>\n        <matricula xsi:type=\"soapenc:string\">{{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}</matricula>\n        <matriculaInstituidor xsi:type=\"soapenc:string\"></matriculaInstituidor>\n        <numeroContaInterna xsi:type=\"xsd:long\">{{ $('Buscar Cartões Disponíveis Response').item.json.numeroContaInterna }}</numeroContaInterna>\n        <script xsi:type=\"soapenc:string\"></script>\n        <tipoSaque xsi:type=\"xsd:int\">{{ $('Buscar Cartões Disponíveis Response').item.json.modalidadeSaque }}</tipoSaque>\n        <vinculoMatricula xsi:type=\"soapenc:string\"></vinculoMatricula>\n        <aberturaContaPagamento xsi:type=\"xsd:int\">0</aberturaContaPagamento>\n        <banco xsi:type=\"web:BancoParameter\">\n            <numero xsi:type=\"xsd:int\"{{ $('Execute Workflow').item.json['CÓDIGO BANCÁRIO'] }}></numero>\n        </banco>\n        <agencia xsi:type=\"web:AgenciaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\"></digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['AGÊNCIA'] }}</numero>\n        </agencia>\n        <bancoOrdemPagamento xsi:type=\"xsd:int\">0</bancoOrdemPagamento>\n        <celular1 xsi:type=\"web:TelefoneParameter\">\n            <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n            <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n            <ramal xsi:type=\"soapenc:string\"></ramal>\n        </celular1>\n        <codigoFormaEnvioTermo xsi:type=\"soapenc:string\">15</codigoFormaEnvioTermo>\n        <codigoLoja xsi:type=\"xsd:int\">54873</codigoLoja>\n        <codigoRejeicaoContaSimples xsi:type=\"xsd:int\"></codigoRejeicaoContaSimples>\n        <codigoSituacaoServidor xsi:type=\"xsd:int\"></codigoSituacaoServidor>\n        <conta xsi:type=\"web:ContaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['DÍGITO CONTA'] }}</digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json.CONTA }}</numero>\n        </conta>\n        <email xsi:type=\"soapenc:string\">{{ $('Filter Emails').item.json.emails[0] }}</email>\n        <finalidadeCredito xsi:type=\"xsd:int\">1</finalidadeCredito>\n\t\t<numeroParcelas xsi:type=\"soapenc:int\">{{ $('Buscar Simulação Response').item.json.numeroParcelas }}</numeroParcelas>\n        <formaCredito xsi:type=\"xsd:int\">2</formaCredito>\n        <telefoneFixoOuCelular xsi:type=\"web:TelefoneParameter\">\n          <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n          <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n          <ramal xsi:type=\"soapenc:string\"></ramal>\n        </telefoneFixoOuCelular>\n\t   <valorParcela xsi:type=\"soapenc:double\">{{ $('Buscar Simulação Response').item.json.valorParcela }}</valorParcela>\n        <valorSaque xsi:type=\"xsd:double\">{{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}</valorSaque>\n    </proposta>\n    </web:gravarPropostaSaqueComplementar>\n</soapenv:Body>\n\n</soapenv:Envelope>",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -260,
+        -3680
+      ],
+      "id": "94bc85db-22b4-4bb3-9f7d-dfda47c5ad9d",
+      "name": "Gravar Proposta",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        -3140
+      ],
+      "id": "df4e8617-a5d9-440d-88ec-968bec553a8a",
+      "name": "XML Buscar Limite Saque1"
+    },
+    {
+      "parameters": {
+        "url": "https://api-partners.bancobmg.com.br/captacao-consig-propostas/v1/formalizacoes/link-compartilhado/aceite",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "loginUsuario",
+              "value": "={{ $('Credentials').item.json.loginConsig }}"
+            },
+            {
+              "name": "numeroProposta",
+              "value": "={{ $('XML Buscar Limite Saque1').item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:gravarPropostaSaqueComplementarResponse\"].gravarPropostaSaqueComplementarReturn._ }}"
+            },
+            {
+              "name": "nomeCorrespondente",
+              "value": "MDG INTERMEDIACOES DE NEGOCIOS ME"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('BMG Gera Token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2540,
+        -3140
+      ],
+      "id": "90b34a40-1c56-4e93-ae77-913041d0721d",
+      "name": "BMG Link Formalização1"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1020,
+        -3160
+      ],
+      "id": "7c8a1f2d-ce72-40c0-8cc7-31c9393f6718",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        2980,
+        -3140
+      ],
+      "id": "680411bd-ec59-49b3-8198-bafc23799cac",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = items[0].json.query;\n\n// Substitui aspas simples por aspas duplas e converte para objeto\nconst cleaned = raw.replace(/'/g, '\"');\nconst parsed = JSON.parse(cleaned);\n\nreturn [{ json: parsed }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        -3160
+      ],
+      "id": "a11a05e0-61a3-42a2-afb9-d68f0746093f",
+      "name": "Get Content"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+              "name": "CPF",
+              "value": "={{ $('Merge').item.json.cpf }}",
+              "type": "string"
+            },
+            {
+              "id": "fea995f0-a33a-46e7-8727-5fff39d3d89d",
+              "name": "limiteDisponivel",
+              "value": "={{ $('Merge').item.json.limiteDisponivel }}",
+              "type": "number"
+            },
+            {
+              "id": "1bad7947-57cc-4681-9674-53a64d038fb9",
+              "name": "valorParcela",
+              "value": "={{ $('Merge').item.json.valorParcela }}",
+              "type": "number"
+            },
+            {
+              "id": "cc0c2d41-466d-41c7-9409-8fc3aea52890",
+              "name": "numeroParcelas",
+              "value": "={{ $('Merge').item.json.numeroParcelas }}",
+              "type": "number"
+            },
+            {
+              "id": "b2526609-1d42-4bb4-a5a3-f2d9f01277cb",
+              "name": "codigoEntidade",
+              "value": "={{ $('Merge').item.json.entidade }}",
+              "type": "string"
+            },
+            {
+              "id": "7e748f93-d43c-479b-af72-15ee6f430145",
+              "name": "modalidadeSaque",
+              "value": "={{ $('Merge').item.json.modalidadeSaque }}",
+              "type": "string"
+            },
+            {
+              "id": "bb539c6c-dbdd-42d7-a7a3-a716db10a1cd",
+              "name": "numeroAdesao",
+              "value": "={{ $('Merge').item.json.numeroAdesao }}",
+              "type": "string"
+            },
+            {
+              "id": "ca8fa3aa-075d-4f6a-8682-a5bc1b4d3ed6",
+              "name": "numeroContaInterna",
+              "value": "={{ $('Merge').item.json.numeroContaInterna }}",
+              "type": "string"
+            },
+            {
+              "id": "b1f6ba43-e888-46f5-aad7-58e6d3126622",
+              "name": "matricula",
+              "value": "={{ $('Merge').item.json.matricula }}",
+              "type": "string"
+            },
+            {
+              "id": "f7974c47-4fa6-46c5-bb02-45e225acfbc8",
+              "name": "remoteJid",
+              "value": "={{ $('Merge').item.json.remoteJid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        20,
+        -3140
+      ],
+      "id": "53df6f9d-bf83-4512-bc8d-2c6094b9b073",
+      "name": "Get Body"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d1b89a14-b7fd-430a-aac8-3a900ce0879d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1020,
+        -2940
+      ],
+      "id": "64f2c882-5b60-4c53-9862-92de99719a61",
+      "name": "Webhook",
+      "webhookId": "d1b89a14-b7fd-430a-aac8-3a900ce0879d"
+    },
+    {
+      "parameters": {
+        "keys": {
+          "key": [
+            {
+              "currentKey": "body",
+              "newKey": "query "
+            }
+          ]
+        },
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.renameKeys",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        -2940
+      ],
+      "id": "9dd56c85-5307-4111-9b39-214411422081",
+      "name": "Rename Keys"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega o array do campo body\nlet data = items[0].json.body;\n\n// Corrige problemas de digitação, como \"96}\"\ndata = data.map(item => {\n  return {\n    ...item,\n    numeroParcelas: item.numeroParcelas?.toString().replace(/[^\\d]/g, '') || null,\n    limiteDisponivel: parseFloat(item.limiteDisponivel) || null,\n    valorParcela: parseFloat(item.valorParcela) || null\n  };\n});\n\n// Retorna o primeiro item do array\nreturn [{ json: data[0] }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        -2940
+      ],
+      "id": "d39b3678-f151-4348-9798-bc6a5058061b",
+      "name": "Get Body1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -400,
+        -3140
+      ],
+      "id": "c79b7a67-b253-46af-9d0b-d184182665ea",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8abefc62-3c33-4be9-a3a2-f65f42e2ba37",
+              "name": "error.message",
+              "value": "={{ $json.mensagemLegivel }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2120,
+        -2860
+      ],
+      "id": "9147446f-20fa-48a5-ade7-b36bcfc50565",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "48d1788a-bc06-472d-8c7f-948b0d18ff47",
+              "name": "status_code",
+              "value": "400",
+              "type": "string"
+            },
+            {
+              "id": "323b2d87-dcb6-4c45-91e2-03ee1fbc44d4",
+              "name": "step",
+              "value": "Buscar Limite Saque",
+              "type": "string"
+            },
+            {
+              "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+              "name": "message",
+              "value": "={{ JSON.stringify($json.error.message) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2120,
+        -2540
+      ],
+      "id": "043a8446-55fa-4dba-9313-c3f78d2cb565",
+      "name": "On Error Buscar Limite Saque1"
+    },
+    {
+      "parameters": {
+        "jsCode": "function decodeHtmlEntities(str) {\n  return str\n    .replace(/&#xE1;/g, 'á')\n    .replace(/&#xE0;/g, 'à')\n    .replace(/&#xE2;/g, 'â')\n    .replace(/&#xEA;/g, 'ê')\n    .replace(/&#xE3;/g, 'ã')\n    .replace(/&#xED;/g, 'í')\n    .replace(/&#xF3;/g, 'ó')\n    .replace(/&#xFA;/g, 'ú')\n    .replace(/&#xF4;/g, 'ô')\n    .replace(/&#xE9;/g, 'é')\n    .replace(/&quot;/g, '\"');\n}\n\nconst rawMessage = items[0].json.error.message;\n\nconst match = rawMessage.match(/<faultstring>(.*?)<\\/faultstring>/);\n\nif (match && match[1]) {\n  const decoded = decodeHtmlEntities(match[1]);\n\n  const cleanedMessage = decoded.replace(/^.*Lista de inconsistências:/i, '').trim();\n\n  return [{ json: { mensagemLegivel: cleanedMessage } }];\n} else {\n  return [{ json: { mensagemLegivel: 'Mensagem de erro não encontrada.' } }];\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1480,
+        -2940
+      ],
+      "id": "c25ea4f9-1486-46ed-bee0-29ef9a9c9de6",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        2340,
+        -2860
+      ],
+      "id": "bd50a900-8c58-42fd-8a02-814ecd18d361",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        -3140
+      ],
+      "id": "4b601b0c-360b-42c6-ad9e-16dcb6896bc3",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        -2860
+      ],
+      "id": "6a2932f9-d6b7-44ba-8cfc-202b3c046536",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "content": "## RECEBIMENTO DE DADOS \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 620,
+        "width": 1200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        -3360
+      ],
+      "typeVersion": 1,
+      "id": "01b4c064-f5f6-4ad4-8ade-8b3da21a018d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA DE DADOS CREDILUS IN100/CREDILIUS \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 460,
+        "width": 800
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        220,
+        -3360
+      ],
+      "typeVersion": 1,
+      "id": "2d097f5d-2506-44d8-b7de-336dfd69ccf2",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Credentials": {
+      "main": [
+        [
+          {
+            "node": "Get Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Credilus Request": {
+      "main": [
+        [
+          {
+            "node": "Filter Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Emails": {
+      "main": [
+        [
+          {
+            "node": "Telefone remoteJid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telefone remoteJid": {
+      "main": [
+        [
+          {
+            "node": "Gravar Proposta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BMG Gera Token": {
+      "main": [
+        [
+          {
+            "node": "BMG Link Formalização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BMG Link Formalização": {
+      "main": [
+        [
+          {
+            "node": "BMG Link Formalização1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Credilus Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gravar Proposta1": {
+      "main": [
+        [
+          {
+            "node": "XML Buscar Limite Saque1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML Buscar Limite Saque1": {
+      "main": [
+        [
+          {
+            "node": "BMG Gera Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BMG Link Formalização1": {
+      "main": [
+        [
+          {
+            "node": "Criar AF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar AF": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Content": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Body": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Body1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Keys": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Body1": {
+      "main": [
+        [
+          {
+            "node": "Rename Keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 180
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mdgintermediacoes.com.br",
+            "scheme": "https",
+            "server_port": "443",
+            "remote_addr": "10.3.60.5",
+            "connection": "Upgrade",
+            "x-real-ip": "10.3.60.5",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "10.3.60.5",
+            "x-forwarded-host": "n8n.mdgintermediacoes.com.br",
+            "x-forwarded-port": "443",
+            "content-length": "262",
+            "content-type": "application/json",
+            "accept": "*/*",
+            "accept-language": "*",
+            "sec-fetch-mode": "cors",
+            "user-agent": "node",
+            "accept-encoding": "br, gzip, deflate"
+          },
+          "params": {},
+          "query": {},
+          "body": [
+            {
+              "cpf": "29590620000",
+              "limiteDisponivel": "937.35",
+              "valorParcela": "26.19",
+              "numeroParcelas": "96",
+              "entidade": "1581",
+              "modalidadeSaque": "2",
+              "numeroAdesao": "52649149",
+              "numeroContaInterna": "20492662",
+              "matricula": "1729435960",
+              "remoteJid": "5519993418990@s.whatsapp.net"
+            }
+          ],
+          "webhookUrl": "https://n8n.mdgintermediacoes.com.br/webhook-test/e22a1111-0143-4707-88b7-a7acb53da516",
+          "executionMode": "test"
+        }
+      }
+    ],
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "{\"cpf\": \"29590620000\", \"limite_disponivel\": \"937.35\", \"valor_parcela\": \"26.19\", \"numero_parcelas\": \"96\", \"entidade\": \"INSS\", \"modalidade_saque\": \"complementar\", \"numero_adesao\": \"[GERAR_AQUI]\", \"numero_conta_interna\": \"[GERAR_AQUI]\", \"matricula\": \"[GERAR_AQUI]\", \"remote_jid\": \"[SESSAO_WPP]\"}"
+        }
+      }
+    ]
+  },
+  "versionId": "e8e40386-8c4e-4e0c-8d47-978e52233cc8",
+  "activeVersionId": "e8e40386-8c4e-4e0c-8d47-978e52233cc8",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-03T19:59:01.150Z",
+      "createdAt": "2025-06-03T19:59:01.150Z",
+      "role": "workflow:owner",
+      "workflowId": "VzNFvDWJ7DjA0B8X",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-29T01:50:38.405Z",
+    "createdAt": "2025-11-29T01:50:38.405Z",
+    "versionId": "e8e40386-8c4e-4e0c-8d47-978e52233cc8",
+    "workflowId": "VzNFvDWJ7DjA0B8X",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f83ab9ac-57d2-471c-9156-fbecd4cca128",
+                "name": "login",
+                "value": "robo.54873",
+                "type": "string"
+              },
+              {
+                "id": "c88f03dd-1f83-42d2-baa2-d3c47d1f3694",
+                "name": "senha",
+                "value": "Cosmo@001",
+                "type": "string"
+              },
+              {
+                "id": "bae96078-ad32-4b68-be2b-5b0aa6285af1",
+                "name": "loginConsig",
+                "value": "MDG54873.DAYANESTE",
+                "type": "string"
+              },
+              {
+                "id": "4724c2b0-7e62-4601-8929-baf611283647",
+                "name": "senhaConsig",
+                "value": "Cosmo@003",
+                "type": "string"
+              },
+              {
+                "id": "c025f066-dbcf-484b-aad9-11547fce83f3",
+                "name": "credilusToken",
+                "value": "kDSgE9KhSkkXk0WQkA0FU1f6VQ6N6g0Olvxl0Byhb1b6280f",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -200,
+          -3140
+        ],
+        "id": "7c9c9f50-9e71-4f38-8039-35df0459f70a",
+        "name": "Credentials"
+      },
+      {
+        "parameters": {
+          "url": "=https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf?cpf={{ $('Merge').item.json.cpf }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $('Credentials').item.json.credilusToken }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          500,
+          -3140
+        ],
+        "id": "8235f4ae-ad6d-49f3-b917-3a6c79a00d51",
+        "name": "Credilus Request",
+        "executeOnce": false,
+        "alwaysOutputData": true,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const allData = $(\"Credilus Request\").first().json.data;\nconst record = allData[0];\n\nconst emails = record.EMAILS;\nconst nomeCompleto = record.NOME || \"\";\nconst cpf = record.CPFCNPJ || \"\";\n\nfunction parseEmailList(emailString) {\n  if (emailString) {\n    return emailString\n      .split(',')\n      .map(email => email.trim())\n      .filter(email => email !== '');\n  }\n  return [];\n}\n\nlet emailList = parseEmailList(emails);\n\nif (emailList.length === 0) {\n  const nomes = nomeCompleto.trim().split(\" \");\n  const primeiroNome = nomes[0]?.toLowerCase() || \"usuario\";\n  const ultimoNome = nomes[nomes.length - 1]?.toLowerCase() || \"padrao\";\n  const cpfDigitos = cpf.replace(/\\D/g, \"\"); // remove caracteres não numéricos\n  const ultimosDigitos = cpfDigitos.slice(-2) || \"00\";\n  const emailGerado = `${primeiroNome}${ultimoNome}${ultimosDigitos}@gmail.com`;\n  emailList = [emailGerado];\n}\n\nreturn {\n  emails: emailList\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          680,
+          -3140
+        ],
+        "id": "aba553fa-3802-48a6-baea-7c330c567073",
+        "name": "Filter Emails"
+      },
+      {
+        "parameters": {
+          "jsCode": "const phoneData = $(\"Merge\").first().json.remoteJid;\n\nfunction extractPhoneInfo(whatsappString) {\n    const match = whatsappString?.match(/^55(\\d{2})(\\d{8,9})@s\\.whatsapp\\.net$/);\n    \n    if (match) {\n        return {\n            ddd: match[1],\n            phone: match[2]\n        };\n    }\n\n    return null; // Retorna null se o formato não corresponder\n}\n\nconst result = extractPhoneInfo(phoneData);\n\n// O n8n espera um array de objetos como saída no nó de código\nreturn result ? [result] : [];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          840,
+          -3140
+        ],
+        "id": "08c8ee2b-dcbc-4edb-8504-b089a2b4a346",
+        "name": "Telefone remoteJid"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mdgintermediacoes.com.br/webhook-test/agilus/af/create",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={\n  \"cpf\": \"{{ $('Get Body').item.json.body.cpf.toString() }}\",\n  \"matricula\": \"{{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}\",\n  \"nome\": \"{{ $('Nova Era Response').item.json.beneficiario.Nome }}\",\n  \"rua\": \"{{ $('Nova Era Response').item.json.beneficiario.Endereco }}\",\n  \"numero\": \"{{ $('Nova Era Response').item.json.beneficiario.Numero ? $('Nova Era Response').item.json.beneficiario.Numero : \"\" }}\",\n  \"telefone\": \"({{ $('Telefone remoteJid').item.json.ddd }}){{$('Telefone remoteJid').item.json.phone}}\",\n  \"bairro\": \"{{ $('Nova Era Response').item.json.beneficiario.Bairro }}\",\n  \"cidade\": \"{{ $('Nova Era Response').item.json.beneficiario.Cidade }}\",\n  \"estado\": \"{{ $('Nova Era Response').item.json.beneficiario.UF }}\",\n  \"cep\": \"{{ $('Nova Era Response').item.json.beneficiario.CEP }}\",\n  \"rg\": \"{{ $('Nova Era Response').item.json.beneficiario.Rg }}\",\n  \"data_nascimento\": \"{{ $('Nova Era Response').item.json.beneficiario.DataNascimento }}\",\n  \"estado_civil\": \"solteiro\",\n  \"sexo\": \"{{ $('Nova Era Response').item.json.beneficiario.Sexo }}\",\n  \"banco_codigo\": {{ $('Nova Era Response').item.json.contaBancaria.Banco }},\n  \"banco_agencia\": \"{{ $('Nova Era Response').item.json.contaBancaria.AgenciaPagto }}\",\n  \"banco_conta_corrente\": \"{{ $('Nova Era Response').item.json.contaBancaria.ContaPagto }}\",\n  \"orgav_codigo\": {{ $('Nova Era Response').item.json.orgao_agilus }},\n  \"salario\": {{ $('Nova Era Response').item.json.resumoFinanceiro.ValorBeneficio }},\n  \"login_cadastramento\": \"DIGITADOR\",\n  \"banco_poupanca\": {{ $('Nova Era Response').item.json.contaBancaria.MeioPagamento === 2 ? true : false }},\n  \"especie\": {{ $('Nova Era Response').item.json.beneficiario.Especie }},\n  \"nome_mae\": \"{{ $('Nova Era Response').item.json.beneficiario.NomeMae }}\",\n  \"recebe_cartao_magnetico\": {{ $('Nova Era Response').item.json.contaBancaria.MeioPagamento === 2 || $('Nova Era Response').item.json.contaBancaria.MeioPagamento === 1 ? true : false }},\n  \"digitacao_banco\": \"BMG\",\n  \"digitacao_tbb_descricao\": \"SAQUE COMPLEMENTAR | SEM SEGURO\",\n  \"digitacao_valor_parcela\": {{ $('Buscar Simulação Response').item.json.valorParcela }},\n  \"digitacao_codigo_contrato_banco\": \"99999998\"\n}",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2760,
+          -3140
+        ],
+        "id": "c2bc7297-62c2-4984-bfe3-fd6515096113",
+        "name": "Criar AF",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api-partners.bancobmg.com.br/oauth/v1/access-token",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"grant_type\": \"client_credentials\"\n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2100,
+          -3140
+        ],
+        "id": "f3c3fcca-0cb0-4b73-aab8-c943ece54007",
+        "name": "BMG Gera Token",
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "YaXQfYAVSv0UMT4M",
+            "name": "BMG API Credentials"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "https://api-partners.bancobmg.com.br/captacao-consig-propostas/v1/formalizacoes/link-compartilhado",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "loginUsuario",
+                "value": "={{ $('Credentials').item.json.loginConsig }}"
+              },
+              {
+                "name": "numeroProposta",
+                "value": "={{ $('XML Buscar Limite Saque1').item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:gravarPropostaSaqueComplementarResponse\"].gravarPropostaSaqueComplementarReturn._ }}"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $('BMG Gera Token').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2320,
+          -3140
+        ],
+        "id": "a2d6123d-b0b4-4328-a519-db541bd831e8",
+        "name": "BMG Link Formalização"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "gZ5JN1xv9TScWZQj",
+            "mode": "list",
+            "cachedResultName": "Higenizador - IN100 Credilus copy"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          280,
+          -3140
+        ],
+        "id": "8d70043c-0c1a-4223-b136-c8f0c858a22e",
+        "name": "Execute Workflow",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/xml",
+          "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"    xmlns:web=\"http://webservice.econsig.bmg.com\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">\n<soapenv:Header />\n<soapenv:Body>\n    <web:gravarPropostaSaqueComplementar soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n    <proposta xsi:type=\"web:SaqueComplementarParameter\">\n        <login xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.login }}</login>\n        <senha xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senha }}</senha>\n        <loginConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.loginConsig }}</loginConsig>\n        <codigoEntidade xsi:type=\"xsd:int\">{{ $('Merge').item.json.entidade }}</codigoEntidade>\n        <cpf xsi:type=\"soapenc:string\">{{ $('Get Body').item.json.CPF }}</cpf>\n        <senhaConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senhaConsig }}</senhaConsig>\n        <sequencialOrgao xsi:type=\"xsd:int\"></sequencialOrgao>\n        <cpfImpedidoComissionar xsi:type=\"xsd:boolean\">false</cpfImpedidoComissionar>\n        <matricula xsi:type=\"soapenc:string\">{{ $('Merge').item.json.matricula }}</matricula>\n        <matriculaInstituidor xsi:type=\"soapenc:string\"></matriculaInstituidor>\n        <numeroContaInterna xsi:type=\"xsd:long\">{{ $('Merge').item.json.numeroContaInterna }}</numeroContaInterna>\n        <script xsi:type=\"soapenc:string\"></script>\n        <tipoSaque xsi:type=\"xsd:int\">{{ $('Merge').item.json.modalidadeSaque }}</tipoSaque>\n        <vinculoMatricula xsi:type=\"soapenc:string\"></vinculoMatricula>\n        <aberturaContaPagamento xsi:type=\"xsd:int\">0</aberturaContaPagamento>\n        <banco xsi:type=\"web:BancoParameter\">\n            <numero xsi:type=\"xsd:int\">{{ $('Execute Workflow').item.json['CÓDIGO BANCÁRIO'] }}</numero>\n        </banco>\n        <agencia xsi:type=\"web:AgenciaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\"></digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['AGÊNCIA'] }}</numero>\n        </agencia>\n        <bancoOrdemPagamento xsi:type=\"xsd:int\">0</bancoOrdemPagamento>\n        <celular1 xsi:type=\"web:TelefoneParameter\">\n            <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n            <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n            <ramal xsi:type=\"soapenc:string\"></ramal>\n        </celular1>\n        <codigoFormaEnvioTermo xsi:type=\"soapenc:string\">15</codigoFormaEnvioTermo>\n        <codigoLoja xsi:type=\"xsd:int\">54873</codigoLoja>\n        <codigoRejeicaoContaSimples xsi:type=\"xsd:int\"></codigoRejeicaoContaSimples>\n        <codigoSituacaoServidor xsi:type=\"xsd:int\"></codigoSituacaoServidor>\n        <conta xsi:type=\"web:ContaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['DÍGITO CONTA'] }}</digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json.CONTA }}</numero>\n        </conta>\n        <email xsi:type=\"soapenc:string\">{{ $('Filter Emails').item.json.emails[0] }}</email>\n        <finalidadeCredito xsi:type=\"xsd:int\">1</finalidadeCredito>\n\t\t<numeroParcelas xsi:type=\"soapenc:int\">{{ $('Merge').item.json.numeroParcelas }}</numeroParcelas>\n        <formaCredito xsi:type=\"xsd:int\">2</formaCredito>\n        <telefoneFixoOuCelular xsi:type=\"web:TelefoneParameter\">\n          <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n          <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n          <ramal xsi:type=\"soapenc:string\"></ramal>\n        </telefoneFixoOuCelular>\n\t   <valorParcela xsi:type=\"soapenc:double\">{{ $('Merge').item.json.valorParcela }}</valorParcela>\n        <valorSaque xsi:type=\"xsd:double\">{{ $('Merge').item.json.limiteDisponivel }}</valorSaque>\n    </proposta>\n    </web:gravarPropostaSaqueComplementar>\n</soapenv:Body>\n\n</soapenv:Envelope>",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1120,
+          -3140
+        ],
+        "id": "e267e0bf-0b9a-4a4a-bb62-c57d60c4bdfa",
+        "name": "Gravar Proposta1",
+        "retryOnFail": true,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ws1.bmgconsig.com.br/webservices/SaqueComplementar",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/xml",
+          "body": "=<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"    xmlns:web=\"http://webservice.econsig.bmg.com\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\">\n<soapenv:Header />\n<soapenv:Body>\n    <web:gravarPropostaSaqueComplementar soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n    <proposta xsi:type=\"web:SaqueComplementarParameter\">\n        <login xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.login }}</login>\n        <senha xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senha }}</senha>\n        <loginConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.loginConsig }}</loginConsig>\n        <codigoEntidade xsi:type=\"xsd:int\">1581</codigoEntidade>\n        <cpf xsi:type=\"soapenc:string\">26881551487</cpf>\n        <senhaConsig xsi:type=\"soapenc:string\">{{ $('Credentials').item.json.senhaConsig }}</senhaConsig>\n        <sequencialOrgao xsi:type=\"xsd:int\">0</sequencialOrgao>\n        <cpfImpedidoComissionar xsi:type=\"xsd:boolean\">false</cpfImpedidoComissionar>\n        <matricula xsi:type=\"soapenc:string\">{{ $('Buscar Cartões Disponíveis Response').item.json.matricula }}</matricula>\n        <matriculaInstituidor xsi:type=\"soapenc:string\"></matriculaInstituidor>\n        <numeroContaInterna xsi:type=\"xsd:long\">{{ $('Buscar Cartões Disponíveis Response').item.json.numeroContaInterna }}</numeroContaInterna>\n        <script xsi:type=\"soapenc:string\"></script>\n        <tipoSaque xsi:type=\"xsd:int\">{{ $('Buscar Cartões Disponíveis Response').item.json.modalidadeSaque }}</tipoSaque>\n        <vinculoMatricula xsi:type=\"soapenc:string\"></vinculoMatricula>\n        <aberturaContaPagamento xsi:type=\"xsd:int\">0</aberturaContaPagamento>\n        <banco xsi:type=\"web:BancoParameter\">\n            <numero xsi:type=\"xsd:int\"{{ $('Execute Workflow').item.json['CÓDIGO BANCÁRIO'] }}></numero>\n        </banco>\n        <agencia xsi:type=\"web:AgenciaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\"></digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['AGÊNCIA'] }}</numero>\n        </agencia>\n        <bancoOrdemPagamento xsi:type=\"xsd:int\">0</bancoOrdemPagamento>\n        <celular1 xsi:type=\"web:TelefoneParameter\">\n            <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n            <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n            <ramal xsi:type=\"soapenc:string\"></ramal>\n        </celular1>\n        <codigoFormaEnvioTermo xsi:type=\"soapenc:string\">15</codigoFormaEnvioTermo>\n        <codigoLoja xsi:type=\"xsd:int\">54873</codigoLoja>\n        <codigoRejeicaoContaSimples xsi:type=\"xsd:int\"></codigoRejeicaoContaSimples>\n        <codigoSituacaoServidor xsi:type=\"xsd:int\"></codigoSituacaoServidor>\n        <conta xsi:type=\"web:ContaParameter\">\n            <digitoVerificador xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json['DÍGITO CONTA'] }}</digitoVerificador>\n            <numero xsi:type=\"soapenc:string\">{{ $('Execute Workflow').item.json.CONTA }}</numero>\n        </conta>\n        <email xsi:type=\"soapenc:string\">{{ $('Filter Emails').item.json.emails[0] }}</email>\n        <finalidadeCredito xsi:type=\"xsd:int\">1</finalidadeCredito>\n\t\t<numeroParcelas xsi:type=\"soapenc:int\">{{ $('Buscar Simulação Response').item.json.numeroParcelas }}</numeroParcelas>\n        <formaCredito xsi:type=\"xsd:int\">2</formaCredito>\n        <telefoneFixoOuCelular xsi:type=\"web:TelefoneParameter\">\n          <ddd xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.ddd }}</ddd>\n          <numero xsi:type=\"soapenc:string\">{{ $('Telefone remoteJid').item.json.phone }}</numero>\n          <ramal xsi:type=\"soapenc:string\"></ramal>\n        </telefoneFixoOuCelular>\n\t   <valorParcela xsi:type=\"soapenc:double\">{{ $('Buscar Simulação Response').item.json.valorParcela }}</valorParcela>\n        <valorSaque xsi:type=\"xsd:double\">{{ $('Buscar Limite Saque Response').item.json.valorSaqueMaximo }}</valorSaque>\n    </proposta>\n    </web:gravarPropostaSaqueComplementar>\n</soapenv:Body>\n\n</soapenv:Envelope>",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -260,
+          -3680
+        ],
+        "id": "94bc85db-22b4-4bb3-9f7d-dfda47c5ad9d",
+        "name": "Gravar Proposta",
+        "disabled": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          1880,
+          -3140
+        ],
+        "id": "df4e8617-a5d9-440d-88ec-968bec553a8a",
+        "name": "XML Buscar Limite Saque1"
+      },
+      {
+        "parameters": {
+          "url": "https://api-partners.bancobmg.com.br/captacao-consig-propostas/v1/formalizacoes/link-compartilhado/aceite",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "loginUsuario",
+                "value": "={{ $('Credentials').item.json.loginConsig }}"
+              },
+              {
+                "name": "numeroProposta",
+                "value": "={{ $('XML Buscar Limite Saque1').item.json[\"soapenv:Envelope\"][\"soapenv:Body\"][\"ns1:gravarPropostaSaqueComplementarResponse\"].gravarPropostaSaqueComplementarReturn._ }}"
+              },
+              {
+                "name": "nomeCorrespondente",
+                "value": "MDG INTERMEDIACOES DE NEGOCIOS ME"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $('BMG Gera Token').item.json.access_token }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2540,
+          -3140
+        ],
+        "id": "90b34a40-1c56-4e93-ae77-913041d0721d",
+        "name": "BMG Link Formalização1"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -1020,
+          -3160
+        ],
+        "id": "7c8a1f2d-ce72-40c0-8cc7-31c9393f6718",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          2980,
+          -3140
+        ],
+        "id": "680411bd-ec59-49b3-8198-bafc23799cac",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "jsCode": "const raw = items[0].json.query;\n\n// Substitui aspas simples por aspas duplas e converte para objeto\nconst cleaned = raw.replace(/'/g, '\"');\nconst parsed = JSON.parse(cleaned);\n\nreturn [{ json: parsed }];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -780,
+          -3160
+        ],
+        "id": "a11a05e0-61a3-42a2-afb9-d68f0746093f",
+        "name": "Get Content"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "63c1cd58-316d-40bd-8de4-a2a174a9fe39",
+                "name": "CPF",
+                "value": "={{ $('Merge').item.json.cpf }}",
+                "type": "string"
+              },
+              {
+                "id": "fea995f0-a33a-46e7-8727-5fff39d3d89d",
+                "name": "limiteDisponivel",
+                "value": "={{ $('Merge').item.json.limiteDisponivel }}",
+                "type": "number"
+              },
+              {
+                "id": "1bad7947-57cc-4681-9674-53a64d038fb9",
+                "name": "valorParcela",
+                "value": "={{ $('Merge').item.json.valorParcela }}",
+                "type": "number"
+              },
+              {
+                "id": "cc0c2d41-466d-41c7-9409-8fc3aea52890",
+                "name": "numeroParcelas",
+                "value": "={{ $('Merge').item.json.numeroParcelas }}",
+                "type": "number"
+              },
+              {
+                "id": "b2526609-1d42-4bb4-a5a3-f2d9f01277cb",
+                "name": "codigoEntidade",
+                "value": "={{ $('Merge').item.json.entidade }}",
+                "type": "string"
+              },
+              {
+                "id": "7e748f93-d43c-479b-af72-15ee6f430145",
+                "name": "modalidadeSaque",
+                "value": "={{ $('Merge').item.json.modalidadeSaque }}",
+                "type": "string"
+              },
+              {
+                "id": "bb539c6c-dbdd-42d7-a7a3-a716db10a1cd",
+                "name": "numeroAdesao",
+                "value": "={{ $('Merge').item.json.numeroAdesao }}",
+                "type": "string"
+              },
+              {
+                "id": "ca8fa3aa-075d-4f6a-8682-a5bc1b4d3ed6",
+                "name": "numeroContaInterna",
+                "value": "={{ $('Merge').item.json.numeroContaInterna }}",
+                "type": "string"
+              },
+              {
+                "id": "b1f6ba43-e888-46f5-aad7-58e6d3126622",
+                "name": "matricula",
+                "value": "={{ $('Merge').item.json.matricula }}",
+                "type": "string"
+              },
+              {
+                "id": "f7974c47-4fa6-46c5-bb02-45e225acfbc8",
+                "name": "remoteJid",
+                "value": "={{ $('Merge').item.json.remoteJid }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          20,
+          -3140
+        ],
+        "id": "53df6f9d-bf83-4512-bc8d-2c6094b9b073",
+        "name": "Get Body"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "d1b89a14-b7fd-430a-aac8-3a900ce0879d",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -1020,
+          -2940
+        ],
+        "id": "64f2c882-5b60-4c53-9862-92de99719a61",
+        "name": "Webhook",
+        "webhookId": "d1b89a14-b7fd-430a-aac8-3a900ce0879d"
+      },
+      {
+        "parameters": {
+          "keys": {
+            "key": [
+              {
+                "currentKey": "body",
+                "newKey": "query "
+              }
+            ]
+          },
+          "additionalOptions": {}
+        },
+        "type": "n8n-nodes-base.renameKeys",
+        "typeVersion": 1,
+        "position": [
+          -580,
+          -2940
+        ],
+        "id": "9dd56c85-5307-4111-9b39-214411422081",
+        "name": "Rename Keys"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Pega o array do campo body\nlet data = items[0].json.body;\n\n// Corrige problemas de digitação, como \"96}\"\ndata = data.map(item => {\n  return {\n    ...item,\n    numeroParcelas: item.numeroParcelas?.toString().replace(/[^\\d]/g, '') || null,\n    limiteDisponivel: parseFloat(item.limiteDisponivel) || null,\n    valorParcela: parseFloat(item.valorParcela) || null\n  };\n});\n\n// Retorna o primeiro item do array\nreturn [{ json: data[0] }];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -800,
+          -2940
+        ],
+        "id": "d39b3678-f151-4348-9798-bc6a5058061b",
+        "name": "Get Body1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1,
+        "position": [
+          -400,
+          -3140
+        ],
+        "id": "c79b7a67-b253-46af-9d0b-d184182665ea",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8abefc62-3c33-4be9-a3a2-f65f42e2ba37",
+                "name": "error.message",
+                "value": "={{ $json.mensagemLegivel }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2120,
+          -2860
+        ],
+        "id": "9147446f-20fa-48a5-ade7-b36bcfc50565",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "48d1788a-bc06-472d-8c7f-948b0d18ff47",
+                "name": "status_code",
+                "value": "400",
+                "type": "string"
+              },
+              {
+                "id": "323b2d87-dcb6-4c45-91e2-03ee1fbc44d4",
+                "name": "step",
+                "value": "Buscar Limite Saque",
+                "type": "string"
+              },
+              {
+                "id": "1353e79a-b7aa-47f4-a65c-0f2e3cf41c75",
+                "name": "message",
+                "value": "={{ JSON.stringify($json.error.message) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2120,
+          -2540
+        ],
+        "id": "043a8446-55fa-4dba-9313-c3f78d2cb565",
+        "name": "On Error Buscar Limite Saque1"
+      },
+      {
+        "parameters": {
+          "jsCode": "function decodeHtmlEntities(str) {\n  return str\n    .replace(/&#xE1;/g, 'á')\n    .replace(/&#xE0;/g, 'à')\n    .replace(/&#xE2;/g, 'â')\n    .replace(/&#xEA;/g, 'ê')\n    .replace(/&#xE3;/g, 'ã')\n    .replace(/&#xED;/g, 'í')\n    .replace(/&#xF3;/g, 'ó')\n    .replace(/&#xFA;/g, 'ú')\n    .replace(/&#xF4;/g, 'ô')\n    .replace(/&#xE9;/g, 'é')\n    .replace(/&quot;/g, '\"');\n}\n\nconst rawMessage = items[0].json.error.message;\n\nconst match = rawMessage.match(/<faultstring>(.*?)<\\/faultstring>/);\n\nif (match && match[1]) {\n  const decoded = decodeHtmlEntities(match[1]);\n\n  const cleanedMessage = decoded.replace(/^.*Lista de inconsistências:/i, '').trim();\n\n  return [{ json: { mensagemLegivel: cleanedMessage } }];\n} else {\n  return [{ json: { mensagemLegivel: 'Mensagem de erro não encontrada.' } }];\n}\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1480,
+          -2940
+        ],
+        "id": "c25ea4f9-1486-46ed-bee0-29ef9a9c9de6",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.2,
+        "position": [
+          2340,
+          -2860
+        ],
+        "id": "bd50a900-8c58-42fd-8a02-814ecd18d361",
+        "name": "Respond to Webhook1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          3200,
+          -3140
+        ],
+        "id": "4b601b0c-360b-42c6-ad9e-16dcb6896bc3",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2560,
+          -2860
+        ],
+        "id": "6a2932f9-d6b7-44ba-8cfc-202b3c046536",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "content": "## RECEBIMENTO DE DADOS \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 620,
+          "width": 1200
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1040,
+          -3360
+        ],
+        "typeVersion": 1,
+        "id": "01b4c064-f5f6-4ad4-8ade-8b3da21a018d",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "## CONSULTA DE DADOS CREDILUS IN100/CREDILIUS \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+          "height": 460,
+          "width": 800
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          220,
+          -3360
+        ],
+        "typeVersion": 1,
+        "id": "2d097f5d-2506-44d8-b7de-336dfd69ccf2",
+        "name": "Sticky Note1"
+      }
+    ],
+    "connections": {
+      "Credentials": {
+        "main": [
+          [
+            {
+              "node": "Get Body",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Credilus Request": {
+        "main": [
+          [
+            {
+              "node": "Filter Emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Emails": {
+        "main": [
+          [
+            {
+              "node": "Telefone remoteJid",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Telefone remoteJid": {
+        "main": [
+          [
+            {
+              "node": "Gravar Proposta1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "BMG Gera Token": {
+        "main": [
+          [
+            {
+              "node": "BMG Link Formalização",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "BMG Link Formalização": {
+        "main": [
+          [
+            {
+              "node": "BMG Link Formalização1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow": {
+        "main": [
+          [
+            {
+              "node": "Credilus Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gravar Proposta1": {
+        "main": [
+          [
+            {
+              "node": "XML Buscar Limite Saque1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML Buscar Limite Saque1": {
+        "main": [
+          [
+            {
+              "node": "BMG Gera Token",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "BMG Link Formalização1": {
+        "main": [
+          [
+            {
+              "node": "Criar AF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Criar AF": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Content": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Body": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get Body1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rename Keys": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Get Body1": {
+        "main": [
+          [
+            {
+              "node": "Rename Keys",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-02-18T14:02:38.331Z",
+      "createdAt": "2025-02-18T14:02:38.331Z",
+      "id": "Bd8bdkbUuGWtSaFv",
+      "name": "Saque Complementar"
+    }
+  ]
+}

@@ -1,0 +1,3502 @@
+{
+  "updatedAt": "2026-02-02T12:28:24.127Z",
+  "createdAt": "2025-11-21T15:55:48.082Z",
+  "id": "ZrvXtOSnPHcqzxeE",
+  "name": "PRECFACIL - Importacao Oficio",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        -1024
+      ],
+      "id": "f2c3b8e3-605f-48b2-b89f-3a2e3227559c",
+      "name": "Compression"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "destinationKey": "arquivoBase64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1424,
+        -1024
+      ],
+      "id": "5cce69bb-bd73-426d-897e-d45367b358ea",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da5a30b5-7951-4bee-8dbf-e7ae6eb0874d",
+              "name": "arquivoBase64",
+              "value": "={{ $json.arquivoBase64 }}",
+              "type": "string"
+            },
+            {
+              "id": "da0a7604-9338-490b-a120-26c9dd9714d8",
+              "name": "nomeArquivo",
+              "value": "={{ $('Edit Fields1').item.json.FileName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1664,
+        -1024
+      ],
+      "id": "df3a4413-ce60-4786-bda7-44b495339c1d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2afe62c8-73a4-469a-8c5e-11b220a90c88",
+              "name": "=FileName",
+              "value": "={{ Object.values($binary)[0].fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "a6f1103a-8d3b-4a01-b010-968b7bbb2ab4",
+              "name": "base64",
+              "value": "={{ Object.keys($binary)[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        -1024
+      ],
+      "id": "b3d3dea1-a37a-493c-9523-06791dc884ce",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00693003-6b08-47c3-b58c-226e0d894692",
+              "name": "CPF",
+              "value": "={{ $json.content.parseJson().CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "b2c80a97-3b35-4b54-98c6-4d6ff7ee51dd",
+              "name": "NomeCliente",
+              "value": "={{ $json.content.parseJson().NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "80237cba-070b-46b6-8027-7f2a903db540",
+              "name": "DataNascimento",
+              "value": "={{ $json.content.parseJson().DataNascimento }}",
+              "type": "string"
+            },
+            {
+              "id": "e37c79ea-01b1-4e87-8683-13706e4de3ce",
+              "name": "NumeroProcesso",
+              "value": "={{ $json.content.parseJson().NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "97028d4a-dcab-44dd-af41-c9dd60be189a",
+              "name": "content",
+              "value": "={{ $json.content.parseJson().link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        -1216
+      ],
+      "id": "9eb191ee-1476-4395-9beb-bba15c93a697",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "53d04119-7060-4e26-83ea-edad78ca0bc1",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "não",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        544,
+        -912
+      ],
+      "id": "0af4d227-822f-40f5-9fef-c58160eb901f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.galo.top/api/precatorio.php?key=f8fnxnijcaoendmuaxx5w8itjurip8&cpf={{ $json.CPF }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        336,
+        -912
+      ],
+      "id": "af9d5c0c-cd79-43b9-968c-6fe753f12315",
+      "name": "HTTP Request GaloTop",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "$binary",
+        "options": {
+          "disableDotNotation": false,
+          "includeBinary": true
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        976,
+        -1024
+      ],
+      "id": "ac10cece-3697-4053-be63-1a7174486819",
+      "name": "separa arquivos",
+      "executeOnce": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4000,
+        -1312
+      ],
+      "id": "1e56f643-dbe3-48e4-aa98-7957abbb532f",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14f08801-2713-4fc2-b1dc-3e99000f0cc0",
+              "name": "NomeCliente",
+              "value": "={{ $json.NOME.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "55a5fb0a-041c-496e-9f4d-4fdf55f5752a",
+              "name": "CPF",
+              "value": "={{ $json.DOCUMENTO.replaceAll('.','').replaceAll('-','') }}",
+              "type": "string"
+            },
+            {
+              "id": "e49b810f-a95b-4748-aae9-1ac4ecc26ef2",
+              "name": "NumeroProcesso",
+              "value": "={{ $json[\"PROCESSO ORIGINARIO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "b4cbc456-086f-430f-af64-a9d066c0d042",
+              "name": "link",
+              "value": "=https://www.galo.top/api/precatorio.php?key=f8fnxnijcaoendmuaxx5w8itjurip8&cpf={{ $json.DOCUMENTO.replaceAll('.','').replaceAll('-','') }}",
+              "type": "string"
+            },
+            {
+              "id": "aec0dafe-274c-450e-8a39-2d0c6effc59e",
+              "name": "SITUACAO HOJE",
+              "value": "={{ $json[\"SITUACAO HOJE\"].toUpperCase().replaceSpecialChars() }}",
+              "type": "string"
+            },
+            {
+              "id": "dce753fc-3e55-44ba-97b5-2a6cf08fc82a",
+              "name": "VALOR SOLICITADO",
+              "value": "={{ $json[\"VALOR SOLICITADO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8f4873e5-ca67-425e-b1fc-22038368259c",
+              "name": "TIPO",
+              "value": "={{ $json.TIPO }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1296,
+        1344
+      ],
+      "id": "72f1da8c-688a-4bb6-8ce2-e172d2158846",
+      "name": "Edit Fields3",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.CPF }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 100000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2240,
+        1696
+      ],
+      "id": "e817d266-4005-4320-bf03-cd1e1ff0a7cf",
+      "name": "Consulta credilus1",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w8npVsqkeaJd7X0q",
+          "name": "rpa.acg.sanitize"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2496,
+        1680
+      ],
+      "id": "e73bdd9a-a2b3-4a4c-9edd-c0a21a77e302",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "18f9fe66-3b90-4c89-828b-a32ccc1b8f11",
+              "name": "NomeCliente",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "e510686e-adb9-42c3-98ce-87dde159c9d7",
+              "name": "CPF",
+              "value": "={{ $json.CPFCNPJ }}",
+              "type": "string"
+            },
+            {
+              "id": "f1f622b6-cc64-494e-8992-772886467fa0",
+              "name": "DataNascimento",
+              "value": "={{ $json.NASC }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2656,
+        1680
+      ],
+      "id": "c062aefc-b634-4328-a7a4-01ebeaa8f77e",
+      "name": "CONCILIA DADOS"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        1680
+      ],
+      "id": "827919bf-98b4-401f-853f-26b5658c9521",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2864,
+        1376
+      ],
+      "id": "321c2b46-04d8-459d-97b4-8f8b09e5e7cc",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b46d562-73b2-47e7-8d2d-0568a3141d28",
+              "name": "NomeCliente",
+              "value": "={{ $json.NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "1dd48a39-127f-4c5f-afe4-aaa5710bdad7",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "0382c6bf-04ff-4bee-a5ee-b599dedbd35b",
+              "name": "DataNascimento",
+              "value": "={{ DateTime.fromFormat($json.DataNascimento, 'dd/MM/yyyy').toISO() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "e0804e1a-d00f-4d09-b89b-500447e8ae95",
+              "name": "NumeroProcesso",
+              "value": "={{ $json.NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "098b1dad-e6bd-43f6-a571-8fd47cdd4907",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3376,
+        1376
+      ],
+      "id": "881826a4-ba2a-46b4-a9da-44651fed2afa",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2048,
+        1664
+      ],
+      "id": "6465527f-0e07-4f69-8361-e54b9a67b986",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "precfacil_exchange",
+        "exchangeType": "direct",
+        "routingKey": "precfacil_importacao_oficio",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "crm",
+                "value": "={{ $json.link.extractDomain() }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        3616,
+        1376
+      ],
+      "id": "650ee69e-153f-448a-8dc8-344fe21afdd1",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4112,
+        1376
+      ],
+      "id": "b4901400-331d-4b1a-bcc5-13e737eaa930",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "queue": "precfacil_importacao_oficio",
+        "options": {
+          "binding": {
+            "bindings": [
+              {
+                "exchange": "precfacil_exchange",
+                "routingKey": "precfacil_importacao_oficio"
+              }
+            ]
+          },
+          "acknowledge": "executionFinishesSuccessfully",
+          "durable": true,
+          "parallelMessages": 1
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -192
+      ],
+      "id": "509ed3f2-9cc3-49fb-b87b-dca90fb9b2c2",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5115a25b-ac8e-4e3b-afd0-14b1ad46150f",
+              "leftValue": "={{ $json[\"SITUACAO HOJE\"] }}",
+              "rightValue": "NAO PROTOCOLADA",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "9ec4bb8c-de0f-49eb-9859-d94307fa8a2c",
+              "leftValue": "={{ $json[\"SITUACAO HOJE\"] }}",
+              "rightValue": "ATIVO",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "4228f194-999d-4e37-8b20-8f4007bac496",
+              "leftValue": "={{ $json[\"SITUACAO HOJE\"] }}",
+              "rightValue": "ATIVA",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "d8012aaa-7c15-4d10-99be-ba141ab1daa6",
+              "leftValue": "={{ $json[\"SITUACAO HOJE\"] }}",
+              "rightValue": "ATIVO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "2200c06d-268a-473f-b8c2-2daea6df8836",
+              "leftValue": "={{ $json[\"SITUACAO HOJE\"] }}",
+              "rightValue": "EM CONFERENCIA",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "dcf02d58-443d-48e5-9dce-a31bc671cc63",
+              "leftValue": "={{ $json[\"SITUACAO HOJE\"] }}",
+              "rightValue": "AGUARDANDO ASSINATURA",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "42941bc9-e592-4462-a646-d5092cb10f2b",
+              "leftValue": "={{ $json[\"SITUACAO HOJE\"] }}",
+              "rightValue": "EM ELABORACAO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1504,
+        1344
+      ],
+      "id": "bf5fb648-2741-4e61-b812-8de3237c7d09",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "content": "## FILTRO STATUS",
+        "height": 320,
+        "width": 192,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1456,
+        1232
+      ],
+      "typeVersion": 1,
+      "id": "2c2a5521-ee92-4aa4-8bab-cd1bb418b381",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## FILTRO VALOR",
+        "height": 320,
+        "width": 192,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1664,
+        1232
+      ],
+      "typeVersion": 1,
+      "id": "9e801902-3aa8-48d1-9b1f-6a96732330a6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## EXTRAI PLANILHA ",
+        "height": 528,
+        "width": 448,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        384,
+        1136
+      ],
+      "typeVersion": 1,
+      "id": "58daeb9e-8fdd-4137-afb9-bce2fdc43737",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "={subject: NOVOS OFICIOS OR [4mti] } AND {from: operacional@acgconsultoria.com.br OR atendimento@acgconsultoria.com.br OR raul.guimaraes@mdgintermediacoes.com.br OR jenifer.guerra@acgconsultoria.com.br\n}",
+          "readStatus": "unread"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        2016
+      ],
+      "id": "790f2a29-3016-46d8-a9ba-76367c7001b6",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.filter(item => {\n  const dados = item.json;\n  \n  // 1. Limpeza do valor padrão BR (Ex: \"96.996,55\")\n  // .replace(/\\./g, '') -> Remove todos os pontos de milhar (vira \"96996,55\")\n  // .replace(',', '.')  -> Troca a vírgula por ponto (vira \"96996.55\")\n  const valorTexto = dados['VALOR SOLICITADO'] || \"0\";\n  const valorLimpo = valorTexto.toString().replace(/\\./g, '').replace(',', '.');\n  const valor = parseFloat(valorLimpo);\n\n  const tipo = dados['TIPO'];\n\n  // 2. Lógica RPV: Entre 20k e 60k\n  if (tipo === 'RPV' && valor >= 20000 && valor <= 60000) {\n    return true;\n  }\n\n  // 3. Lógica PRC: Acima ou igual a 50k\n  if (tipo === 'PRC' && valor >= 50000) {\n    return true;\n  }\n\n  return false;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        1344
+      ],
+      "id": "714f00be-86d4-4da9-bf32-2de4b69f5501",
+      "name": "Code in JavaScript1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "NumeroProcesso",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3024,
+        -1200
+      ],
+      "id": "e58f92e0-b202-4414-b9d8-c3e6e5637648",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "attachment_0",
+        "options": {
+          "sheetName": "RPV"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        1344
+      ],
+      "id": "89bc0e6f-b75b-4d66-b55a-65df3bd6ff76",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "attachment_0",
+        "options": {
+          "sheetName": "OUTROS"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        1504
+      ],
+      "id": "fa03b0da-9ba6-438f-8871-8d7696ab1185",
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "attachment_0",
+        "options": {
+          "sheetName": "PRC"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        1200
+      ],
+      "id": "4ad68abe-46e1-484a-9ad9-9d38ed410de1",
+      "name": "Extract from File3"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        864,
+        1328
+      ],
+      "id": "a19903eb-5e4d-4c31-9344-dcfb84d07b75",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "de94b499-37d7-4daf-a807-cc4985940a7f",
+              "name": "TIPO",
+              "value": "PRC",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        1200
+      ],
+      "id": "726d4115-3c16-4ccc-9fa7-0bca84d9854a",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "de94b499-37d7-4daf-a807-cc4985940a7f",
+              "name": "TIPO",
+              "value": "RPV",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        1344
+      ],
+      "id": "c4859584-bd19-4d72-9017-d2a614561ac6",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "de94b499-37d7-4daf-a807-cc4985940a7f",
+              "name": "TIPO",
+              "value": "OUTROS",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        1504
+      ],
+      "id": "4f32e1f2-e34d-4c6a-a6bb-2f7e5ffa417f",
+      "name": "Edit Fields7"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8aa4610f-88e6-45c3-abf1-b7c7842c478d",
+                    "leftValue": "={{ $json.properties.headers.crm }}",
+                    "rightValue": "www.galo.top",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "galo.top"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b84b4c97-60c5-4dbe-9e26-7a5ee0f47cbe",
+                    "leftValue": "={{ $json.properties.headers.crm }}",
+                    "rightValue": "dataself.com.br",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "4MTI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        -192
+      ],
+      "id": "8fb566fa-9e38-4fe9-8106-5f31ebf0a23c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "content": "## CONSULTA CREDILUS",
+        "height": 464,
+        "width": 1056,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1952,
+        1520
+      ],
+      "typeVersion": 1,
+      "id": "2b83701f-2ab2-4f79-9958-03733a380eea",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## FILA",
+        "height": 320,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3552,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "b2510940-a827-4082-8fe2-48839c9850a6",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## ORGANIZA DADOS",
+        "height": 320,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3328,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "676f09d0-342e-4537-8ba0-d882c9e4a1c3",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## FILTRA DADOS",
+        "height": 320,
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        1232
+      ],
+      "typeVersion": 1,
+      "id": "d8ae715d-a3e3-491c-8073-73249e19a4fd",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3824,
+        1376
+      ],
+      "id": "90283b7a-329d-4b97-b235-ea9bd51d4010",
+      "name": "Mark a message as read",
+      "webhookId": "b01c4ef9-8619-4a50-8c2a-18f8b452aaee",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a26d16da-c071-41e8-bf80-ffe294734389",
+                    "leftValue": "={{ $json.subject }}",
+                    "rightValue": "NOVOS OFICIOS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "GALOTOP"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.subject }}",
+                    "rightValue": "4mti",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "f159fbad-5c2e-42a3-99fa-3fb4f092b09b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "4MTI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        2016
+      ],
+      "id": "aa04476d-757b-4574-a4e1-6c3059f908bf",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const mimeXlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';\n\nfor (const bin of Object.values($binary)) {\n  if (bin.mimeType === mimeXlsx) {\n    return [\n      {\n        json: $json,\n        binary: {\n          attachment_0: bin,\n        },\n      },\n    ];\n  }\n}\n\n// se não existir XLSX, descarta o item\nreturn [];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        2016
+      ],
+      "id": "2b6a4209-c62c-4371-a1ca-81cd076cdb22",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        2128
+      ],
+      "id": "49d970a4-594e-4db4-8296-52cdb73c2eb9",
+      "name": "Extract from File4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14f08801-2713-4fc2-b1dc-3e99000f0cc0",
+              "name": "NomeCliente",
+              "value": "={{ $json[\"Nome Requerente\"].toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "55a5fb0a-041c-496e-9f4d-4fdf55f5752a",
+              "name": "CPF",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "338349ff-c25e-4987-9556-bfa1fb65efc5",
+              "name": "link",
+              "value": "={{ $json[\" Link Espelho \"] }}",
+              "type": "string"
+            },
+            {
+              "id": "aec0dafe-274c-450e-8a39-2d0c6effc59e",
+              "name": "SITUACAO HOJE",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "dce753fc-3e55-44ba-97b5-2a6cf08fc82a",
+              "name": "VALOR SOLICITADO",
+              "value": "={{ $json[\" Valor Total \"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8f4873e5-ca67-425e-b1fc-22038368259c",
+              "name": "TIPO",
+              "value": "={{ $json[\"Tipo Processo\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "52a662b7-c1d0-4313-a3fd-4be0cd9c2c64",
+              "name": "NumeroProcesso",
+              "value": "={{ $json[\"Número Processo Originário\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        592,
+        2128
+      ],
+      "id": "7b7e448d-368a-4da2-be06-af6457ed502b",
+      "name": "Edit Fields8",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.filter(item => {\n  const dados = item.json;\n  \n  // 1. Limpeza do valor padrão BR (Ex: \"96.996,55\")\n  // .replace(/\\./g, '') -> Remove todos os pontos de milhar (vira \"96996,55\")\n  // .replace(',', '.')  -> Troca a vírgula por ponto (vira \"96996.55\")\n  const valorTexto = dados['VALOR SOLICITADO'] || \"0\";\n  const valorLimpo = valorTexto.toString().replace(/\\./g, '').replace(',', '.');\n  const valor = parseFloat(valorLimpo);\n\n  const tipo = dados['TIPO'];\n\n  // 2. Lógica RPV: Entre 20k e 60k\n  if (tipo === 'RPV' && valor >= 20000 && valor <= 60000) {\n    return true;\n  }\n\n  // 3. Lógica PRC: Acima ou igual a 50k\n  if (tipo === 'Precatório' && valor >= 50000) {\n    return true;\n  }\n\n  return false;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        2128
+      ],
+      "id": "4cc8e125-c3e4-4dd8-a32e-fd05fba4319a",
+      "name": "Code in JavaScript3",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b46d562-73b2-47e7-8d2d-0568a3141d28",
+              "name": "NomeCliente",
+              "value": "={{ $json.NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "1dd48a39-127f-4c5f-afe4-aaa5710bdad7",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "e0804e1a-d00f-4d09-b89b-500447e8ae95",
+              "name": "NumeroProcesso",
+              "value": "={{\n  (() => {\n    const p = ($json.NumeroProcesso || '').replace(/\\D/g, '');\n\n    if (p.length !== 20) return null;\n\n    return `${p.slice(0,7)}-${p.slice(7,9)}.${p.slice(9,13)}.${p.slice(13,14)}.${p.slice(14,16)}.${p.slice(16,20)}`;\n  })()\n}}\n",
+              "type": "string"
+            },
+            {
+              "id": "098b1dad-e6bd-43f6-a571-8fd47cdd4907",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        2128
+      ],
+      "id": "e52e320c-2539-452d-a3e3-892562e0b79a",
+      "name": "Edit Fields9"
+    },
+    {
+      "parameters": {
+        "mode": "exchange",
+        "exchange": "precfacil_exchange",
+        "exchangeType": "direct",
+        "routingKey": "precfacil_importacao_oficio",
+        "options": {
+          "headers": {
+            "header": [
+              {
+                "key": "crm",
+                "value": "={{ $json.link.extractDomain() }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        2128
+      ],
+      "id": "b034e46c-ff66-43da-ae59-659133e57919",
+      "name": "RabbitMQ1",
+      "executeOnce": false,
+      "credentials": {
+        "rabbitmq": {
+          "id": "8S2CCfj4pf5t6xWv",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## FILA",
+        "height": 320,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        2000
+      ],
+      "typeVersion": 1,
+      "id": "6d04b98a-2757-401c-82c5-9b2102e9e255",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## ORGANIZA DADOS",
+        "height": 320,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        2000
+      ],
+      "typeVersion": 1,
+      "id": "1b5aa382-a866-4a3d-bd72-2f7d01524325",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Gmail Trigger').item.json.threadId }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        2128
+      ],
+      "id": "543a5df1-db73-4e93-be67-53e78a0db94c",
+      "name": "Mark a message as read1",
+      "webhookId": "b01c4ef9-8619-4a50-8c2a-18f8b452aaee",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00693003-6b08-47c3-b58c-226e0d894692",
+              "name": "CPF",
+              "value": "={{ $json.content.parseJson().CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "b2c80a97-3b35-4b54-98c6-4d6ff7ee51dd",
+              "name": "NomeCliente",
+              "value": "={{ $json.content.parseJson().NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "80237cba-070b-46b6-8027-7f2a903db540",
+              "name": "DataNascimento",
+              "value": "={{ $json.content.parseJson().DataNascimento }}",
+              "type": "string"
+            },
+            {
+              "id": "e37c79ea-01b1-4e87-8683-13706e4de3ce",
+              "name": "NumeroProcesso",
+              "value": "={{ $json.content.parseJson().NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "97028d4a-dcab-44dd-af41-c9dd60be189a",
+              "name": "content",
+              "value": "={{ $json.content.parseJson().link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        -16
+      ],
+      "id": "ae422ab2-a239-425a-9b84-df910922ca57",
+      "name": "Edit Fields10"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "53d04119-7060-4e26-83ea-edad78ca0bc1",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "Documento não encontrado",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        384,
+        -16
+      ],
+      "id": "b925ee63-bbd3-45bb-9a07-17b3c277d163",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.content }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        128,
+        -16
+      ],
+      "id": "8d57befc-fa18-4bf7-a708-0e88b5eba9cd",
+      "name": "HTTP Request1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://appacghmg.r2jsystem.com.br/api/ImportacaoOficio/cadastra-proposta-por-oficio",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "nomeCliente",
+              "value": "={{ $json.NomeCliente }}"
+            },
+            {
+              "name": "cpf",
+              "value": "={{ $json.cpf }}"
+            },
+            {
+              "name": "dataNascimento",
+              "value": "={{ $json.DataNascimento }}"
+            },
+            {
+              "name": "numeroProcesso",
+              "value": "={{ $json.NumeroProcesso }}"
+            },
+            {
+              "name": "nomeArquivo",
+              "value": "={{ $json.nomeArquivo }}"
+            },
+            {
+              "name": "arquivoBase64",
+              "value": "={{ $json.arquivoBase64 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2496,
+        -256
+      ],
+      "id": "cc38f0eb-f003-4fa1-9017-952ece54b3a7",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mjo2pYG9IQj9Y4Kb",
+          "name": "PRECFACIL"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        -256
+      ],
+      "id": "5fce19a9-7f39-4542-a608-d80a1c929e98",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "content": "## IMPORTA DADOS PRECFACIL\n\n",
+        "height": 336,
+        "width": 208,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3936,
+        -1184
+      ],
+      "typeVersion": 1,
+      "id": "01ab2d07-5edf-4c01-910e-802b04b3122e",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $json.text || '';\n\nconst text = rawText\n  .replace(/\\u00A0/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n/* =========================\n   UTILITÁRIOS\n========================= */\nconst normalizeCPF = (v) => v.replace(/\\D/g, '');\nconst isCPF = (v) => /^\\d{11}$/.test(v);\n\n/* =========================\n   Nº DA REQUISIÇÃO\n   Ex: Nº:0003265.2025.8.06682\n========================= */\nlet numeroRequisicao = null;\n\nconst requisicaoRegexes = [\n  /N[ºo]\\s*[:\\-]?\\s*([\\d.]+)/i,\n  /REQUISI[CÇ][AÃ]O[\\s\\S]{0,40}?([\\d.]{6,})/i\n];\n\nfor (const r of requisicaoRegexes) {\n  const m = text.match(r);\n  if (m) {\n    numeroRequisicao = m[1];\n    break;\n  }\n}\n\n/* =========================\n   BENEFICIÁRIO (FORTE)\n   JOSE ... 38597683287 Não 01/02/2025\n========================= */\nlet nomeBeneficiario = null;\nlet cpfBeneficiario = null;\n\nconst strongRegex =\n  /([A-ZÁÉÍÓÚÂÊÔÃÕÇ\\s]{5,})\\s+(\\d{11})\\s+(?:Não|Sim)\\s+\\d{2}\\/\\d{2}\\/\\d{4}/;\n\nconst strongMatch = text.match(strongRegex);\n\nif (strongMatch) {\n  nomeBeneficiario = strongMatch[1].trim();\n  cpfBeneficiario = strongMatch[2];\n} else {\n  /* =========================\n     CONTEXTO SEMÂNTICO\n  ========================= */\n  const contextRegex =\n    /(BENEFICI[AÁ]RIO|REQUERENTE|CREDOR)[\\s\\S]{0,120}?([A-ZÁÉÍÓÚÂÊÔÃÕÇ\\s]{5,})[\\s\\S]{0,40}?(\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2})/i;\n\n  const contextMatch = text.match(contextRegex);\n\n  if (contextMatch) {\n    nomeBeneficiario = contextMatch[2].trim();\n    cpfBeneficiario = normalizeCPF(contextMatch[3]);\n  } else {\n    /* =========================\n       FALLBACK CPF LIMPO\n    ========================= */\n    const cpfCandidates = [...text.matchAll(/\\b\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}\\b/g)]\n      .map(m => normalizeCPF(m[0]))\n      .filter(isCPF);\n\n    if (cpfCandidates.length) {\n      cpfBeneficiario = cpfCandidates[0];\n    }\n  }\n}\n\n/* =========================\n   OUTPUT FIXO\n========================= */\nreturn [\n  {\n    numeroRequisicao,\n    nomeBeneficiario,\n    cpfBeneficiario\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        32
+      ],
+      "id": "9ed3be9b-d928-441c-b44e-3e4f751e43c5",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "url": "https://credilus.app.mdgintermediacoes.com.br/api/v1/credilink/search/wsdl/cpf",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cpf",
+              "value": "={{ $json.cpfBeneficiario }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 100000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        32
+      ],
+      "id": "1fdb14df-611d-4021-b4be-53f861887ef2",
+      "name": "Consulta credilus",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w8npVsqkeaJd7X0q",
+          "name": "rpa.acg.sanitize"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        16
+      ],
+      "id": "cf58771a-1bb4-4c74-8cb7-dc48c9da6a20",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "18f9fe66-3b90-4c89-828b-a32ccc1b8f11",
+              "name": "NomeCliente",
+              "value": "={{ $json.NOME }}",
+              "type": "string"
+            },
+            {
+              "id": "e510686e-adb9-42c3-98ce-87dde159c9d7",
+              "name": "CPF",
+              "value": "={{ $json.CPFCNPJ }}",
+              "type": "string"
+            },
+            {
+              "id": "f1f622b6-cc64-494e-8992-772886467fa0",
+              "name": "DataNascimento",
+              "value": "={{ DateTime.fromFormat($json.NASC, 'dd/MM/yyyy').toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        16
+      ],
+      "id": "78483ab6-7f79-44ae-892d-3c9de320ce61",
+      "name": "CONCILIA DADOS1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "CPF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        16
+      ],
+      "id": "24f8e450-ba6c-4493-bdc9-8e857670a2aa",
+      "name": "Remove Duplicates1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "62d2fc43-cf51-491c-aafb-736211cb2249",
+              "name": "cpf",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "7999c4d5-5357-4165-9644-78b155761dd9",
+              "name": "NomeCliente",
+              "value": "={{ $json.NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "51fb226b-d25c-437e-a26d-7ea9abb0ee1b",
+              "name": "DataNascimento",
+              "value": "={{ $json.DataNascimento }}",
+              "type": "string"
+            },
+            {
+              "id": "79863178-2d44-4b1b-a478-024e6815f0b6",
+              "name": "NumeroProcesso",
+              "value": "={{ $('Edit Fields10').item.json.NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "9a2bc968-d543-4228-812e-ab689f46e79d",
+              "name": "nomeArquivo",
+              "value": "={{ $('Edit Fields10').item.json.NumeroProcesso }}-{{ $('Code in JavaScript4').item.json.numeroRequisicao }}.pdf",
+              "type": "string"
+            },
+            {
+              "id": "ef9cde85-3ea8-499a-b861-499ae276e056",
+              "name": "arquivoBase64",
+              "value": "={{ $json.arquivoBase64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2272,
+        -256
+      ],
+      "id": "8c664ea5-a00b-480d-9f72-02237eeba620",
+      "name": "Edit Fields13"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2048,
+        -256
+      ],
+      "id": "c0e728c6-6a78-49e0-b432-fe00fd3e99f0",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        32
+      ],
+      "id": "925bd7c0-3d7e-4f8b-bde5-365d4d0e652e",
+      "name": "Extract pdf"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        -272
+      ],
+      "id": "18a8fb5a-51af-4710-baf4-adb7cdbb8d71",
+      "name": "Extract base64"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2afe62c8-73a4-469a-8c5e-11b220a90c88",
+              "name": "=nomeArquivo",
+              "value": "={{ $('HTTP Request1').item.binary.data.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "a6f1103a-8d3b-4a01-b010-968b7bbb2ab4",
+              "name": "arquivoBase64",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        -272
+      ],
+      "id": "3499b2e0-1a41-4054-9480-cd23546d056d",
+      "name": "dados_pdf"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d014c709-0ed2-4b8a-87ad-658f7fad1a0a",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        32
+      ],
+      "id": "641cb838-4609-4a07-b5fa-64aef5e8cb38",
+      "name": "dados_oficio"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://appacghmg.r2jsystem.com.br/api/ImportacaoOficio/cadastra-proposta-por-oficio",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "nomeCliente",
+              "value": "={{ $json.NomeCliente }}"
+            },
+            {
+              "name": "cpf",
+              "value": "={{ $json.CPF }}"
+            },
+            {
+              "name": "dataNascimento",
+              "value": "={{ $json.DataNascimento.toDateTime() }}"
+            },
+            {
+              "name": "numeroProcesso",
+              "value": "={{ $json.NumeroProcesso }}"
+            },
+            {
+              "name": "nomeArquivo",
+              "value": "={{ $json.nomeArquivo }}"
+            },
+            {
+              "name": "arquivoBase64",
+              "value": "={{ $json.arquivoBase64 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4000,
+        -1088
+      ],
+      "id": "0adfe2dd-a7e1-4b93-9043-7f3559807025",
+      "name": "HTTP Request3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mjo2pYG9IQj9Y4Kb",
+          "name": "PRECFACIL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3728,
+        -1200
+      ],
+      "id": "dddfd688-ebde-463a-aa83-cc60aa470f95",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4208,
+        -1088
+      ],
+      "id": "b72f798b-e766-4352-8344-203b02626083",
+      "name": "Wait",
+      "webhookId": "193f10eb-2242-4f62-b674-cbaa75219906"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        1344
+      ],
+      "id": "2ce9522a-fffd-404d-ae75-e8b61fe110be",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5901984c-74c9-4936-849a-4e3972b0cc38",
+              "name": "alerta",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "9039c294-012d-40d8-8a85-4d29c78ddc39",
+              "name": "CPF",
+              "value": "={{ $('Edit Fields2').item.json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "0bec382f-ed27-4ea0-aa54-93ca800b7232",
+              "name": "NomeCliente",
+              "value": "={{ $('Edit Fields2').item.json.NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "564f6ad0-ecf0-4614-92e0-35d2a81b5195",
+              "name": "NumeroProcesso",
+              "value": "={{ $('Edit Fields2').item.json.NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "ee867de5-08e4-46ab-b4f2-688bc3e985bd",
+              "name": "link",
+              "value": "={{ $('Edit Fields2').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "df0fc190-5442-45f8-8748-9321232e6c9c",
+              "name": "crm",
+              "value": "={{ $('Edit Fields2').item.json.content.extractDomain() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        -720
+      ],
+      "id": "05f2f353-d0f3-408d-8b68-6157150d2b7f",
+      "name": "Edit Fields11"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json;\n\n// Usar o CRM vindo no input e normalizar (remove www.)\nlet crm = 'CRM não identificado';\n\nif (data.crm && typeof data.crm === 'string') {\n  crm = data.crm.replace(/^www\\./, '');\n}\n\n// Subject do email\nconst subject = `Alerta – Documento não encontrado no CRM (${crm})`;\n\n// Corpo do email\nconst body = `\nPrezados,\n\nInformamos que, durante a verificação automática no CRM (${crm}), não foi localizado o arquivo/documento esperado no sistema.\n\nDetalhes do registro:\n- Cliente: ${data.NomeCliente}\n- CPF: ${data.CPF}\n- Número do Processo: ${data.NumeroProcesso}\n- Status: ${data.alerta}\n\nLink consultado:\n${data.link}\n\nSolicitamos a validação manual do caso ou o envio do documento correto para que o fluxo possa prosseguir normalmente.\n\nAtenciosamente,\nDesenvolvimento. \n`.trim();\n\n// Retorno\nreturn [\n  {\n    json: {\n      crm,\n      subject,\n      body,\n      NomeCliente: data.NomeCliente,\n      CPF: data.CPF,\n      NumeroProcesso: data.NumeroProcesso,\n      alerta: data.alerta,\n      link: data.link\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -720
+      ],
+      "id": "0a3a8f81-0512-4ea0-9246-597b163b0135",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "sendTo": "aline.goncalves@acgconsultoria.com.br, jenifer.guerra@acgconsultoria.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        -720
+      ],
+      "id": "6645b24a-9a02-4f5b-bf01-a34b723a6095",
+      "name": "Send a message",
+      "webhookId": "4dea638c-e29e-4d3c-a55a-e12c0e4eab2c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5901984c-74c9-4936-849a-4e3972b0cc38",
+              "name": "alerta",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "9039c294-012d-40d8-8a85-4d29c78ddc39",
+              "name": "CPF",
+              "value": "={{ $('Edit Fields2').item.json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "0bec382f-ed27-4ea0-aa54-93ca800b7232",
+              "name": "NomeCliente",
+              "value": "={{ $('Edit Fields2').item.json.NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "564f6ad0-ecf0-4614-92e0-35d2a81b5195",
+              "name": "NumeroProcesso",
+              "value": "={{ $('Edit Fields2').item.json.NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "ee867de5-08e4-46ab-b4f2-688bc3e985bd",
+              "name": "link",
+              "value": "={{ $('Edit Fields2').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "df0fc190-5442-45f8-8748-9321232e6c9c",
+              "name": "crm",
+              "value": "={{ $('Edit Fields2').item.json.content.extractDomain() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        352
+      ],
+      "id": "59b902ac-7135-41d1-8456-77b22d753a67",
+      "name": "Edit Fields12"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json;\n\n// Usar o CRM vindo no input e normalizar (remove www.)\nlet crm = 'CRM não identificado';\n\nif (data.crm && typeof data.crm === 'string') {\n  crm = data.crm.replace(/^www\\./, '');\n}\n\n// Subject do email\nconst subject = `Alerta – Documento não encontrado no CRM (${crm})`;\n\n// Corpo do email\nconst body = `\nPrezados,\n\nInformamos que, durante a verificação automática no CRM (${crm}), não foi localizado o arquivo/documento esperado no sistema.\n\nDetalhes do registro:\n- Cliente: ${data.NomeCliente}\n- CPF: ${data.CPF}\n- Número do Processo: ${data.NumeroProcesso}\n- Status: ${data.alerta}\n\nLink consultado:\n${data.link}\n\nSolicitamos a validação manual do caso ou o envio do documento correto para que o fluxo possa prosseguir normalmente.\n\nAtenciosamente,\nDesenvolvimento. \n`.trim();\n\n// Retorno\nreturn [\n  {\n    json: {\n      crm,\n      subject,\n      body,\n      NomeCliente: data.NomeCliente,\n      CPF: data.CPF,\n      NumeroProcesso: data.NumeroProcesso,\n      alerta: data.alerta,\n      link: data.link\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        352
+      ],
+      "id": "c8960968-9585-4612-aceb-60e18ef1fcae",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "sendTo": "aline.goncalves@acgconsultoria.com.br, jenifer.guerra@acgconsultoria.com.br, felipe.ferreira@mdgintermediacoes.com.br",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        352
+      ],
+      "id": "2c55ef07-dfa7-4114-8b63-285c492c93be",
+      "name": "Send a message1",
+      "webhookId": "4dea638c-e29e-4d3c-a55a-e12c0e4eab2c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iEXJKdMeC12THwyd",
+          "name": "Gmail Desenvolvimento"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $('Edit Fields12').item.json.alerta }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        352
+      ],
+      "id": "84e8eae2-c574-401f-8daf-fa6aeac9ca01",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $('Edit Fields11').item.json.alerta }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -720
+      ],
+      "id": "28b4ba2d-316d-4ebf-a455-dfd21960fe09",
+      "name": "Stop and Error1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "NumeroProcesso",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        3072,
+        1376
+      ],
+      "id": "bea9aeeb-6e9d-4f43-84ab-cae931a71fcf",
+      "name": "Remove Duplicates2"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "nomeArquivo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        3440,
+        -1200
+      ],
+      "id": "ec49ae03-3c80-4bf7-b844-345ec9a12227",
+      "name": "Remove Duplicates3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        -1024
+      ],
+      "id": "d8372a21-cbd1-4e6e-bf10-dd57b6165a92",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "arquivoBase64",
+        "options": {
+          "fileName": "={{ $('Edit Fields').item.json.nomeArquivo }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2048,
+        -752
+      ],
+      "id": "94f92136-2263-4ba6-bc93-eef3ab1bef37",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        2256,
+        -752
+      ],
+      "id": "ba60a5c3-39b9-4259-8c43-0f32fd89a418",
+      "name": "Extract from File6"
+    },
+    {
+      "parameters": {
+        "jsCode": "/* =========================\n   ENTRADA\n========================= */\nconst rawText = $json.text || '';\n\nconst text = rawText\n  .replace(/\\u00A0/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n/* =========================\n   1. PROCESSO (CNJ)\n   PRIORIDADE SEMÂNTICA\n========================= */\n\nlet numeroProcesso = null;\n\n/**\n * Linha explícita \"Processo:\"\n * Aceita CNJ cru (20 dígitos)\n * ou CNJ mascarado\n */\nconst processoLinhaRegex =\n  /Processo\\s*:\\s*(\\d{20}|\\d{7}-\\d{2}\\.\\d{4}\\.\\d\\.\\d{2}\\.\\d{4})/i;\n\nconst processoLinhaMatch = text.match(processoLinhaRegex);\n\nif (processoLinhaMatch) {\n  const p = processoLinhaMatch[1];\n\n  // CNJ cru → mascara\n  if (/^\\d{20}$/.test(p)) {\n    numeroProcesso =\n      `${p.slice(0,7)}-${p.slice(7,9)}.` +\n      `${p.slice(9,13)}.${p.slice(13,14)}.` +\n      `${p.slice(14,16)}.${p.slice(16,20)}`;\n  } else {\n    numeroProcesso = p;\n  }\n} else {\n  /**\n   * Fallback — CNJ mascarado solto\n   * (usado só se não existir \"Processo:\")\n   */\n  const cnjFallback =\n    text.match(/\\d{7}-\\d{2}\\.\\d{4}\\.\\d\\.\\d{2}\\.\\d{4}/);\n\n  if (cnjFallback) {\n    numeroProcesso = cnjFallback[0];\n  }\n}\n\n/* =========================\n   2. OFÍCIO REQUISITÓRIO\n   (multi-tribunal)\n========================= */\n\nconst oficioPatterns = [\n  /OF[IÍ]CIO\\s+REQUISIT[ÓO]RIO\\s*(?:n[ºo]\\s*)?([\\d.]+)/i,\n  /REQUISI[CÇ][AÃ]O(?:\\s+DE\\s+PAGAMENTO)?\\s*(?:n[ºo]\\s*)?([\\d.]+)/i,\n  /\\b(PRC|RPV)\\b\\s*(?:n[ºo]\\s*)?([\\d.]{6,})/i,\n  /N[ºo]\\s*[:\\-]?\\s*([\\d.]{6,})/i\n];\n\nlet oficio = null;\n\nfor (const regex of oficioPatterns) {\n  const match = text.match(regex);\n  if (match) {\n    oficio = match[2] || match[1];\n    break;\n  }\n}\n\n/* =========================\n   3. FALLBACK BRUTO\n========================= */\nif (!oficio) {\n  const brute = text.match(/\\b\\d{8,}\\b/);\n  if (brute) oficio = brute[0];\n}\n\n/* =========================\n   4. NORMALIZAÇÃO\n========================= */\nif (oficio) {\n  oficio = oficio.replace(/[^\\d.]/g, '');\n}\n\n/* =========================\n   SAÍDA (n8n)\n========================= */\nreturn [\n  {\n    json: {\n      numeroProcesso,\n      oficioRequisitorio: oficio\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        -752
+      ],
+      "id": "35d1ee27-f6f7-49b4-83a3-7b1e55699e33",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1136ce31-d8e7-4f9f-8e0a-2e0e7ad93691",
+              "name": "oficioRequisitorio",
+              "value": "={{ $json.oficioRequisitorio }}",
+              "type": "string"
+            },
+            {
+              "id": "1f9d0382-7172-4eca-beaa-005863e4711c",
+              "name": "arquivoBase64",
+              "value": "={{ $('Edit Fields').item.json.arquivoBase64 }}",
+              "type": "string"
+            },
+            {
+              "id": "7fc24607-30eb-4d16-b3fc-c94be93ee77b",
+              "name": "NumeroProcesso",
+              "value": "={{ $json.numeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "1cbc012f-db10-4528-b2cc-b2552555c4c7",
+              "name": "nomeArquivo",
+              "value": "={{ $('Convert to File').item.binary.data.fileName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2672,
+        -752
+      ],
+      "id": "34bbe600-64d0-4f13-b4a5-46a90ae354f6",
+      "name": "Edit Fields14"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f3cd585-f9ba-4e10-9eba-6c5242f80d87",
+              "name": "oficioRequisitorio",
+              "value": "={{ $json.oficioRequisitorio }}",
+              "type": "string"
+            },
+            {
+              "id": "dc03019a-e64b-42b2-9681-ee319adbb9b0",
+              "name": "arquivoBase64",
+              "value": "={{ $json.arquivoBase64 }}",
+              "type": "string"
+            },
+            {
+              "id": "392580c3-c1fd-4b83-8156-a1d6ecfa95fd",
+              "name": "NumeroProcesso",
+              "value": "={{ $json.NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "8f056b55-8f47-4ecc-8e89-98234f10d033",
+              "name": "nomeArquivo",
+              "value": "={{ $json.nomeArquivo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2064,
+        -1040
+      ],
+      "id": "2925dcb8-6fe8-4691-96d9-c4974f14ab00",
+      "name": "Edit Fields15"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff146a59-0ccb-4776-a5db-99d5137a2609",
+              "name": "CPF",
+              "value": "={{ $json.CPF }}",
+              "type": "string"
+            },
+            {
+              "id": "223be97f-ff1e-44c2-8ec9-b597c890f901",
+              "name": "NomeCliente",
+              "value": "={{ $json.NomeCliente }}",
+              "type": "string"
+            },
+            {
+              "id": "9ddade61-1b9c-4dad-98ff-2380ade17093",
+              "name": "DataNascimento",
+              "value": "={{ $json.DataNascimento }}",
+              "type": "string"
+            },
+            {
+              "id": "e272e298-dbaf-44c3-b9b8-0d3185560e7f",
+              "name": "NumeroProcesso",
+              "value": "={{ $json.NumeroProcesso }}",
+              "type": "string"
+            },
+            {
+              "id": "1ff211f4-a69b-498d-94ee-41d4e474de83",
+              "name": "nomeArquivo",
+              "value": "={{ $json.NumeroProcesso }}-{{ $json.oficioRequisitorio }}.pdf",
+              "type": "string"
+            },
+            {
+              "id": "e12dabe7-2d2e-444a-b960-948f1d50aac2",
+              "name": "arquivoBase64",
+              "value": "={{ $json.arquivoBase64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3232,
+        -1200
+      ],
+      "id": "c5407695-6335-436d-a4a4-9e576a888bd7",
+      "name": "Edit Fields16"
+    },
+    {
+      "parameters": {
+        "content": "## ORGANIZA DADOS\n\n",
+        "height": 336,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3184,
+        -1312
+      ],
+      "typeVersion": 1,
+      "id": "fce53fdd-6041-48a2-8278-9001dab8e76a",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## EXTRAI NUMERO OFICIO\n\n",
+        "height": 336,
+        "width": 784,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2016,
+        -896
+      ],
+      "typeVersion": 1,
+      "id": "768555e9-d237-434d-9aef-fcf44e6566ab",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "## DESCOMPACTA OFICIOS\n\n",
+        "height": 336,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        736,
+        -1136
+      ],
+      "typeVersion": 1,
+      "id": "bcdb58ce-e9bb-4e92-baaf-4261ad36cd9a",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "## GET OFÍCIOS \n",
+        "height": 336,
+        "width": 192,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        288,
+        -1040
+      ],
+      "typeVersion": 1,
+      "id": "7c272d34-bd3e-4bec-bf81-8e56836eff1e",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "## NOTIFICA ERROS \n\n",
+        "height": 336,
+        "width": 784,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        752,
+        -784
+      ],
+      "typeVersion": 1,
+      "id": "8a01f45d-961d-48dd-b33d-d257a0564c17",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "## IMPORTA DADOS PRECFACIL\n\n",
+        "height": 336,
+        "width": 208,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2448,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "30aa77eb-904f-4d2e-8c7f-5aba38a3dbd9",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "## ORGANIZA DADOS\n\n",
+        "height": 336,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2224,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "f2493ea7-cd98-4c0d-8274-8ae40f5cfa7c",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "## EXTRAI DADOS OFICIO\n\n",
+        "height": 336,
+        "width": 576,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        672,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "81e6693a-1875-4a65-bd27-4bee0237ad16",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "## COLETA DADOS CREDILUS\n\n",
+        "height": 352,
+        "width": 432,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1264,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "87cc7922-313c-4b70-bad6-f62d8aca2ba7",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "content": "## NOTIFICA ERROS \n\n",
+        "height": 336,
+        "width": 784,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        672,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "ef73ddd0-6e5e-40ab-9f15-eb829b236f84",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "content": "## MARCA COMO LIDO",
+        "height": 320,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3776,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "801395a1-cd1a-4cc0-a5bf-4fd293112173",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "content": "## EXTRAI PLANILHA ",
+        "height": 320,
+        "width": 416,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        2000
+      ],
+      "typeVersion": 1,
+      "id": "fac8ad93-dfb3-4aec-a98a-6ca1dd84e843",
+      "name": "Sticky Note21"
+    },
+    {
+      "parameters": {
+        "content": "## MARCA COMO LIDO",
+        "height": 320,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1520,
+        2000
+      ],
+      "typeVersion": 1,
+      "id": "46fe1bfe-608d-4eed-88ea-7f0df43a76a2",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        2128
+      ],
+      "id": "37bce585-1d05-4a91-927a-4cf3d028df55",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "content": "## FILA DE IMPORTACAO\n",
+        "height": 1728,
+        "width": 5136
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        896
+      ],
+      "typeVersion": 1,
+      "id": "2911ce3b-70d1-425a-8787-a345bc7fc2eb",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "content": "## MPORTACAO\n",
+        "height": 2096,
+        "width": 5136
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -752,
+        -1360
+      ],
+      "typeVersion": 1,
+      "id": "34006f01-af9d-41b5-b9ab-b7ec0fe4320f",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "content": "## FILTRO VALOR",
+        "height": 320,
+        "width": 192,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        2000
+      ],
+      "typeVersion": 1,
+      "id": "2b9c9022-332a-4df3-ae57-4a281f0e98ca",
+      "name": "Sticky Note25"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        976,
+        2128
+      ],
+      "id": "929c7d5f-29fc-4dab-b05d-935f1993efcc",
+      "name": "Limit1"
+    }
+  ],
+  "connections": {
+    "Compression": {
+      "main": [
+        [
+          {
+            "node": "separa arquivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request GaloTop",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Compression",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request GaloTop": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "separa arquivos": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta credilus1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "CONCILIA DADOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CONCILIA DADOS": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Consulta credilus1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark a message as read": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields8": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields9": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ1": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields10": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Extract base64",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract pdf",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta credilus": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "CONCILIA DADOS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CONCILIA DADOS1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Consulta credilus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates1": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields13": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract pdf": {
+      "main": [
+        [
+          {
+            "node": "dados_oficio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract base64": {
+      "main": [
+        [
+          {
+            "node": "dados_pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados_pdf": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados_oficio": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields11": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields12": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields15",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Extract from File6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields14": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields15": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields16": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark a message as read1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Gmail Trigger": {
+      "Gmail Trigger": {
+        "lastTimeChecked": 1769901698,
+        "possibleDuplicates": [
+          "19c165cf066c4194"
+        ]
+      }
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "fields": {
+            "consumerTag": "amq.ctag-snL20-OI85wjQnzNGWX4Lw",
+            "deliveryTag": 2,
+            "redelivered": false,
+            "exchange": "precfacil_exchange",
+            "routingKey": "precfacil_importacao_oficio"
+          },
+          "properties": {
+            "headers": {
+              "crm": "www.galo.top"
+            }
+          },
+          "content": "{\"NomeCliente\":\"REINALDO DOS SANTOS\",\"CPF\":\"19683111815\",\"DataNascimento\":\"1949-07-12T00:00:00.000-03:00\\n\",\"NumeroProcesso\":\"5000021-24.2024.4.03.6144\",\"link\":\"https://www.galo.top/api/precatorio.php?key=f8fnxnijcaoendmuaxx5w8itjurip8&cpf=19683111815\"}"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "df1c2412-3981-4214-969c-f29208dc902f",
+  "activeVersionId": null,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-02-02T12:28:24.088Z",
+      "createdAt": "2026-02-02T12:28:24.088Z",
+      "role": "workflow:owner",
+      "workflowId": "ZrvXtOSnPHcqzxeE",
+      "projectId": "WKaFGMA1xkhJiQjY"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
